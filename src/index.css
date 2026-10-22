@@ -1,0 +1,124 @@
+/* 色彩來源：DESIGN §4；幾何與文字來源：TOKENS §2。 */
+:root {
+  /* Primitive */
+  --palette-paper: #F6F3E9;
+  --palette-cream: #FFFCF4;
+  --palette-sand: #EDE6D6;
+  --palette-teal: #123F46;
+  --palette-teal-deep: #0D3339;
+  --palette-brass: #B47B24;
+  --palette-brass-ink: #805512;
+  --palette-brass-action: #95631A;
+  --palette-brass-light: #D7B56D;
+  --palette-slate: #53645F;
+  --palette-sage: #90A18B;
+  --palette-line-soft: #D6CEBC;
+  --palette-line-strong: #7C8173;
+  --palette-disabled: #E5E1D6;
+
+  /* Semantic */
+  --color-bg-page: var(--palette-paper);
+  --color-bg-surface: var(--palette-cream);
+  --color-bg-subtle: var(--palette-sand);
+  --color-bg-brand: var(--palette-teal);
+  --color-text-primary: var(--palette-teal);
+  --color-text-secondary: var(--palette-slate);
+  --color-text-inverse: var(--palette-cream);
+  --color-text-accent: var(--palette-brass-ink);
+  --color-text-accent-inverse: var(--palette-brass-light);
+  --color-border-subtle: var(--palette-line-soft);
+  --color-border-control: var(--palette-line-strong);
+  --color-action-primary: var(--palette-teal);
+  --color-action-primary-hover: var(--palette-teal-deep);
+  --color-action-accent: var(--palette-brass-action);
+  --color-action-accent-hover: var(--palette-brass-ink);
+  --color-action-label: var(--palette-cream);
+  --color-accent-decoration: var(--palette-brass);
+  --color-focus-on-light: var(--palette-teal);
+  --color-focus-on-dark: var(--palette-cream);
+  --color-disabled-bg: var(--palette-disabled);
+  --color-disabled-text: var(--palette-slate);
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --radius-field: 12px;
+  --radius-control: 16px;
+  --radius-card: 20px;
+  --radius-panel: 24px;
+  --radius-pill: 9999px;
+
+  --control-min-height: 48px;
+  --control-primary-min-height: 56px;
+  --control-min-width: 96px;
+  --control-primary-min-width: 128px;
+  --control-padding-inline: var(--space-6);
+  --control-padding-block: 11px;
+  --control-primary-padding-block: 15px;
+  --field-min-height: 52px;
+  --icon-target-size: 48px;
+  --icon-inline-size: 20px;
+  --icon-standalone-size: 24px;
+  --control-content-gap: var(--space-2);
+  --action-group-gap: var(--space-3);
+
+  --font-control-size: 1rem;
+  --font-control-line-height: 1.5rem;
+  --font-control-weight: 600;
+  --font-control-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-body-family: var(--font-control-family);
+  --font-display-family: "Songti TC", "PMingLiU", serif;
+  --font-body-size: 1rem;
+  --font-body-line-height: 1.75rem;
+  --font-meta-size: 0.875rem;
+  --font-meta-line-height: 1.375rem;
+  --font-heading-small-size: 1.75rem;
+  --font-heading-small-line-height: 2.375rem;
+  --font-heading-wide-size: 2.25rem;
+  --font-heading-wide-line-height: 3rem;
+  --font-heading-weight: 600;
+  --font-section-size: 1.375rem;
+  --font-section-line-height: 2rem;
+
+  --border-control-width: 1px;
+  --focus-outline-width: 3px;
+  --focus-outline-offset: 3px;
+  --motion-feedback-duration: 120ms;
+
+  --layout-gutter-small: var(--space-4);
+  --layout-gutter-medium: var(--space-6);
+  --layout-gutter-large: var(--space-8);
+  --layout-content-max-width: 1200px;
+  --layout-reading-max-width: 680px;
+  --layout-section-gap-small: var(--space-8);
+  --layout-section-gap-wide: var(--space-12);
+  --card-padding-small: var(--space-5);
+  --card-padding-wide: var(--space-6);
+  font-family: var(--font-body-family);
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-inline-size: 0; }
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; text-underline-offset: 5px; }
+p, h1, h2, h3, a { overflow-wrap: anywhere; }
+a:focus-visible, [tabindex="-1"]:focus-visible {
+  outline: var(--focus-outline-width) solid var(--color-focus-on-light);
+  outline-offset: var(--focus-outline-offset);
+}
+::selection { color: var(--color-text-inverse); background: var(--color-bg-brand); }
