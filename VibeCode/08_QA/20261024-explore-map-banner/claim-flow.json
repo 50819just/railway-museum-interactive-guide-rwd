@@ -1,0 +1,66 @@
+[
+  {
+    "countStrings": [
+      "3 / 10 片"
+    ],
+    "notice": "● 有新任務・新的拼圖地點：柴電工場",
+    "progress": "已收集 3 / 10 片",
+    "redDot": true
+  },
+  {
+    "countStrings": [
+      "4 / 10 片"
+    ],
+    "notice": "● 有新任務・新的拼圖地點：客車工場",
+    "progress": "已收集 4 / 10 片",
+    "redDot": true
+  },
+  {
+    "countStrings": [
+      "5 / 10 片"
+    ],
+    "notice": "● 有新任務・新的拼圖地點：原動室",
+    "progress": "已收集 5 / 10 片",
+    "redDot": true
+  },
+  {
+    "countStrings": [
+      "6 / 10 片"
+    ],
+    "notice": "● 有新任務・新的拼圖地點：移車台",
+    "progress": "已收集 6 / 10 片",
+    "redDot": true
+  },
+  {
+    "countStrings": [
+      "7 / 10 片"
+    ],
+    "notice": "● 有新任務・新的拼圖地點：技工養成所",
+    "progress": "已收集 7 / 10 片",
+    "redDot": true
+  },
+  {
+    "countStrings": [
+      "8 / 10 片"
+    ],
+    "notice": "● 有新任務・新的拼圖地點：員工澡堂",
+    "progress": "已收集 8 / 10 片",
+    "redDot": true
+  },
+  {
+    "countStrings": [
+      "9 / 10 片"
+    ],
+    "notice": "● 有新任務・新的拼圖地點：大禮堂",
+    "progress": "已收集 9 / 10 片",
+    "redDot": true
+  },
+  {
+    "countStrings": [
+      "10 / 10 片"
+    ],
+    "notice": "",
+    "progress": "已收集 10 / 10 片",
+    "redDot": false
+  }
+]

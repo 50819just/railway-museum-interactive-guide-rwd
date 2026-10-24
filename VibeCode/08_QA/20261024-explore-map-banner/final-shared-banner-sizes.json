@@ -1,0 +1,47 @@
+[
+  {
+    "bannerWidth": 288,
+    "height": 472,
+    "page": "explore",
+    "progressOccurrences": 1,
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "bannerWidth": 350,
+    "height": 434,
+    "page": "explore",
+    "progressOccurrences": 1,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "bannerWidth": 962,
+    "height": 390,
+    "page": "explore",
+    "progressOccurrences": 1,
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "bannerWidth": 288,
+    "height": 472,
+    "page": "redemption",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "bannerWidth": 350,
+    "height": 434,
+    "page": "redemption",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "bannerWidth": 962,
+    "height": 390,
+    "page": "redemption",
+    "scrollWidth": 1280,
+    "width": 1280
+  }
+]

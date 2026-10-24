@@ -23,12 +23,12 @@ function Scenery({ progress }) {
 
   </svg>
 }
-export default function ParkMap({ selectedId, onSelect, guide, progress, onOpenRoute }) {
+export default function ParkMap({ selectedId, onSelect, guide, progress }) {
   return <div className={`map-frame ${guide ? 'is-guiding' : ''}`}>
-    <div className="map-toolbar"><div><h2>園區探索地圖</h2><span className="map-progress" aria-live="polite">首輪・已完成 {progress.completed.length} / 10 站 <small>示範</small></span></div><button className="map-route-list" onClick={onOpenRoute} aria-label="查看十站路線" aria-haspopup="dialog"><Icon name="map" size={18}/>十站清單</button></div>
+    <div className="map-toolbar"><span>文化預覽・原型示意圖</span><span>點站點可預覽</span></div>
     <div className="map-canvas"><Scenery progress={progress}/>{stations.map(station=> {
       const completed = progress.completed.includes(station.id)
-      const current = station.id === (progress.completed.length < 10 ? progress.completed.length + 1 : null)
+      const current = station.id === (stations[progress.completed.length]?.id)
       return <button key={station.id} style={{left:`${station.x}%`,top:`${station.y}%`}} className={`map-point ${completed?'is-complete':''} ${current?'is-current':''} ${station.id===selectedId?'is-selected':''}`} aria-label={`第${stationNumber(station.id)}站 ${station.name}，${completed?'已完成（示範）':current?'下一站':'尚未解鎖，可預覽'}`} aria-pressed={station.id===selectedId} onClick={()=>onSelect(station.id)}>{completed?<Icon name="check" size={16}/>:stationNumber(station.id)}{current&&<span className="point-label">{station.name}</span>}</button>
     })}<span className="map-caption">園區平面示意</span></div>
     <div className="map-legend"><span><i className="legend-complete"/>已完成</span><span><i className="legend-current"/>下一站</span><span><i/>待解鎖</span></div>

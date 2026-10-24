@@ -83,3 +83,83 @@
   .app-shell #main .map-first .map-column { margin-top: 4px; }
   .app-shell #main .map-first .explore-task-dock > span { overflow-wrap: anywhere; }
 }
+
+/* Culture and scanning are both primary: main content is never collapsed.
+   The dock remains reachable while reading, even before the in-card CTA. */
+.app-shell #main .map-first .station-main-image { margin: 18px 0 0; }
+.app-shell #main .map-first .station-main-image img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; }
+.app-shell #main .map-first .station-main-image figcaption { font-size: 11px; line-height: 1.6; color: var(--muted); margin-top: 6px; }
+.app-shell #main .map-first .station-culture { margin-top: 20px; }
+.app-shell #main .map-first .culture-eyebrow { font-size: 12px; color: var(--gold-ink); font-weight: 700; margin-bottom: 8px; }
+.app-shell #main .map-first .station-culture h3 { font-size: 19px; line-height: 1.5; margin: 0 0 12px; }
+.app-shell #main .map-first .culture-paragraph { font-size: 14px; line-height: 1.9; margin: 0 0 12px; color: var(--teal); }
+.app-shell #main .map-first .culture-observation { background: var(--surface-low); padding: 14px 16px; border-radius: 12px; margin-block: 16px; }
+.app-shell #main .map-first .culture-observation strong { font-size: 13px; }
+.app-shell #main .map-first .culture-observation p { font-size: 13px; line-height: 1.8; margin-top: 6px; }
+.app-shell #main .map-first .culture-observation small { display: block; font-size: 12px; line-height: 1.7; color: var(--muted); margin-top: 8px; }
+.app-shell #main .map-first .culture-sources { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: 12px; line-height: 1.8; }
+.app-shell #main .map-first .culture-sources a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.app-shell #main .map-first .culture-context-note { font-size: 11px; line-height: 1.7; color: var(--muted); margin: 0; }
+.app-shell #main .map-first .station-scan-actions { border-top: 1px solid var(--line); padding-top: 4px; margin-top: 20px; }
+.app-shell #main .map-first .station-more-detail { border-top: 1px solid var(--line); margin-top: 20px; }
+.app-shell #main .map-first .station-more-detail .station-detail { margin-top: 8px; }
+@media (max-width: 700px) {
+  .app-shell #main .map-first .station-culture h3 { font-size: 18px; }
+  .app-shell #main .map-first .culture-paragraph { font-size: 14px; }
+  .app-shell #main .map-first .task-route-actions { border: 0; margin-top: 4px; }
+}
+
+/* Same banner footprint as redemption: 390px desktop / 430px mobile. */
+.app-shell #main .culture-explore { max-width: 1420px; }
+.app-shell #main .culture-explore .page-heading { margin-bottom: 16px; }
+.app-shell #main .culture-explore .explore-overview { max-width: none; margin-bottom: 22px; }
+.app-shell #main .station-feature-anchor { scroll-margin-top: 16px; outline: none; }
+.app-shell #main .station-feature { position: relative; isolation: isolate; min-height: 390px; border-radius: 20px; overflow: hidden; border: 1px solid var(--line); background: var(--sand); }
+.app-shell #main .station-feature-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.app-shell #main .station-feature::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(65deg,#fff 3%,#fffffff0 24%,#ffffffb8 45%,#ffffff00 73%); }
+.app-shell #main .station-feature-badge { position: absolute; top: 18px; right: 18px; z-index: 2; background: var(--teal); color: var(--cream); padding: 8px 12px; font-size: 12px; border-radius: 10px; }
+.app-shell #main .station-feature-copy { position: relative; z-index: 1; max-width: 62%; padding: 138px 36px 32px; }
+.app-shell #main .station-feature-copy h2 { font-family: var(--font-serif); font-size: 32px; line-height: 1.5; margin: 8px 0 10px; }
+.app-shell #main .station-feature-intro { font-size: 14px; line-height: 1.9; color: var(--teal); }
+.app-shell #main .station-feature-copy button { display: inline-flex; align-items: center; gap: 10px; margin-top: 16px; min-height: 44px; border-radius: 10px; padding: 10px 16px; background: var(--teal); color: var(--cream); font-size: 13px; font-weight: 700; }
+.app-shell #main .station-feature-caption { font-size: 11px; line-height: 1.7; color: var(--muted); margin: 8px 0 20px; }
+.app-shell #main .station-task-card { margin-top: 20px; padding: 24px; }
+.app-shell #main .station-task-card h3 { font-size: 20px; line-height: 1.6; margin-top: 8px; }
+.app-shell #main .station-task-card .task-route-button { margin-top: 12px; }
+.app-shell #main .station-story-dialog { margin: auto; width: min(720px,calc(100% - 28px)); max-height: 86dvh; padding: 26px; border: 0; border-radius: 22px; color: var(--teal); background: var(--cream); overflow-y: auto; overscroll-behavior: contain; }
+.app-shell #main .station-story-dialog::backdrop { background: #082d36a6; }
+.app-shell #main .station-story-dialog > header { display: flex; gap: 16px; align-items: center; justify-content: space-between; }
+.app-shell #main .station-story-dialog h2 { font-size: 23px; line-height: 1.5; margin-top: 6px; }
+.app-shell #main .station-story-dialog h2:focus { outline: 0; }
+.app-shell #main .story-dialog-photo { margin: 18px 0 0; }
+.app-shell #main .story-dialog-photo img { display: block; width: 100%; height: auto; max-height: 280px; object-fit: cover; border-radius: 12px; }
+.app-shell #main .story-dialog-photo figcaption { font-size: 11px; color: var(--muted); line-height: 1.7; margin-top: 6px; }
+.app-shell #main .story-return-button { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; width: 100%; margin-top: 24px; padding: 12px; border-radius: 12px; background: var(--teal); color: var(--cream); font-weight: 700; }
+@media (max-width:700px) {
+  .app-shell #main .culture-explore { padding-top: 0; }
+  .app-shell #main .culture-explore .page-heading h1 { font-size: 23px; max-width: none; }
+  .app-shell #main .culture-explore .explore-overview { margin-bottom: 18px; }
+  .app-shell #main .station-feature { min-height: 430px; }
+  .app-shell #main .station-feature::after { background: linear-gradient(22deg,#fff 2%,#fffffff5 23%,#ffffffbb 43%,#ffffff00 72%); }
+  .app-shell #main .station-feature-copy { max-width: 100%; padding: 228px 22px 24px; }
+  .app-shell #main .station-feature-copy h2 { font-size: 25px; margin: 6px 0; }
+  .app-shell #main .station-feature-intro { font-size: 13px; max-width: 280px; }
+  .app-shell #main .station-feature-copy button { margin-top: 12px; }
+  .app-shell #main .station-feature-badge { top: 12px; right: 12px; }
+  .app-shell #main .station-story-dialog { padding: 20px; }
+}
+@media (min-width:360px) and (max-width:700px) {
+  .app-shell #main .culture-explore { padding-inline: 20px; }
+}
+.app-shell #main .station-story-dialog > header { position: sticky; top: -26px; z-index: 1; padding-block: 6px; background: var(--cream); }
+@media (max-width:700px) { .app-shell #main .station-story-dialog > header { top: -20px; } }
+@media (max-width:700px) {
+  .app-shell #main .explore-toolbar-slot { position: sticky; top: 0; z-index: 20; background: var(--cream); box-shadow: 0 3px 12px #123f4612; }
+  .app-shell #main .station-feature-anchor { scroll-margin-top: 60px; }
+  .app-shell #main .culture-explore :is(button,a,summary) { scroll-margin-block: 72px 164px; }
+}
+.app-shell #main .station-feature-caption { margin: 6px 0 14px; }
+/* Shared footprint for exploration and redemption banners at each breakpoint. */
+.app-shell #main :is(.station-feature,.redeem-hero) { min-height: 390px; }
+@media (max-width:700px) { .app-shell #main :is(.station-feature,.redeem-hero) { min-height: 434px; } }
+@media (max-width:359px) { .app-shell #main :is(.station-feature,.redeem-hero) { min-height: 472px; } }

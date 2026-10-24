@@ -3,7 +3,7 @@ import Icon from '../../components/Icon'
 import { trapIntroDialogTab } from './dialogFocus'
 
 const steps = [
-  { title: '跟著站序，開始探索', description: '首輪依順序走訪 10 站，每站都有一段鐵道故事。', note: '請依館內指標安全移動。' },
+  { title: '跟著站序，開始探索', description: '點「園區探索地圖」找站點，點「搜集旅程」回看進度；圖片上的按鈕能閱讀展區故事。', note: '進入探索後，可用「選單指引」再看一次。路線為原型示意，參觀依現場開放範圍。' },
   { title: '一站一片，一起收集', description: '1～2 人共享首輪 10 塊拼圖；到站完成確認後，收集這一站的拼圖。', note: '可用示範碼體驗領片。' },
   { title: '留下合照，也能輕鬆略過', description: '拍照是自選，不影響領片；合照可留作這趟旅程的紀念。', note: '到站後可自選合照或示意拍照，儲存到本機紀念照區。示意照片為 AI 範例。' },
 ]
