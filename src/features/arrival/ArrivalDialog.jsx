@@ -8,6 +8,7 @@ import { saveLocalPhoto } from './photoStore'
 import { photoSourceLabel } from './photoModel'
 import preparePhoto from './preparePhoto'
 import { celebrationProgress } from './celebrationModel'
+import { createQrScanner } from './qrScanner'
 import './ArrivalFlow.css'
 
 export default function ArrivalDialog({ stationId, onClose, onContinue }) {
@@ -85,38 +86,44 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     const token = generation.current
     setMessage('')
     setCamera('starting')
+    let cameraOpened = false
     try {
-      if (!window.BarcodeDetector || !navigator.mediaDevices?.getUserMedia || !window.isSecureContext) {
-        setCamera('unsupported'); return
+      if (!window.isSecureContext) {
+        setCamera('unsupported'); setMessage('相機需要安全連線，請以 HTTPS 網址開啟本頁。'); return
       }
-      const formats = await window.BarcodeDetector.getSupportedFormats()
-      if (token !== generation.current) return
-      if (!formats.includes('qr_code')) { setCamera('unsupported'); return }
-      const detector = new window.BarcodeDetector({ formats: ['qr_code'] })
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setCamera('unsupported'); setMessage('目前環境無法使用相機，請在完整瀏覽器中開啟，或使用下方示範碼。'); return
+      }
       const media = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false })
       if (token !== generation.current) { media.getTracks().forEach(track => track.stop()); return }
       stream.current = media
       video.current.srcObject = media
       await video.current.play()
       if (token !== generation.current) return
+      cameraOpened = true
+      const readFrame = await createQrScanner()
+      if (token !== generation.current) return
       setCamera('scanning')
       async function scan() {
         if (token !== generation.current) return
         try {
           if (video.current?.readyState >= 2) {
-            const codes = await detector.detect(video.current)
+            const payload = await readFrame(video.current)
             if (token !== generation.current) return
-            if (codes.length) { verify(codes[0].rawValue); return }
+            if (payload) { verify(payload); return }
           }
           timer.current = setTimeout(scan, 250)
-        } catch { stopCamera(); setCamera('error'); setMessage('辨識暫時中斷，請重試相機或使用下方示範碼。') }
+        } catch {
+          if (token !== generation.current) return
+          stopCamera(); setCamera('error'); setMessage('QR 辨識暫時中斷，請重試或使用下方示範碼。')
+        }
       }
       scan()
     } catch (error) {
       if (token !== generation.current) return
       stopCamera()
       setCamera(error.name === 'NotAllowedError' ? 'denied' : 'error')
-      setMessage(error.name === 'NotAllowedError' ? '沒有取得相機權限，仍可使用示範碼，不影響體驗。' : '目前無法開啟相機，請檢查裝置或改用示範碼。')
+      setMessage(cameraOpened ? 'QR 辨識無法啟動，請重試或使用下方示範碼。' : error.name === 'NotAllowedError' ? '沒有取得相機權限，請檢查此網站與瀏覽器的相機授權，或使用示範碼。' : '目前無法開啟相機，請關閉其他使用相機的程式後重試，或使用示範碼。')
     }
   }
   function claim() {
@@ -206,7 +213,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     <header className="arrival-header"><div><p className="eyebrow">到站確認・本機 Demo</p><h2 id="arrival-title" ref={stepHeading} tabIndex={-1}>{phase === 'scan' ? '掃一下，留下這一站。' : phase === 'confirm' ? '確認這一站' : '拼圖領取成功'}</h2></div><button className="icon-button" aria-label="關閉到站確認" onClick={closeFlow}><Icon name="close"/></button></header>
     {phase === 'scan' ? <>
       <p className="arrival-description">目前前往第 {stationNumber(stationId)} 站 {stations[stationId - 1].name}。請掃描這一站的示範碼。</p>
-      <div className={`arrival-viewfinder ${camera === 'scanning' ? 'is-scanning' : ''}`}><video ref={video} playsInline muted aria-label="相機掃碼預覽" hidden={!['starting', 'scanning'].includes(camera)}/>{!['starting', 'scanning'].includes(camera) && <><Icon name="camera" size={44}/><strong>對準站點 QR Code</strong><span>相機只用於掃碼，不會上傳影像</span></>}<span className="arrival-camera-status" role="status">{camera === 'starting' ? '正在開啟相機…' : camera === 'scanning' ? '掃描中，請將示範 QR 碼置於鏡頭前' : camera === 'unsupported' ? '此瀏覽器不支援相機 QR 辨識，請用下方示範碼' : camera === 'denied' ? '相機未授權・可使用示範碼' : camera === 'error' ? '相機暫不可用・可重新嘗試' : '相機尚未開啟'}</span></div>
+      <div className={`arrival-viewfinder ${camera === 'scanning' ? 'is-scanning' : ''}`}><video ref={video} playsInline muted aria-label="相機掃碼預覽" hidden={!['starting', 'scanning'].includes(camera)}/>{!['starting', 'scanning'].includes(camera) && <><Icon name="camera" size={44}/><strong>對準站點 QR Code</strong><span>相機只用於掃碼，不會上傳影像</span></>}<span className="arrival-camera-status" role="status">{camera === 'starting' ? '正在開啟相機…' : camera === 'scanning' ? '掃描中，請將示範 QR 碼置於鏡頭前' : camera === 'unsupported' ? '目前環境無法啟用相機・請見下方說明' : camera === 'denied' ? '相機未授權・可使用示範碼' : camera === 'error' ? '相機暫不可用・可重新嘗試' : '相機尚未開啟'}</span></div>
       <button className="primary-button" onClick={startCamera} disabled={camera === 'starting'}><Icon name="camera"/>開啟相機掃碼</button>
       {camera === 'scanning' && <button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>停止相機</button>}
       <section className="arrival-demo-code"><img src={`${import.meta.env.BASE_URL}images/qr/station-${stationNumber(stationId)}-demo-qr.png`} alt={`第 ${stationNumber(stationId)} 站 QR 示範碼，內容 ${stationPayload(stationId)}`} width="396" height="396"/><div><strong>在電腦上 Demo？</strong><p>可在另一台裝置顯示示範碼，再用本頁相機掃描；也能直接按下方按鈕。</p><button className="arrival-solid-action" onClick={() => verify(stationPayload(stationId))}>使用本頁示範碼</button></div></section>

@@ -6,7 +6,7 @@ const base = import.meta.env.BASE_URL
 const firstRoundProducts = [
   { id: 'transparent', image: 'product-transparent-frame.jpg', name: '賽璐璐透明層疊紀念框', material: '高級款・最高加購價', description: '把鐵道風景收進透明層次，讓旅程成為桌上的紀念。透明材質與工法為概念方向。', fee: 599 },
   { id: 'ticket-keyring', image: 'product-ticket-keyring.jpg', name: '木質鐵道票牌鑰匙圈', material: '木質票牌・隨身紀念', description: '把一張旅程的小票牌掛上鑰匙，每天帶著鐵道回憶出門。', fee: 0 },
-  { id: 'layered', image: 'product-02.jpg', name: '薄板層疊小火車擺飾', material: '木質薄板・平面層疊', description: '以木質薄板一層層疊出小火車的輪廓。', fee: 149 },
+  { id: 'rabbit-stationmaster', image: 'product-rabbit-stationmaster-v1.jpg', name: '垂耳兔站長娃娃', material: '原創角色・柔軟絨毛', description: '奶油白垂耳、墨綠站長帽和淡粉領巾，讓小兔站長陪你收藏沿途的回憶。AI 商品概念示意，非已量產商品。', fee: 149, priceNote: '沿用原商品示範價，娃娃實際定價待確認。' },
   { id: 'wooden', image: 'product-03.jpg', name: '木製拼裝小火車', material: '木質・立體組裝', description: '把沿途收集的回憶，化成可以組裝的收藏。', fee: 349 },
   { id: 'train-plush', image: 'product-04.jpg', name: '火車造型抱枕', material: '柔軟織物・居家陪伴', description: '把小火車的模樣，變成一份柔軟的陪伴。', fee: 249 },
   { id: 'otter', image: 'product-05.jpg', name: '鐵道水獺布偶', material: '原創角色・織物', description: '帶一位小小旅伴回家，記住今天的鐵道故事。', fee: 399 },
@@ -16,7 +16,7 @@ function ProductCard({ product, revisit = false }) {
   return <article className="redeem-card" aria-labelledby={`product-${product.id}`}>
     {product.image ? <img className="redeem-product-image" src={`${base}images/${product.image}`} alt={`${product.name}的 AI 商品概念圖`} width="900" height="900" loading="lazy" decoding="async"/> : <div className="redeem-placeholder"><span aria-hidden="true">▱</span><strong>圖片製作中</strong><p>{product.id === 'transparent' ? '透明層疊紀念框・原創示意待補' : '木質鐵道票牌鑰匙圈・原創示意待補'}</p></div>}
     <div className="redeem-card-body"><p className="redeem-material">{product.material}</p><h3 id={`product-${product.id}`}>{product.name}</h3><p className="redeem-description">{product.description}</p>
-      <div className="redeem-cost"><strong>{revisit ? '第二輪獨立額度' : '10 塊拼圖'}</strong><span>{product.fee === 0 ? '免加購（＋ NT$0）' : `＋ NT$${product.fee}`}</span>{revisit && <small>所需限定額度待定</small>}</div>
+      <div className="redeem-cost"><strong>{revisit ? '第二輪獨立額度' : '10 塊拼圖'}</strong><span>{product.fee === 0 ? '免加購（＋ NT$0）' : `＋ NT$${product.fee}`}</span>{revisit && <small>所需限定額度待定</small>}{product.priceNote && <small>{product.priceNote}</small>}</div>
       <details className="redeem-details"><summary>查看兌換說明</summary><p>{revisit ? '首輪完成後，下次再入園並使用新的有效票根啟動第二輪；另行完成 10 個不同站點，才核發獨立限定額度。核發量與商品成本待定，不與首輪拼圖混用。' : '須先完成首輪全部 10 站。品項、庫存與保留期限待確認。正式確認時才檢查資格、可用片數與庫存；扣除額度不會清除已完成的小火車。'}</p></details>
     </div>
   </article>

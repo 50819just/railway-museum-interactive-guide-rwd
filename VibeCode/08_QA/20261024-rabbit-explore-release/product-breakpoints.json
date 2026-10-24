@@ -1,0 +1,29 @@
+[
+  {
+    "height": 667,
+    "oldFlatTrain": false,
+    "otter": true,
+    "rabbit": true,
+    "rabbitImageLoaded": true,
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "height": 844,
+    "oldFlatTrain": false,
+    "otter": true,
+    "rabbit": true,
+    "rabbitImageLoaded": true,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "height": 800,
+    "oldFlatTrain": false,
+    "otter": true,
+    "rabbit": true,
+    "rabbitImageLoaded": true,
+    "scrollWidth": 1280,
+    "width": 1280
+  }
+]

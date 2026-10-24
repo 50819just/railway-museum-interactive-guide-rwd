@@ -1,4 +1,4 @@
-/* Map-first exploration: one map and one task, without stacked progress cards. */
+/* Mobile task-first exploration; desktop keeps map and task side by side. */
 .app-shell #main .map-first .page-heading { margin-bottom: 24px; }
 .app-shell #main .map-first .explore-layout { grid-template-columns: minmax(0,1.55fr) minmax(280px,1fr); gap: 28px; align-items: start; }
 .app-shell #main .map-first .station-column { display: block; padding-top: 0; min-width: 0; }
@@ -54,4 +54,32 @@
   .app-shell #main .map-first .task-panel { padding: 18px; }
   .app-shell #main .map-first .map-progress { font-size: 11px; }
   .app-shell #main .map-first .map-legend { gap: 14px; }
+}
+
+/* Progress is a short orientation cue, not a second task card. DOM order follows
+   the mobile task sequence; grid areas preserve the desktop map layout. */
+.app-shell #main .map-first .explore-layout { grid-template-areas: "map task"; }
+.app-shell #main .map-first .map-column { grid-area: map; }
+.app-shell #main .map-first .station-column { grid-area: task; }
+.app-shell #main .map-first .explore-overview { max-width: 620px; margin: -6px 0 24px; }
+.app-shell #main .map-first .explore-progress-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }
+.app-shell #main .map-first .explore-progress-label span { font-size: 12px; color: var(--muted); }
+.app-shell #main .map-first .explore-progress-bar { display: block; width: 100%; height: 5px; border: 0; border-radius: 8px; overflow: hidden; margin-top: 9px; background: var(--sand); accent-color: var(--teal); }
+.app-shell #main .map-first .explore-progress-bar::-webkit-progress-bar { background: var(--sand); }
+.app-shell #main .map-first .explore-progress-bar::-webkit-progress-value { background: var(--teal); }
+.app-shell #main .map-first .explore-progress-bar::-moz-progress-bar { background: var(--teal); }
+.app-shell #main .map-first .explore-overview p { font-size: 12px; line-height: 1.7; color: var(--muted); margin-top: 8px; }
+.app-shell #main .map-first .task-route-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; border-bottom: 1px solid var(--line); padding-block: 6px; }
+.app-shell #main .map-first .task-route-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; background: transparent; font-size: 13px; padding: 6px 0; }
+.app-shell #main .map-first :is(button, a, summary) { scroll-margin-block: 24px 210px; }
+@media (max-width: 700px) {
+  .app-shell #main .map-first .page-heading { margin-bottom: 16px; }
+  .app-shell #main .map-first .heading-description { display: none; }
+  .app-shell #main .map-first .explore-overview { margin: 0 0 16px; }
+  .app-shell #main .map-first .station-title { margin: 14px 0 10px; }
+  .app-shell #main .map-first .task-intro { font-size: 13px; }
+  .app-shell #main .map-first .task-primary-slot { margin-top: 16px; }
+  .app-shell #main .map-first .task-footnote { display: none; }
+  .app-shell #main .map-first .map-column { margin-top: 4px; }
+  .app-shell #main .map-first .explore-task-dock > span { overflow-wrap: anywhere; }
 }
