@@ -1,0 +1,61 @@
+.more-page { max-width: 1080px; padding: 36px 40px 40px; margin: auto; }
+.more-family-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 20px; align-items: center; background: #ffffff; border-radius: 28px; padding: 28px; margin-top: 28px; box-shadow: 0 4px 20px #123f4608; }
+.more-feature-icon { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 20px; background: var(--sand); color: var(--teal); }
+.more-family-card h2 { font-size: 22px; line-height: 1.4; font-weight: 800; }
+.more-family-card p { margin-top: 8px; font-size: 14px; line-height: 1.8; color: var(--muted); }
+.more-demo-label { display: inline-block; padding: 5px 10px; background: var(--paper); border-radius: 999px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+.more-family-card > button { display: inline-flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 52px; border-radius: 999px; padding: 12px 22px; color: var(--teal); background: var(--surface-container, var(--sand)); font-size: 15px; font-weight: 700; }
+.more-family-card > button:hover { background: var(--sand); }
+.more-services { margin-top: 32px; }
+.more-services > h2 { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+.more-link-group { background: #ffffff; padding: 8px; border-radius: 24px; display: grid; gap: 4px; }
+.more-service-link { display: flex; width: 100%; gap: 16px; align-items: center; text-align: left; text-decoration: none; min-width: 0; min-height: 88px; padding: 16px; border-radius: 18px; background: transparent; }
+.more-service-link:hover { background: var(--paper); }
+.more-service-icon { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; border-radius: 14px; background: var(--paper); flex-shrink: 0; }
+.more-service-link > span:nth-child(2) { flex: 1; min-width: 0; }
+.more-service-link > svg { flex-shrink: 0; }
+.more-service-link strong { display: block; font-size: 16px; font-weight: 700; }
+.more-service-link small { display: block; font-size: 13px; line-height: 1.7; margin-top: 5px; color: var(--muted); }
+.more-rules { padding: 8px; background: #ffffff; border-radius: 24px; margin-top: 16px; }
+.more-rules summary { display: flex; align-items: center; gap: 16px; min-height: 76px; padding: 12px 16px; border-radius: 18px; cursor: pointer; font-size: 16px; font-weight: 700; list-style: none; }
+.more-rules summary::-webkit-details-marker { display: none; }
+.more-rules summary::after { content: '+'; margin-left: auto; font-size: 26px; font-weight: 400; }
+.more-rules[open] summary::after { content: '−'; }
+.more-rules summary:hover { background: var(--paper); }
+.more-rules summary:focus-visible { outline: 3px solid var(--teal); outline-offset: 4px; }
+.more-rules > div { padding: 8px 20px 20px 76px; }
+.more-rules p { font-size: 14px; line-height: 1.9; color: var(--muted); margin-top: 10px; }
+.more-prototype-info { display: flex; align-items: flex-start; gap: 12px; padding: 24px 8px 0; margin-top: 16px; color: var(--muted); }
+.more-prototype-info > svg { flex-shrink: 0; margin-top: 2px; }
+.more-prototype-info h2 { font-size: 13px; font-weight: 700; }
+.more-prototype-info p { font-size: 12px; line-height: 1.9; margin-top: 6px; }
+@media(max-width:1000px) { .more-page { padding: 28px; } .more-family-card { grid-template-columns: auto minmax(0,1fr); } .more-family-card > button { grid-column: 1/-1; } }
+@media(max-width:700px) { .more-page { padding: 24px 20px 28px; } .more-family-card { padding: 22px; gap: 16px; border-radius: 24px; margin-top: 24px; } .more-feature-icon { width: 52px; height: 52px; border-radius: 16px; } .more-family-card h2 { font-size: 20px; } .more-family-card p { font-size: 13px; } .more-family-card > button { width: 100%; } .more-rules > div { padding-left: 20px; } }
+@media(max-width:359px) { .more-page { padding-inline: 16px; } .more-family-card { padding: 18px; grid-template-columns: 1fr; } .more-feature-icon { display: none; } .more-service-link { gap: 12px; padding-inline: 12px; } }
+
+/* 探索是主要任務，登入與官方資訊維持次要服務層級。 */
+.more-explore-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 28px; margin-top: 28px; border-radius: 28px; background: var(--deep); color: var(--cream); }
+.more-explore-eyebrow { color: #e4c47f; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.more-explore-card h2 { font-family: var(--font-display); font-size: 25px; font-weight: 800; line-height: 1.5; margin-top: 8px; }
+.more-explore-card h2 + p { color: #dbe6e4; font-size: 14px; line-height: 1.8; margin-top: 8px; }
+.more-explore-action { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 16px 22px; min-height: 56px; border-radius: 999px; background: #ffddb7; color: var(--deep); font-size: 15px; font-weight: 800; }
+.more-explore-action:hover { background: #fdbd6c; }
+.more-explore-action:focus-visible { outline-color: #ffddb7; }
+.more-section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+.more-section-heading h2 { font-size: 18px; font-weight: 800; }
+.more-section-heading > span { color: var(--muted); font-size: 12px; }
+.more-section-note { font-size: 13px; line-height: 1.8; color: var(--muted); margin-bottom: 16px; }
+.more-official-link .more-service-icon { color: var(--gold-ink); }
+.more-external-caption { display: block; margin-top: 6px; font-size: 11px; font-weight: 500; color: var(--gold-ink); }
+.more-source-note { margin: 12px 8px 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.more-service-link:disabled:hover { background: transparent; }
+@media(max-width:1200px) { .more-explore-card { grid-template-columns: 1fr; gap: 20px; } .more-explore-action { width: 100%; } }
+@media(max-width:700px) { .more-explore-card { padding: 24px 22px; border-radius: 24px; margin-top: 24px; } .more-explore-card h2 { font-size: 23px; } .more-explore-action { gap: 16px; font-size: 14px; } }
+@media(max-width:359px) { .more-explore-card { padding: 20px 18px; } .more-explore-card h2 { font-size: 21px; } .more-explore-action { padding-inline: 16px; gap: 10px; } }
+
+/* Keep background information available without interrupting the main journey. */
+.more-about{margin-top:28px;color:var(--muted);font-size:13px;line-height:1.8}
+.more-about summary{display:list-item;cursor:pointer;min-height:44px;padding:12px 0;font-weight:600}
+.more-about summary:focus-visible{outline:3px solid var(--teal);outline-offset:4px}
+.more-about>div{max-width:680px;padding:8px 0 16px}
+.more-about p+p{margin-top:8px}

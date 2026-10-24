@@ -1,0 +1,57 @@
+/* Map-first exploration: one map and one task, without stacked progress cards. */
+.app-shell #main .map-first .page-heading { margin-bottom: 24px; }
+.app-shell #main .map-first .explore-layout { grid-template-columns: minmax(0,1.55fr) minmax(280px,1fr); gap: 28px; align-items: start; }
+.app-shell #main .map-first .station-column { display: block; padding-top: 0; min-width: 0; }
+.app-shell #main .map-first .map-column { min-width: 0; scroll-margin-top: 20px; }
+.app-shell #main .map-first .map-toolbar { padding: 14px 18px; gap: 10px; }
+.app-shell #main .map-first .map-toolbar h2 { font-size: 16px; line-height: 1.4; }
+.app-shell #main .map-first .map-progress { display: block; margin-top: 4px; font-size: 12px; }
+.app-shell #main .map-first .map-progress small { font-size: 10px; margin-left: 4px; color: var(--muted); }
+.app-shell #main .map-first .map-route-list { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 8px 12px; flex-shrink: 0; border-radius: 12px; background: var(--surface-container); font-size: 12px; }
+.app-shell #main .map-first .task-panel { padding: 24px; scroll-margin-block: 20px 180px; }
+.app-shell #main .map-first .station-title { margin: 18px 0 12px; gap: 12px; }
+.app-shell #main .map-first .station-title h2 { font-size: 22px; }
+.app-shell #main .map-first .task-intro { font-size: 14px; line-height: 1.8; color: var(--muted); }
+.app-shell #main .map-first .task-state-note,
+.app-shell #main .map-first .task-route-note { font-size: 13px; line-height: 1.8; padding: 12px; margin-top: 14px; border-radius: 12px; background: var(--surface-low); }
+.app-shell #main .map-first .task-route-note svg { display: inline; vertical-align: middle; margin-right: 5px; }
+.app-shell #main .map-first .task-primary-slot { margin-top: 20px; }
+.app-shell #main .map-first .primary-button { background: var(--teal); text-decoration: none; text-align: left; line-height: 1.5; min-height: 52px; }
+.app-shell #main .map-first .primary-button:hover { background: var(--deep); }
+.app-shell #main .map-first .primary-button svg { flex-shrink: 0; }
+.app-shell #main .map-first .task-help { margin: 10px 0 0; font-size: 12px; color: var(--muted); line-height: 1.8; }
+.app-shell #main .map-first .task-details { margin-top: 16px; }
+.app-shell #main .map-first .task-details > summary { cursor: pointer; min-height: 44px; padding-block: 12px; font-size: 14px; font-weight: 600; }
+.app-shell #main .map-first .station-image { margin-top: 8px; }
+.app-shell #main .map-first .station-image img { height: auto; aspect-ratio: 3/2; object-fit: cover; }
+.app-shell #main .map-first .return-map { margin: 16px 0 0; }
+.app-shell #main .map-first .task-footnote { font-size: 12px; color: var(--muted); line-height: 1.8; margin: 16px 4px 0; }
+.app-shell #main .map-first .task-complete-mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--surface-container); margin: 22px 0 16px; }
+.app-shell #main .map-first .map-point { min-width: 44px; min-height: 44px; }
+.app-shell #main .map-first .map-legend { gap: 18px; flex-wrap: wrap; }
+.app-shell #main .map-first .journey-demo-settings { margin-top: 26px; }
+.app-shell #main .map-first .explore-task-dock { display: none; }
+@media (max-width: 1100px) and (min-width: 701px) {
+  .app-shell #main .map-first .explore-layout { grid-template-columns: minmax(0,1.2fr) minmax(270px,1fr); gap: 20px; }
+}
+@media (max-width: 700px) {
+  .app-shell #main .map-first { padding: 20px 16px 100px; }
+  .app-shell #main .map-first .page-heading { margin-bottom: 18px; }
+  .app-shell #main .map-first .page-heading h1 { font-size: 24px; margin-top: 4px; }
+  .app-shell #main .map-first .heading-description { font-size: 13px; line-height: 1.7; margin-top: 6px; }
+  .app-shell #main .map-first .page-heading .eyebrow { display: none; }
+  .app-shell #main .map-first .explore-layout { display: flex; flex-direction: column; gap: 16px; }
+  .app-shell #main .map-first .map-toolbar { padding: 10px 12px; }
+  .app-shell #main .map-first .map-toolbar h2 { font-size: 15px; }
+  .app-shell #main .map-first .map-route-list { padding-inline: 10px; }
+  .app-shell #main .map-first .map-disclaimer { font-size: 11px; margin-top: 8px; }
+  .app-shell #main .map-first .task-panel { padding: 20px; }
+  .app-shell #main .map-first .explore-task-dock { display: flex; position: fixed; z-index: 9; inset: auto 0 calc(74px + max(0px, env(safe-area-inset-bottom) - 10px)); align-items: center; gap: 12px; padding: 10px 16px; background: var(--surface-card); box-shadow: 0 -3px 18px #00282e14; }
+  .app-shell #main .map-first .explore-task-dock > span { flex: 1; min-width: 0; font-size: 12px; line-height: 1.5; }
+  .app-shell #main .map-first .explore-task-dock :is(button,a) { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; padding: 10px 12px; background: var(--teal); color: white; font-size: 13px; text-decoration: none; max-width: 65%; }
+}
+@media (max-width: 359px) {
+  .app-shell #main .map-first .task-panel { padding: 18px; }
+  .app-shell #main .map-first .map-progress { font-size: 11px; }
+  .app-shell #main .map-first .map-legend { gap: 14px; }
+}

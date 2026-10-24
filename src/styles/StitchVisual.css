@@ -1,0 +1,200 @@
+/* Stitch alignment: reference screen 1fde1c7bcf8c4cbe8b13f2ef68cc07a4.
+   Content-only overrides; navigation interaction is owned by NavigationChrome.css. */
+.app-shell #main :is(h1,h2,h3) {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-synthesis: none;
+  letter-spacing: .01em;
+}
+.app-shell #main .page-heading h1,
+.app-shell #main .family-heading h1 {
+  font-size: 28px;
+  line-height: 1.29;
+  letter-spacing: .02em;
+}
+.app-shell #main :is(.asset-section-heading,.redeem-section-heading,.album-section-heading) h2,
+.app-shell #main .family-card h2,
+.app-shell #main .travel-album-empty h2 {
+  font-size: 22px;
+  line-height: 1.35;
+}
+.app-shell #main :is(.station-title h2,.quick-stop-info h2) {
+  font-size: 22px;
+  line-height: 1.35;
+}
+.app-shell #main .station-title > span {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+.app-shell #main :is(.redeem-card h3,.album-photo-card h3) {
+  font-size: 18px;
+  line-height: 1.45;
+}
+.app-shell #main .map-section-heading h2 { font-size: 18px; line-height: 1.45; }
+.app-shell #main :is(.heading-description,.station-description) {
+  font-size: 14px;
+  line-height: 1.75;
+}
+.app-shell #main :is(.eyebrow,.muted,.map-toolbar,.map-legend,.map-section-heading > span) {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.app-shell #main .eyebrow { font-weight: 600; letter-spacing: .02em; }
+
+/* Quiet surfaces replace repeated decorative outlines, not control affordances. */
+.app-shell #main :is(.journey-strip,.station-card,.map-frame,.mobile-next-stop,
+  .collection-summary,.redeem-progress,.redeem-card,.album-photo-card,
+  .travel-album-empty,.family-card,.train-candidate,.asset-card,.collage-preview) {
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-surface);
+}
+.app-shell #main .journey-strip {
+  background: var(--surface-low);
+  padding: 20px;
+}
+.app-shell #main .journey-strip strong { font-size: 16px; font-weight: 700; }
+.app-shell #main .journey-strip b { font-size: 22px; }
+.app-shell #main .journey-strip .muted { font-weight: 500; }
+.app-shell #main .sample-label {
+  border: 0;
+  background: var(--surface-high);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 3px 7px;
+  font-size: 11px;
+}
+.app-shell #main .progress-track { height: 10px; background: var(--surface-high); }
+.app-shell #main .progress-track > span { background: var(--gold-action); }
+.app-shell #main :is(.map-toolbar,.map-legend) {
+  border: 0;
+  background: var(--surface-low);
+}
+.app-shell #main .map-frame { background: var(--surface-card); }
+.app-shell #main .station-card { padding: 28px; }
+.app-shell #main .station-title { gap: 16px; margin: 24px 0; }
+.app-shell #main .station-description { margin: 22px 0; }
+.app-shell #main :is(.station-image,.mobile-next-stop > img) { border-radius: 12px; }
+.app-shell #main :is(.route-toggle,.section-shortcuts button,.footer-top) {
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-container);
+}
+.app-shell #main .route-toggle { color: var(--teal); font-size: 14px; font-weight: 600; }
+.app-shell #main :is(.route-toggle,.section-shortcuts button,.footer-top):hover {
+  background: var(--surface-high);
+}
+.app-shell #main :is(.primary-button,.quick-primary,.summary-action,.redeem-progress button) {
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 16px;
+  box-shadow: var(--shadow-action);
+}
+.app-shell #main :is(.primary-button,.quick-primary) { background: var(--gold-action); }
+.app-shell #main :is(.primary-button,.quick-primary):hover { background: var(--gold-ink); }
+.app-shell #main :is(.preview-notice,.redeem-prototype,.family-scope,.guide-notice,.batch-note) {
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface-low);
+  padding: 18px 20px;
+}
+.app-shell #main .batch-note { margin-top: 24px; }
+.app-shell #main .guide-notice { background: #edf2ee; }
+.app-shell #main :is(.candidate-details,.alpha-grid figure,.family-invite) {
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface-low);
+}
+.app-shell #main :is(.redeem-product-image,.redeem-placeholder) { border: 0; }
+.app-shell #main .redeem-card-body { padding: 24px; }
+.app-shell #main .redeem-cost { border: 0; padding-top: 4px; margin-top: 20px; gap: 8px; }
+.app-shell #main .redeem-cost strong { font-size: 22px; font-weight: 800; }
+.app-shell #main .redeem-cost span { font-size: 14px; font-weight: 600; }
+.app-shell #main :is(.redeem-revisit,.asset-page-footer) { border: 0; }
+.app-shell #main .redeem-revisit { margin-top: 44px; }
+.app-shell #main .album-photo-card figcaption { padding: 24px; }
+.app-shell #main .travel-album-empty li { border: 0; padding: 16px 0; }
+.app-shell #main .family-ticket {
+  border: 0;
+  background: var(--surface-low);
+  border-radius: 16px;
+}
+.app-shell #main .family-ticket > strong { font-family: var(--font-display); font-weight: 800; }
+.app-shell #main .family-count > strong { font-weight: 800; }
+.app-shell #main .family-members li { border: 0; }
+.app-shell #main .family-members li + li { margin-top: 6px; }
+
+/* Functional controls keep their outlines and explicit selected/focus states. */
+.app-shell #main .family-choices label { border-color: var(--family-control-line); }
+.app-shell #main .family-choices label.selected {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+  background: var(--surface-container);
+}
+.app-shell #main .route-dialog {
+  border: 0;
+  background: var(--surface-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-dialog);
+  padding: 28px;
+}
+.app-shell #main .route-dialog h2 { font-size: 24px; line-height: 1.35; }
+.app-shell #main .route-list { display: grid; gap: 8px; }
+.app-shell #main .route-list li + li { border: 0; }
+.app-shell #main .route-list button { border-radius: 12px; padding: 12px; background: var(--surface-low); }
+.app-shell #main .route-list button:hover { background: var(--surface-container); }
+.app-shell #main .route-list strong { font-weight: 700; }
+.app-shell #main :is(button,a,summary):focus-visible { outline: 3px solid var(--teal); outline-offset: 4px; }
+.app-shell #main .map-point:not(.is-complete):not(.is-current) {
+  border-color: transparent;
+  background: var(--surface-card);
+  box-shadow: 0 2px 8px #00282e1a;
+}
+
+@media (max-width: 700px) {
+  .app-shell #main .page-heading h1,
+  .app-shell #main .family-heading h1 {
+    font-size: 24px;
+    line-height: 1.33;
+    max-width: none;
+  }
+  .app-shell #main .page-heading { gap: 16px; }
+  .app-shell #main .journey-strip {
+    padding: 18px 16px;
+    gap: 14px;
+    margin: 24px 0;
+  }
+  .app-shell #main .journey-strip > div:first-child { min-width: 174px; }
+  .app-shell #main .journey-strip strong { font-size: 14px; }
+  .app-shell #main .journey-strip b { font-size: 20px; }
+  .app-shell #main .mobile-next-stop { padding: 20px; gap: 16px; margin: 24px 0 0; }
+  .app-shell #main .quick-stop-info h2 { font-size: 20px; }
+  .app-shell #main .station-card { padding: 24px; }
+  .app-shell #main .station-title { margin: 22px 0; }
+  .app-shell #main .explore-layout { gap: 24px; }
+  .app-shell #main .map-section-heading { margin-bottom: 16px; gap: 12px; }
+  .app-shell #main .map-section-heading h2 { font-size: 16px; }
+  .app-shell #main .map-section-heading > span { font-size: 11px; }
+  .app-shell #main :is(.asset-section-heading,.redeem-section-heading,.album-section-heading) h2,
+  .app-shell #main .family-card h2,
+  .app-shell #main .travel-album-empty h2 { font-size: 22px; }
+  .app-shell #main :is(.redeem-card-body,.album-photo-card figcaption) { padding: 22px; }
+  .app-shell #main .route-dialog { padding: 24px; }
+}
+@media (max-width: 359px) {
+  .app-shell #main .journey-strip { padding: 16px 14px; gap: 12px; }
+  .app-shell #main .journey-strip > div:first-child { min-width: 164px; }
+  .app-shell #main .mobile-next-stop { padding: 18px; }
+  .app-shell #main .station-card { padding: 20px; }
+}
+
+
+/* Final border QA: keep structural surfaces quiet; preserve functional controls. */
+.app-shell .app-header,.app-shell .bottom-nav,.app-shell .sidebar-note{border:0}
+.app-shell #main .redeem-hero{border:0;box-shadow:none}
+.app-shell #main .family-page button:not(.family-primary):not(.family-text){border:0;background:var(--surface-container)}
+.app-shell #main .family-page .family-invite button:not(.family-primary){border:1px solid var(--family-control-line);background:var(--cream)}
+.app-shell #main .family-page button.family-primary{border:0}
+.app-shell #main .family-page button:focus-visible{outline:3px solid var(--teal);outline-offset:4px}

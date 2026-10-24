@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 52" fill="none">
+<!-- Original prototype identity: workshop arch and railway perspective. Not museum branding. -->
+<path d="M7 42V22C7 12.6 14.6 5 24 5s17 7.6 17 17v20" stroke="#FFFCF4" stroke-width="3.4" stroke-linecap="round"/>
+<path d="M13 36V22a11 11 0 0 1 22 0v14M24 6v9M8 22h8M32 22h8" stroke="#E4C47F" stroke-width="2" stroke-linecap="round"/>
+<path d="m20 28-8 20m16-20 8 20M18 34h12M16 40h16M13 47h22" stroke="#FFFCF4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

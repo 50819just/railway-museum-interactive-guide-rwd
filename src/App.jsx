@@ -1,122 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useEffect, useRef, useState } from 'react'
+import AppShell from './components/AppShell'
+import ExplorePage from './features/explore/ExplorePage'
+import AssetPreviewPage from './features/assets/AssetPreviewPage'
+import FamilyPage from './features/family/FamilyPage'
+import MorePage from './features/more/MorePage'
+import IntroExperience from './features/intro/IntroExperience'
+import useIntro from './features/intro/useIntro'
 import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href={`${import.meta.env.BASE_URL}icons.svg#documentation-icon`}></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href={`${import.meta.env.BASE_URL}icons.svg#social-icon`}></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href={`${import.meta.env.BASE_URL}icons.svg#github-icon`}></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href={`${import.meta.env.BASE_URL}icons.svg#discord-icon`}></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href={`${import.meta.env.BASE_URL}icons.svg#x-icon`}></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href={`${import.meta.env.BASE_URL}icons.svg#bluesky-icon`}></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+import './styles/StitchVisual.css'
+const currentPage = () => ['train','photos','family','more'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'explore'
+function focusPage() {
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0 })
+    document.querySelector('#main > :not([hidden]) h1')?.focus({ preventScroll: true })
+  })
 }
-
-export default App
+export default function App() {
+  const [page, setPage] = useState(currentPage)
+  const { state: intro, act: introAction } = useIntro()
+  const previousPageRef = useRef(page)
+  useEffect(() => {
+    const update = () => setPage(currentPage())
+    window.addEventListener('hashchange', update)
+    return () => window.removeEventListener('hashchange', update)
+  }, [])
+  useEffect(() => {
+    const pageChanged = previousPageRef.current !== page
+    previousPageRef.current = page
+    if (intro.phase === 'closed' && (pageChanged || !intro.replay)) focusPage()
+  }, [page, intro.phase, intro.replay])
+  function navigate(next) {
+    if (next===page) focusPage()
+    else window.location.hash=next
+  }
+  return <><AppShell page={page} onNavigate={navigate}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">啟動設定目前僅本次有效，無法保證下次記住；不影響這次使用。</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><IntroExperience state={intro} onAction={introAction}/></>
+}

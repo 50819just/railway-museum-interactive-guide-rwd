@@ -1,0 +1,31 @@
+/* Optional, quiet story layer: no extra card shell or decorative border. */
+.app-shell #main .station-detail {
+  margin-top: 28px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.app-shell #main .station-detail summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 52px;
+  padding: 8px 0;
+  color: var(--teal);
+  cursor: pointer;
+  list-style: none;
+}
+.app-shell #main .station-detail summary::-webkit-details-marker { display: none; }
+.app-shell #main .station-detail summary::after { content: '+'; font-size: 24px; font-weight: 500; }
+.app-shell #main .station-detail[open] summary::after { content: '−'; }
+.app-shell #main .station-detail summary strong { display: block; font-size: 15px; font-weight: 800; }
+.app-shell #main .station-detail summary small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.app-shell #main .station-detail summary:hover strong { text-decoration: underline; text-underline-offset: 4px; }
+.app-shell #main .station-detail summary:focus-visible { outline: 3px solid var(--teal); outline-offset: 4px; border-radius: 4px; }
+.app-shell #main .station-detail-content { padding-top: 16px; }
+.app-shell #main .station-detail-content h3 { margin-bottom: 14px; font-size: 16px; line-height: 1.5; }
+.app-shell #main .station-detail figure { margin: 0; }
+.app-shell #main .station-detail img { display: block; width: 100%; height: auto; aspect-ratio: 1672 / 941; object-fit: cover; object-position: center; border: 0; border-radius: 12px; }
+.app-shell #main .station-detail figcaption { margin-top: 10px; font-size: 11px; line-height: 1.7; color: var(--muted); }
+.app-shell #main .station-detail-content > p { margin: 12px 0 0; font-size: 13px; line-height: 1.8; color: var(--muted); }

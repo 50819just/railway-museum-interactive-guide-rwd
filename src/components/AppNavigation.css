@@ -1,0 +1,36 @@
+/* Stitch places an account entry at the top and a grid-style More tab below.
+   The mobile dialog is an accessible adaptation, not an exported Stitch screen. */
+.mobile-header-start { display: none; }
+.header-login-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 84px; min-height: 48px; padding: 10px 18px; border-radius: 999px; color: var(--cream); background: #ffffff12; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+.header-login-button:hover, .header-menu-button:hover { background: #ffffff22; }
+.app-header button:focus-visible { outline-color: var(--cream); }
+.header-menu-button { min-width: 48px; min-height: 48px; display: grid; place-items: center; border-radius: 50%; background: transparent; color: var(--cream); flex-shrink: 0; }
+.app-navigation-dialog { position: fixed; inset: 0 auto 0 0; margin: 0; padding: 0; border: 0; border-radius: 0 28px 28px 0; width: min(360px, calc(100% - 24px)); height: 100dvh; max-height: 100dvh; color: var(--teal); background: var(--paper); box-shadow: 16px 0 56px #001f2438; }
+.app-navigation-dialog::backdrop { background: #00282e70; }
+.navigation-dialog-content { padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom)); min-height: 100%; display: flex; flex-direction: column; }
+.navigation-dialog-content > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
+.navigation-dialog-label { font-size: 12px; color: var(--gold-ink); font-weight: 600; }
+.navigation-dialog-content h2 { font-size: 24px; font-weight: 800; margin-top: 6px; }
+.navigation-close-button { min-width: 48px; min-height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--sand); }
+.navigation-dialog-content nav { display: grid; gap: 8px; }
+.navigation-dialog-content nav button, .navigation-family-link { display: flex; align-items: center; gap: 16px; min-height: 60px; width: 100%; padding: 16px; border-radius: 18px; background: transparent; text-align: left; font-size: 16px; font-weight: 700; }
+.navigation-dialog-content nav button > span, .navigation-family-link > span { flex: 1; }
+.navigation-dialog-content nav button[aria-current="page"] { background: var(--teal); color: var(--cream); }
+.navigation-dialog-content nav button:not([aria-current="page"]):hover { background: var(--sand); }
+.navigation-family-link { margin-top: 24px; background: #ffffff; }
+.navigation-family-link:hover { background: var(--sand); }
+.navigation-prototype-note { margin-top: auto; padding: 32px 16px 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+@media(max-width:1000px) {
+  .mobile-header-start { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .app-shell .app-header { gap: 8px; padding-inline: 16px; }
+  .header-login-button { padding-inline: 14px; min-width: 80px; }
+}
+@media(max-width:359px) {
+  .app-shell .app-header { padding-inline: 10px; gap: 4px; }
+  .mobile-header-start { gap: 2px; }
+  .header-login-button { min-width: 70px; padding-inline: 10px; gap: 5px; }
+}
+@media(prefers-reduced-motion:no-preference) {
+  .app-navigation-dialog[open] { animation: navigation-slide-in .18s ease-out; }
+  @keyframes navigation-slide-in { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+}
