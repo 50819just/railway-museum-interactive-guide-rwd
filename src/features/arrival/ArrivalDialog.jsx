@@ -7,6 +7,7 @@ import { claimStation, getJourneySnapshot } from './journeyStore'
 import { saveLocalPhoto } from './photoStore'
 import { photoSourceLabel } from './photoModel'
 import preparePhoto from './preparePhoto'
+import { celebrationProgress } from './celebrationModel'
 import './ArrivalFlow.css'
 
 export default function ArrivalDialog({ stationId, onClose, onContinue }) {
@@ -22,6 +23,8 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
   const returnTrigger = useRef(null)
   const photoUrl = useRef(null)
   const [phase, setPhase] = useState('scan')
+  const [claimedCount, setClaimedCount] = useState(0)
+  const celebration = celebrationProgress(claimedCount)
   const [camera, setCamera] = useState('idle')
   const [message, setMessage] = useState('')
   const [input, setInput] = useState('')
@@ -32,6 +35,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
   const [savedPhoto, setSavedPhoto] = useState(null)
   const [photoBusy, setPhotoBusy] = useState(false)
   const stepHeading = useRef(null)
+  const savedNotice = useRef(null)
   const station = stations.find(item => item.id === (verifiedId || stationId))
   function stopCamera() {
     generation.current += 1
@@ -63,6 +67,9 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     }
   }, [])
   useEffect(() => { requestAnimationFrame(() => stepHeading.current?.focus()) }, [phase])
+  useEffect(() => {
+    if (savedPhoto) savedNotice.current?.focus()
+  }, [savedPhoto])
   function verify(payload) {
     stopCamera()
     setCamera('idle')
@@ -115,6 +122,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
   function claim() {
     const result = claimStation(stationPayload(verifiedId))
     if (!result.ok) { setPhase('scan'); setVerifiedId(null); setMessage(result.message); return }
+    setClaimedCount(result.state.completed.length)
     setPhase('success')
   }
   function previewPhoto(blob, source) {
@@ -151,8 +159,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
       const blob = await preparePhoto(await response.blob())
       if (!mounted.current) return
       previewPhoto(blob, 'ai-demo')
-      const saved = await saveLocalPhoto({ stationId: station.id, stationName: station.name, source: 'ai-demo', blob })
-      if (mounted.current) setSavedPhoto(saved)
+      // AI samples are previews too: no photo is saved before explicit confirmation.
     })
   }
   async function startPhotoCamera() {
@@ -196,7 +203,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     onContinue()
   }
   return <dialog ref={dialog} className={`arrival-dialog ${phase === 'success' ? 'is-success' : ''}`} aria-labelledby="arrival-title" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); closeFlow() }} onClose={closeFlow}>
-    <header className="arrival-header"><div><p className="eyebrow">到站確認・本機 Demo</p><h2 id="arrival-title" ref={stepHeading} tabIndex={-1}>{phase === 'scan' ? '掃一下，留下這一站。' : phase === 'confirm' ? '確認這一站' : '一片新的旅程回憶'}</h2></div><button className="icon-button" aria-label="關閉到站確認" onClick={closeFlow}><Icon name="close"/></button></header>
+    <header className="arrival-header"><div><p className="eyebrow">到站確認・本機 Demo</p><h2 id="arrival-title" ref={stepHeading} tabIndex={-1}>{phase === 'scan' ? '掃一下，留下這一站。' : phase === 'confirm' ? '確認這一站' : '拼圖領取成功'}</h2></div><button className="icon-button" aria-label="關閉到站確認" onClick={closeFlow}><Icon name="close"/></button></header>
     {phase === 'scan' ? <>
       <p className="arrival-description">目前前往第 {stationNumber(stationId)} 站 {stations[stationId - 1].name}。請掃描這一站的示範碼。</p>
       <div className={`arrival-viewfinder ${camera === 'scanning' ? 'is-scanning' : ''}`}><video ref={video} playsInline muted aria-label="相機掃碼預覽" hidden={!['starting', 'scanning'].includes(camera)}/>{!['starting', 'scanning'].includes(camera) && <><Icon name="camera" size={44}/><strong>對準站點 QR Code</strong><span>相機只用於掃碼，不會上傳影像</span></>}<span className="arrival-camera-status" role="status">{camera === 'starting' ? '正在開啟相機…' : camera === 'scanning' ? '掃描中，請將示範 QR 碼置於鏡頭前' : camera === 'unsupported' ? '此瀏覽器不支援相機 QR 辨識，請用下方示範碼' : camera === 'denied' ? '相機未授權・可使用示範碼' : camera === 'error' ? '相機暫不可用・可重新嘗試' : '相機尚未開啟'}</span></div>
@@ -204,15 +211,30 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
       {camera === 'scanning' && <button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>停止相機</button>}
       <section className="arrival-demo-code"><img src={`${import.meta.env.BASE_URL}images/qr/station-${stationNumber(stationId)}-demo-qr.png`} alt={`第 ${stationNumber(stationId)} 站 QR 示範碼，內容 ${stationPayload(stationId)}`} width="396" height="396"/><div><strong>在電腦上 Demo？</strong><p>可在另一台裝置顯示示範碼，再用本頁相機掃描；也能直接按下方按鈕。</p><button className="arrival-solid-action" onClick={() => verify(stationPayload(stationId))}>使用本頁示範碼</button></div></section>
       <details className="arrival-manual"><summary>手動貼上示範碼／遇到無法掃描</summary><form onSubmit={event => { event.preventDefault(); verify(input) }}><label htmlFor="arrival-payload">站點示範碼</label><input id="arrival-payload" value={input} onChange={event => setInput(event.target.value)} placeholder={stationPayload(stationId)} autoComplete="off" spellCheck="false"/><button className="arrival-solid-action" type="submit">驗證示範碼</button></form><p>現場 QR 損壞或站點關閉時，請向服務台求助；此原型不能代替人工補登。</p></details>
-    </> : phase === 'confirm' ? <div className="arrival-confirm"><span className="arrival-stamp"><Icon name="pin" size={36}/></span><p className="eyebrow">示範碼已辨識・尚未領片</p><h3>第 {stationNumber(station.id)} 站<br/>{station.name}</h3><p>確認後自動補上一片。不需答題或拍照，也能繼續下一站。</p><button className="primary-button" onClick={claim}>確認到站，領一片<Icon name="check"/></button><button className="arrival-text-action" onClick={() => { setPhase('scan'); setVerifiedId(null) }}>重新掃描</button></div> : <div className="arrival-success"><span className="arrival-stamp"><Icon name="check" size={36}/></span><p className="eyebrow">示範掃碼確認</p><h3>已收集 {getJourneySnapshot().completed.length} / 10 片</h3><p>第 {stationNumber(station.id)} 站已記錄在這台裝置。{getJourneySnapshot().sessionOnly ? '瀏覽器無法保存，這次關閉後可能不會保留。' : '重新開啟可接續這份本機 Demo 進度。'}</p><section className="arrival-photo-option"><h4>想留一張你們的合照嗎？</h4><p>可以拍照、選擇照片，或用 AI 示範照體驗。本機儲存，不傳到伺服器；不拍照也能繼續集片。</p>
-      <div className="arrival-photo-actions"><button className="arrival-solid-action" onClick={startPhotoCamera} disabled={photoBusy || camera === 'photo-starting'}>開啟相機拍合照</button><label className="arrival-photo-label" htmlFor="arrival-photo"><Icon name="camera"/>選擇本機合照<input id="arrival-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={photoBusy}/></label><button className="arrival-solid-action" onClick={saveDemoPhoto} disabled={photoBusy}>示意拍一張合照</button></div>
-      <p className="arrival-photo-note">「示意拍一張」會儲存 AI 虛構親子合照，不是你本人或現場真拍。自行選照會縮至最長邊 1600 px。</p>
-      <div hidden={!['photo-starting', 'photo-ready'].includes(camera)} className="arrival-photo-camera"><video ref={photoVideo} autoPlay playsInline muted aria-label="合照相機即時預覽"/>{camera === 'photo-starting' ? <p role="status">正在開啟合照相機…</p> : <button className="arrival-solid-action" onClick={takePhoto} disabled={photoBusy}>拍下這張合照</button>}<button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>停止拍照</button></div>
-      {photo && <figure><img src={photo} alt={photoSource === 'ai-demo' ? 'AI 虛構親子合照示範預覽' : '剛選擇或拍攝的本機合照預覽'}/><figcaption>{photoSourceLabel(photoSource)}・{savedPhoto ? '已存本機相簿' : '尚未儲存'}</figcaption></figure>}
-      {photo && !savedPhoto && <button className="arrival-solid-action" onClick={savePreview} disabled={photoBusy}>儲存這張合照到紀念照區</button>}
-      {photoBusy && <p role="status">正在處理並檢查本機照片，請稍候…</p>}
-      {savedPhoto && <div className="arrival-photo-saved" role="status"><strong>您的照片已儲存在紀念照區</strong><p>第 {stationNumber(savedPhoto.stationId)} 站 {savedPhoto.stationName}・僅限這台裝置與此瀏覽器。清除網站資料可能遺失；未備份到雲端。</p><a href="#photos" onClick={() => { skipReturnFocus.current = true }}>查看紀念照 →</a></div>}
-</section></div>}
+    </> : phase === 'confirm' ? <div className="arrival-confirm"><span className="arrival-stamp"><Icon name="pin" size={36}/></span><p className="eyebrow">示範碼已辨識・尚未領片</p><h3>第 {stationNumber(station.id)} 站<br/>{station.name}</h3><p>確認後自動補上一片。不需答題或拍照，也能繼續下一站。</p><button className="primary-button" onClick={claim}>確認到站，領一片<Icon name="check"/></button><button className="arrival-text-action" onClick={() => { setPhase('scan'); setVerifiedId(null) }}>重新掃描</button></div> : <div className="arrival-success">
+      <section className="arrival-celebration" aria-label="拼圖收集成功">
+        <span className="arrival-stamp arrival-check-animation" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><circle className="success-ring" cx="32" cy="32" r="27" pathLength="1"/><path className="success-check" d="m19 32 9 9 18-19" pathLength="1"/></svg></span>
+        <p className="eyebrow">到站確認成功</p>
+        <h3>恭喜你拿到<br/>第 {celebration.collected} 塊拼圖！</h3>
+        <div className="arrival-collection-feedback" role="status"><p>已收集 {celebration.collected} / 10 片</p><strong>{celebration.complete ? '首輪 100% 完成，十站都收齊了。' : `還差 ${celebration.remainingPercent}% 就完成這趟旅程。`}</strong></div>
+        <div className="arrival-collection-progress" role="progressbar" aria-label="首輪拼圖完成比例" aria-valuemin={0} aria-valuemax={100} aria-valuenow={celebration.percent}><span style={{ width: `${celebration.percent}%` }}/></div>
+        <p className="arrival-device-note">第 {stationNumber(station.id)} 站已記錄在這台裝置。{getJourneySnapshot().sessionOnly ? '瀏覽器目前無法保存進度，關閉後可能遺失。' : '下次回來，可以接著走。'}</p>
+      </section>
+      <section className="arrival-photo-option" aria-labelledby="arrival-photo-title">
+        <div className="arrival-photo-heading"><h4 id="arrival-photo-title">來張合照，收藏這一站</h4><span>選填</span></div>
+        <p>把合照收進拍貼機相冊，在「紀念照」回看。不加入照片，也能繼續旅程。</p>
+        {!savedPhoto && <>
+          <label className="arrival-photo-label" htmlFor="arrival-photo"><Icon name="camera"/>選擇本機合照<input id="arrival-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={photoBusy}/></label>
+          <p className="arrival-photo-note">JPG／PNG／WebP，10 MB 內。先預覽，再按確認儲存；僅保存在此裝置，不上傳雲端。</p>
+          <details className="arrival-photo-tools"><summary>拍一張，或使用 AI 示意照</summary><div className="arrival-photo-actions"><button className="arrival-solid-action" onClick={startPhotoCamera} disabled={photoBusy || camera === 'photo-starting'}>開啟相機拍合照</button><button className="arrival-solid-action" onClick={saveDemoPhoto} disabled={photoBusy}>預覽 AI 示意合照</button></div><p className="arrival-photo-note">AI 示意照是虛構親子合照，不是你本人或現場真拍，也需要確認才會儲存。</p></details>
+        </>}
+        <div hidden={!['photo-starting', 'photo-ready'].includes(camera)} className="arrival-photo-camera"><video ref={photoVideo} autoPlay playsInline muted aria-label="合照相機即時預覽"/>{camera === 'photo-starting' ? <p role="status">正在開啟合照相機…</p> : <button className="arrival-solid-action" onClick={takePhoto} disabled={photoBusy}>拍下這張合照</button>}<button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>停止拍照</button></div>
+        {photo && <figure className="arrival-photobooth-preview"><img src={photo} alt={photoSource === 'ai-demo' ? 'AI 虛構親子合照示範預覽' : '剛選擇或拍攝的本機合照預覽'}/><figcaption>第 {stationNumber(station.id)} 站・{station.name}<br/>{photoSourceLabel(photoSource)}・{savedPhoto ? '已存本機相簿' : '尚未儲存'}</figcaption></figure>}
+        {photo && !savedPhoto && <button className="primary-button arrival-confirm-photo" onClick={savePreview} disabled={photoBusy}>{photoBusy ? '正在儲存，請稍候…' : '確認儲存到紀念照區'}<Icon name="check" size={20}/></button>}
+        {photoBusy && <p role="status">正在處理並檢查本機照片，請稍候…</p>}
+        {savedPhoto && <div ref={savedNotice} className="arrival-photo-saved" role="status" tabIndex={-1}><strong>您的照片已儲存在紀念照區</strong><p>已加入本機拍貼機相冊。清除網站資料可能遺失；未備份到雲端。</p><a href="#photos" onClick={() => { skipReturnFocus.current = true }}>查看紀念照 →</a></div>}
+      </section>
+    </div>}
     {phase === 'success' && <footer className="arrival-success-actions"><p>{photoBusy ? '離開不會取消已開始的本機儲存，結果可到紀念照區查看。' : '不拍照也能繼續，剛領到的拼圖不受影響。'}</p><button className="primary-button" onClick={finish}>{photoBusy ? '照片處理中，可先繼續' : station.id === 10 ? '完成首輪 Demo，回地圖' : savedPhoto ? '繼續下一站' : photo ? '先不儲存，繼續下一站' : '略過合照，繼續下一站'}<Icon name="arrow"/></button></footer>}
     {message && <p className="arrival-feedback" role="alert">{message}</p>}
 

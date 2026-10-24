@@ -3,3 +3,36 @@
 
 /* Success keeps optional-photo actions scrollable, while skip is always visible. */
 .arrival-dialog.is-success[open]{display:flex;flex-direction:column;overflow:hidden;height:min(88dvh,880px)}.arrival-dialog.is-success .arrival-header{flex-shrink:0}.arrival-dialog.is-success .arrival-success{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 2px 8px}.arrival-dialog.is-success .arrival-success .arrival-stamp{width:48px;height:48px;margin:0 auto 8px}.arrival-dialog.is-success .arrival-success .arrival-stamp svg{width:26px;height:26px}.arrival-dialog.is-success .arrival-success h3{font-size:25px;margin:7px 0}.arrival-dialog.is-success .arrival-photo-option{margin:18px 0 8px}.arrival-success-actions{flex-shrink:0;padding:12px 0 0;background:var(--cream);box-shadow:0 -8px 12px #ffffffd9;position:relative;z-index:2}.arrival-success-actions>p{font-size:12px;color:var(--muted);line-height:1.6;text-align:center}.arrival-success-actions .primary-button{margin-bottom:0}.arrival-dialog.is-success>.arrival-feedback{flex-shrink:0;margin-top:10px;font-size:12px;padding:10px 12px;max-height:100px;overflow:auto}
+
+/* Claimed-piece celebration: one quiet draw animation, never an automatic claim. */
+.arrival-dialog.is-success .arrival-celebration .arrival-stamp { width: 68px; height: 68px; margin-bottom: 10px; background: #e7eee2; }
+.arrival-dialog.is-success .arrival-celebration .arrival-stamp svg { width: 60px; height: 60px; }
+.success-ring { stroke: #9aaa8c; stroke-width: 1.5; }
+.success-check { stroke: var(--teal); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.arrival-dialog.is-success .arrival-celebration h3 { font-size: clamp(24px,5vw,30px); line-height: 1.35; margin: 10px 0; }
+.arrival-collection-feedback > strong { display: block; font-size: 14px; line-height: 1.7; margin-top: 4px; color: var(--gold-ink); }
+.arrival-collection-progress { height: 8px; max-width: 280px; border-radius: 20px; background: var(--sand); overflow: hidden; margin: 12px auto 8px; }
+.arrival-collection-progress > span { display: block; height: 100%; background: var(--teal); border-radius: inherit; }
+.arrival-dialog .arrival-device-note { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.arrival-photo-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.arrival-photo-heading h4 { margin: 0; line-height: 1.5; font-size: 17px; }
+.arrival-photo-heading > span { flex-shrink: 0; background: white; padding: 4px 9px; border-radius: 20px; font-size: 11px; color: var(--muted); }
+.arrival-photo-option .arrival-photo-note { margin-top: 10px; line-height: 1.8; }
+.arrival-photo-tools > summary { cursor: pointer; min-height: 44px; padding: 12px 0; font-size: 13px; font-weight: 700; }
+.arrival-photo-tools > .arrival-photo-actions { margin-top: 4px; }
+.arrival-photo-option .arrival-photobooth-preview { background: white; padding: 10px 10px 14px; border-radius: 12px; box-shadow: 0 2px 6px #00282e0d; }
+.arrival-photo-option .arrival-photobooth-preview img { border-radius: 6px; }
+.arrival-photo-option .arrival-photobooth-preview figcaption { line-height: 1.7; margin-top: 10px; }
+@media (prefers-reduced-motion: no-preference) {
+  .arrival-check-animation { animation: receipt-settle .55s ease-out both; }
+  .arrival-check-animation .success-ring { stroke-dasharray: 1; animation: receipt-draw .45s ease-out both; }
+  .arrival-check-animation .success-check { stroke-dasharray: 1; animation: receipt-draw .4s ease-out .25s both; }
+  @keyframes receipt-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes receipt-settle { from { transform: scale(.85); opacity: .2; } to { transform: scale(1); opacity: 1; } }
+}
+@media (max-width: 359px) {
+  .arrival-dialog.is-success .arrival-celebration .arrival-stamp { width: 54px; height: 54px; }
+  .arrival-dialog.is-success .arrival-celebration .arrival-stamp svg { width: 50px; height: 50px; }
+  .arrival-photo-heading h4 { font-size: 15px; }
+  .arrival-dialog.is-success .arrival-photo-option { padding: 16px; }
+}

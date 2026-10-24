@@ -54,13 +54,13 @@ function PhotoPreviewPage({ page, onNavigate }) {
   return <section className="explore-page asset-preview-page" aria-labelledby={`${page}-title`}>
     <header className="page-heading"><div><p className="eyebrow">沿途的故事，慢慢收藏</p><h1 id={`${page}-title`} tabIndex={-1}>旅程紀念照</h1><p className="heading-description">把你們在各站留下的合照，收藏成這趟旅程的回憶。</p></div></header>
     <p className="preview-notice"><strong>本機紀念照</strong><span>到站後主動儲存的合照會出現在這裡，僅限這台裝置與此瀏覽器。未上傳雲端；清除網站資料或私人瀏覽結束可能遺失。</span></p>
-    <section className="album-local" aria-labelledby="album-local-title"><header className="album-section-heading"><p className="eyebrow">YOUR LOCAL JOURNEY</p><h2 id="album-local-title" ref={localHeading} tabIndex={-1}>已存的旅程合照 <small>{photos.length} 張</small></h2><p>照片和探索進度分開保存。重設旅程，不會刪除這裡的照片。</p></header>
+    <section className="album-local" aria-labelledby="album-local-title"><header className="album-section-heading"><p className="eyebrow">YOUR LOCAL PHOTOBOOTH</p><h2 id="album-local-title" ref={localHeading} tabIndex={-1}>已存的旅程合照 <small>{photos.length} 張</small></h2><p>拍貼機相冊・照片和探索進度分開保存。重設旅程，不會刪除這裡的照片。</p></header>
       {loading && <p role="status">正在讀取這台裝置的紀念照…</p>}
       {error && <div className="album-storage-error" role="alert"><p>{error}</p><button className="album-delete-cancel" onClick={() => { setLoading(true); setReload(value => value + 1) }}>重試讀取</button></div>}
       {!loading && !error && (photos.length ? <div className="album-photo-grid">{photos.map(photo => <LocalPhotoCard key={photo.id} photo={photo} onDeleted={afterDelete}/>)}</div> : <div className="travel-album-empty"><span className="album-camera"><Icon name="camera" size={28}/></span><h3>還沒有儲存的旅程合照</h3><p>從第 01 站開始，掃碼領片後可以拍照、選擇本機照片，或用示意合照體驗。記得按儲存，就能回到這裡看；也可以不拍照繼續。</p><button className="album-start" onClick={() => onNavigate('explore')}>前往探索，留下合照 →</button></div>)}
     </section>
     <section className="album-samples" aria-labelledby="album-samples-title"><header className="album-section-heading"><p className="eyebrow">INSPIRATION, NOT YOUR PHOTOS</p><h2 id="album-samples-title">每一站，都有你們</h2><p>下方是獨立的親子合照範例・AI 示意，不是你的照片或實際到站紀錄；不會自動加入上方清單。</p></header><div className="album-photo-grid">{samplePhotos.map((photo, index) => <figure className="album-photo-card" key={photo.image}><div className="album-photo-frame"><img src={`${import.meta.env.BASE_URL}images/${photo.image}`} alt={photo.alt} width="1200" height="800" loading="lazy" decoding="async"/><span>AI 合照範例</span></div><figcaption><small>回憶範例 0{index + 1}</small><h3>{photo.title}</h3><p>{photo.description}</p></figcaption></figure>)}</div></section>
-    <p className="album-optional">拍不拍照都能領片、繼續下一站。只在你按下儲存或「示意拍一張合照」後保存；AI 範例不冒充你的真實合照。</p>
+    <p className="album-optional">拍不拍照都能領片、繼續下一站。選照、拍照或預覽 AI 示意照後，都要按「確認儲存到紀念照區」才保存；AI 範例不冒充你的真實合照。</p>
     <footer className="asset-page-footer"><button className="footer-top" onClick={() => jumpTo(`${page}-title`)}>回到頁首 ↑</button><button className="footer-explore" onClick={() => onNavigate('explore')}>返回園區探索 →</button></footer>
   </section>
 }
