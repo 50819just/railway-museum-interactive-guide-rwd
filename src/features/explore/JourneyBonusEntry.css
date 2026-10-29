@@ -1,0 +1,25 @@
+/* One focused journey invitation, not a new navigation layout. */
+.journey-bonus-entry { position: relative; display: grid; grid-template-columns: 54px minmax(0,1fr) auto; align-items: center; gap: 18px; padding: 22px 24px; margin: 18px 0 24px; background: var(--surface-card, #fff); color: var(--teal); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-surface); }
+.journey-bonus-entry::before { position: absolute; content: ''; top: 20px; bottom: 20px; left: 0; width: 3px; border-radius: 0 3px 3px 0; background: var(--brass); }
+.journey-bonus-entry-icon { display: grid; place-items: center; width: 54px; height: 64px; color: var(--teal); background: var(--surface-low); border: 1px solid var(--line); border-radius: 12px; }
+.journey-bonus-entry-copy { min-width: 0; }
+.journey-bonus-entry-label { display: flex; align-items: center; gap: 7px; color: var(--gold-ink); font-size: 11px; line-height: 1.7; font-weight: 700; letter-spacing: .05em; }
+.journey-bonus-entry-label > span { width: 5px; height: 5px; border-radius: 50%; background: var(--brass); flex-shrink: 0; }
+.app-shell #main .journey-bonus-entry h2 { margin: 5px 0 0; font-size: 18px; line-height: 1.5; letter-spacing: .01em; }
+.journey-bonus-entry-description { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.journey-bonus-entry-action { display: inline-flex; align-items: center; justify-content: center; gap: 14px; min-width: 165px; min-height: 48px; padding: 12px 17px; border-radius: 12px; text-decoration: none; color: var(--cream); background: var(--teal); font-size: 13px; line-height: 1.5; font-weight: 700; }
+.journey-bonus-entry-action > svg { flex-shrink: 0; }
+.journey-bonus-entry-action:hover { background: var(--deep); }
+.journey-bonus-entry-action:focus-visible { outline: 3px solid var(--gold-action); outline-offset: 4px; }
+@media(max-width:700px) {
+  .journey-bonus-entry { grid-template-columns: 44px minmax(0,1fr); gap: 12px 14px; padding: 19px 18px; margin-block: 16px 20px; }
+  .journey-bonus-entry-icon { width: 44px; height: 54px; align-self: start; margin-top: 3px; }
+  .app-shell #main .journey-bonus-entry h2 { font-size: 16px; line-height: 1.6; }
+  .journey-bonus-entry-description { margin-top: 5px; }
+  .journey-bonus-entry-action { grid-column: 2; justify-content: space-between; min-width: 0; width: 100%; padding-inline: 14px; }
+}
+@media(max-width:359px) {
+  .journey-bonus-entry { padding-inline: 15px; column-gap: 11px; }
+  .app-shell #main .journey-bonus-entry h2 { font-size: 15px; }
+  .journey-bonus-entry-action { font-size: 12px; gap: 8px; }
+}

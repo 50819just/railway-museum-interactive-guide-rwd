@@ -10,16 +10,16 @@ const navigation = [
   { id: 'explore', name: '探索', icon: 'map' },
   { id: 'train', name: '兌換區', icon: 'train', preview: true },
   { id: 'photos', name: '紀念照', icon: 'camera' },
-  { id: 'more', name: '更多', icon: 'grid' },
+  { id: 'puzzles', name: '我的拼圖', icon: 'puzzle' },
 ]
-const locationLabels = { explore: '園區探索', train: '兌換區', photos: '旅程紀念照', family: '登入與親子同行', more: '更多' }
+const locationLabels = { explore: '園區探索', train: '兌換區', photos: '旅程紀念照', family: '登入與親子同行', more: '旅程服務', puzzles: '我的拼圖' }
 
 export default function AppShell({ children, page, onNavigate }) {
   const dialogRef = useRef(null)
   const menuButtonRef = useRef(null)
   const restoreMenuFocus = useRef(true)
   const [menuOpen, setMenuOpen] = useState(false)
-  const activePage = page === 'family' ? 'more' : page
+  const activePage = page
 
   useEffect(() => {
     if (!menuOpen) return undefined
@@ -57,11 +57,13 @@ export default function AppShell({ children, page, onNavigate }) {
     <div className="app-content">
       <header className="app-header">
         <div className="mobile-header-start">
-          <button ref={menuButtonRef} className="header-menu-button" type="button" aria-label="開啟導覽選單" aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="app-navigation-dialog" onClick={openMenu}><Icon name="menu" size={23}/></button>
           <a className="mobile-brand" href="#explore" onClick={() => onNavigate('explore')} aria-label="鐵道巡禮，探索首頁"><img className="brand-emblem" src={brandMark} width="30" height="34" alt=""/><span className="brand-name">鐵道巡禮</span></a>
         </div>
-        <span className="desktop-location"><Icon name={page === 'train' ? 'train' : page === 'photos' ? 'camera' : page === 'more' || page === 'family' ? 'grid' : 'map'} size={18}/> {locationLabels[page]}</span>
-        <button className="header-login-button" type="button" onClick={() => onNavigate('family')} title="開啟登入與親子同行"><Icon name="user" size={19}/><span>登入</span></button>
+        <span className="desktop-location"><Icon name={page === 'train' ? 'train' : page === 'photos' ? 'camera' : page === 'puzzles' ? 'puzzle' : page === 'more' || page === 'family' ? 'grid' : 'map'} size={18}/> {locationLabels[page]}</span>
+        <div className="header-actions">
+          <button className="header-login-button" type="button" onClick={() => onNavigate('family')} title="開啟登入與親子同行"><Icon name="user" size={19}/><span>登入</span></button>
+          <button ref={menuButtonRef} className="header-menu-button" type="button" aria-label="開啟導覽選單" aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="app-navigation-dialog" onClick={openMenu}><Icon name="menu" size={23}/></button>
+        </div>
       </header>
       <ActivityNotice onNavigate={onNavigate}/>
       <main id="main" tabIndex={-1}>{children}</main>
@@ -71,6 +73,7 @@ export default function AppShell({ children, page, onNavigate }) {
       <div className="navigation-dialog-content">
         <header><div><span className="navigation-dialog-label">鐵道巡禮</span><h2 id="app-navigation-title">導覽選單</h2></div><button className="navigation-close-button" type="button" aria-label="關閉導覽選單" onClick={closeMenu} autoFocus><Icon name="close"/></button></header>
         <nav aria-label="快速導覽">{navigation.map(item => <button key={item.id} type="button" onClick={() => navigateFromMenu(item.id)} aria-current={activePage === item.id ? 'page' : undefined}><Icon name={item.icon}/><span>{item.name}</span><Icon name="arrow" size={19}/></button>)}</nav>
+        <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('more')} aria-current={page === 'more' ? 'page' : undefined}><Icon name="info"/><span>旅程服務與玩法說明</span><Icon name="arrow" size={19}/></button>
         <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('family')}><Icon name="user"/><span>登入與親子同行</span><Icon name="arrow" size={19}/></button>
       </div>
     </dialog>

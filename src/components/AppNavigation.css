@@ -1,5 +1,4 @@
-/* Stitch places an account entry at the top and a grid-style More tab below.
-   The mobile dialog is an accessible adaptation, not an exported Stitch screen. */
+/* Main collection entry stays in navigation; secondary services use the header menu. */
 .mobile-header-start { display: none; }
 .header-login-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 84px; min-height: 48px; padding: 10px 18px; border-radius: 999px; color: var(--cream); background: #ffffff12; font-size: 14px; font-weight: 700; flex-shrink: 0; }
 .header-login-button:hover, .header-menu-button:hover { background: #ffffff22; }
@@ -33,4 +32,14 @@
 @media(prefers-reduced-motion:no-preference) {
   .app-navigation-dialog[open] { animation: navigation-slide-in .18s ease-out; }
   @keyframes navigation-slide-in { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+}
+
+.header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+.navigation-family-link + .navigation-family-link { margin-top: 8px; }
+@media(max-width:359px) { .header-actions { gap: 2px; } }
+
+@media(max-width:1000px) {
+  .mobile-header-start .mobile-brand { min-height: 48px; }
+  html { scroll-padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
+  #main :is(button, a, summary, input, select, textarea, [tabindex]) { scroll-margin-block: 20px 110px; }
 }

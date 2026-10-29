@@ -1,4 +1,5 @@
 const paths = {
+  puzzle: <path d="M9 3H4v6h1a3 3 0 1 1 0 6H4v6h6v-1a3 3 0 1 1 6 0v1h5v-6h-1a3 3 0 1 1 0-6h1V3h-6v1a3 3 0 1 1-6 0V3Z"/>,
   menu: <path d="M4 6h16M4 12h16M4 18h16"/>,
   user: <><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></>,
   grid: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,

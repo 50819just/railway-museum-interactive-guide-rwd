@@ -8,10 +8,14 @@ import { saveLocalPhoto } from './photoStore'
 import { photoSourceLabel } from './photoModel'
 import preparePhoto from './preparePhoto'
 import { celebrationProgress } from './celebrationModel'
+import useBonus from '../bonus/useBonus'
+import { getBonusSnapshot } from '../bonus/bonusStore'
+import { collectedPuzzleIds } from '../bonus/bonusModel'
 import { createQrScanner } from './qrScanner'
 import './ArrivalFlow.css'
 
 export default function ArrivalDialog({ stationId, onClose, onContinue }) {
+  const bonus = useBonus()
   const dialog = useRef(null)
   const video = useRef(null)
   const photoVideo = useRef(null)
@@ -25,6 +29,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
   const photoUrl = useRef(null)
   const [phase, setPhase] = useState('scan')
   const [claimedCount, setClaimedCount] = useState(0)
+  const [alreadyCollected, setAlreadyCollected] = useState(false)
   const celebration = celebrationProgress(claimedCount)
   const [camera, setCamera] = useState('idle')
   const [message, setMessage] = useState('')
@@ -127,9 +132,11 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     }
   }
   function claim() {
+    const owned = getBonusSnapshot().bonusPieces.includes(verifiedId)
     const result = claimStation(stationPayload(verifiedId))
     if (!result.ok) { setPhase('scan'); setVerifiedId(null); setMessage(result.message); return }
-    setClaimedCount(result.state.completed.length)
+    setAlreadyCollected(owned)
+    setClaimedCount(collectedPuzzleIds(result.state.completed, getBonusSnapshot()).length)
     setPhase('success')
   }
   function previewPhoto(blob, source) {
@@ -210,7 +217,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     onContinue()
   }
   return <dialog ref={dialog} className={`arrival-dialog ${phase === 'success' ? 'is-success' : ''}`} aria-labelledby="arrival-title" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); closeFlow() }} onClose={closeFlow}>
-    <header className="arrival-header"><div><p className="eyebrow">到站確認・本機 Demo</p><h2 id="arrival-title" ref={stepHeading} tabIndex={-1}>{phase === 'scan' ? '掃一下，留下這一站。' : phase === 'confirm' ? '確認這一站' : '拼圖領取成功'}</h2></div><button className="icon-button" aria-label="關閉到站確認" onClick={closeFlow}><Icon name="close"/></button></header>
+    <header className="arrival-header"><div><p className="eyebrow">到站確認・本機 Demo</p><h2 id="arrival-title" ref={stepHeading} tabIndex={-1}>{phase === 'scan' ? '掃一下，留下這一站。' : phase === 'confirm' ? '確認這一站' : alreadyCollected ? '到站確認成功' : '拼圖領取成功'}</h2></div><button className="icon-button" aria-label="關閉到站確認" onClick={closeFlow}><Icon name="close"/></button></header>
     {phase === 'scan' ? <>
       <p className="arrival-description">目前前往第 {stationNumber(stationId)} 站 {stations[stationId - 1].name}。請掃描這一站的示範碼。</p>
       <div className={`arrival-viewfinder ${camera === 'scanning' ? 'is-scanning' : ''}`}><video ref={video} playsInline muted aria-label="相機掃碼預覽" hidden={!['starting', 'scanning'].includes(camera)}/>{!['starting', 'scanning'].includes(camera) && <><Icon name="camera" size={44}/><strong>對準站點 QR Code</strong><span>相機只用於掃碼，不會上傳影像</span></>}<span className="arrival-camera-status" role="status">{camera === 'starting' ? '正在開啟相機…' : camera === 'scanning' ? '掃描中，請將示範 QR 碼置於鏡頭前' : camera === 'unsupported' ? '目前環境無法啟用相機・請見下方說明' : camera === 'denied' ? '相機未授權・可使用示範碼' : camera === 'error' ? '相機暫不可用・可重新嘗試' : '相機尚未開啟'}</span></div>
@@ -218,12 +225,12 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
       {camera === 'scanning' && <button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>停止相機</button>}
       <section className="arrival-demo-code"><img src={`${import.meta.env.BASE_URL}images/qr/station-${stationNumber(stationId)}-demo-qr.png`} alt={`第 ${stationNumber(stationId)} 站 QR 示範碼，內容 ${stationPayload(stationId)}`} width="396" height="396"/><div><strong>在電腦上 Demo？</strong><p>可在另一台裝置顯示示範碼，再用本頁相機掃描；也能直接按下方按鈕。</p><button className="arrival-solid-action" onClick={() => verify(stationPayload(stationId))}>使用本頁示範碼</button></div></section>
       <details className="arrival-manual"><summary>手動貼上示範碼／遇到無法掃描</summary><form onSubmit={event => { event.preventDefault(); verify(input) }}><label htmlFor="arrival-payload">站點示範碼</label><input id="arrival-payload" value={input} onChange={event => setInput(event.target.value)} placeholder={stationPayload(stationId)} autoComplete="off" spellCheck="false"/><button className="arrival-solid-action" type="submit">驗證示範碼</button></form><p>現場 QR 損壞或站點關閉時，請向服務台求助；此原型不能代替人工補登。</p></details>
-    </> : phase === 'confirm' ? <div className="arrival-confirm"><span className="arrival-stamp"><Icon name="pin" size={36}/></span><p className="eyebrow">示範碼已辨識・尚未領片</p><h3>第 {stationNumber(station.id)} 站<br/>{station.name}</h3><p>確認後自動補上一片。不需答題或拍照，也能繼續下一站。</p><button className="primary-button" onClick={claim}>確認到站，領一片<Icon name="check"/></button><button className="arrival-text-action" onClick={() => { setPhase('scan'); setVerifiedId(null) }}>重新掃描</button></div> : <div className="arrival-success">
+    </> : phase === 'confirm' ? <div className="arrival-confirm"><span className="arrival-stamp"><Icon name="pin" size={36}/></span><p className="eyebrow">示範碼已辨識・尚未領片</p><h3>第 {stationNumber(station.id)} 站<br/>{station.name}</h3><p>確認後記錄到訪並收下本站拼圖；若已透過答題補收同片，不會重複加片。拍照可自由選擇。</p><button className="primary-button" onClick={claim}>{bonus.bonusPieces.includes(station.id) ? '確認到站，不重複領片' : '確認到站，領一片'}<Icon name="check"/></button><button className="arrival-text-action" onClick={() => { setPhase('scan'); setVerifiedId(null) }}>重新掃描</button></div> : <div className="arrival-success">
       <section className="arrival-celebration" aria-label="拼圖收集成功">
         <span className="arrival-stamp arrival-check-animation" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><circle className="success-ring" cx="32" cy="32" r="27" pathLength="1"/><path className="success-check" d="m19 32 9 9 18-19" pathLength="1"/></svg></span>
         <p className="eyebrow">到站確認成功</p>
-        <h3>恭喜你拿到<br/>第 {celebration.collected} 塊拼圖！</h3>
-        <div className="arrival-collection-feedback" role="status"><p>已收集 {celebration.collected} / 10 片</p><strong>{celebration.complete ? '首輪 100% 完成，十站都收齊了。' : `還差 ${celebration.remainingPercent}% 就完成這趟旅程。`}</strong></div>
+        <h3>{alreadyCollected ? <>到站記錄完成，<br/>這片拼圖已在收藏裡。</> : <>恭喜你拿到<br/>第 {celebration.collected} 塊拼圖！</>}</h3>
+        <div className="arrival-collection-feedback" role="status"><p>已收集 {celebration.collected} / 10 片</p><strong>{celebration.complete ? '整套拼圖已收齊；實際到訪可繼續依動線完成。' : `還差 ${celebration.remainingPercent}% 就完成這趟旅程。`}</strong></div>
         <div className="arrival-collection-progress" role="progressbar" aria-label="首輪拼圖完成比例" aria-valuemin={0} aria-valuemax={100} aria-valuenow={celebration.percent}><span style={{ width: `${celebration.percent}%` }}/></div>
         <p className="arrival-device-note">第 {stationNumber(station.id)} 站已記錄在這台裝置。{getJourneySnapshot().sessionOnly ? '瀏覽器目前無法保存進度，關閉後可能遺失。' : '下次回來，可以接著走。'}</p>
       </section>
@@ -242,7 +249,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
         {savedPhoto && <div ref={savedNotice} className="arrival-photo-saved" role="status" tabIndex={-1}><strong>您的照片已儲存在紀念照區</strong><p>已加入本機拍貼機相冊。清除網站資料可能遺失；未備份到雲端。</p><a href="#photos" onClick={() => { skipReturnFocus.current = true }}>查看紀念照 →</a></div>}
       </section>
     </div>}
-    {phase === 'success' && <footer className="arrival-success-actions"><p>{photoBusy ? '離開不會取消已開始的本機儲存，結果可到紀念照區查看。' : '不拍照也能繼續，剛領到的拼圖不受影響。'}</p><button className="primary-button" onClick={finish}>{photoBusy ? '照片處理中，可先繼續' : station.id === 10 ? '完成首輪 Demo，回地圖' : savedPhoto ? '繼續下一站' : photo ? '先不儲存，繼續下一站' : '略過合照，繼續下一站'}<Icon name="arrow"/></button></footer>}
+    {phase === 'success' && <footer className="arrival-success-actions"><p>{photoBusy ? '離開不會取消已開始的本機儲存，結果可到紀念照區查看。' : '不拍照也能繼續，收藏與到訪紀錄不受影響。'}</p><button className="primary-button" onClick={finish}>{photoBusy ? '照片處理中，可先繼續' : station.id === 10 ? '完成首輪 Demo，回地圖' : savedPhoto ? '繼續下一站' : photo ? '先不儲存，繼續下一站' : '略過合照，繼續下一站'}<Icon name="arrow"/></button></footer>}
     {message && <p className="arrival-feedback" role="alert">{message}</p>}
 
   </dialog>

@@ -5,15 +5,18 @@ import { stationImage } from '../../data/stations'
 import StationCulture from './StationCulture.jsx'
 import { stationCulture } from './stationCulture.js'
 
-export default function StationStoryDialog({ station, onClose }) {
+export default function StationStoryDialog({ station, onClose, returnLabel = '回到探索，繼續這一站' }) {
   const dialog = useRef(null)
   const heading = useRef(null)
   useEffect(() => {
     const trigger = document.activeElement
     const element = dialog.current
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     if (!element.open) element.showModal()
     heading.current?.focus({ preventScroll: true })
     return () => {
+      document.body.style.overflow = previousOverflow
       if (element.open) element.close()
       if (trigger?.isConnected) trigger.focus({ preventScroll: true })
     }
@@ -26,6 +29,6 @@ export default function StationStoryDialog({ station, onClose }) {
     <header><div><p className="eyebrow">讀一段故事，再走近一點</p><h2 id="station-story-title" ref={heading} tabIndex={-1}>{station.name}・展區故事</h2></div><button className="icon-button" onClick={onClose} aria-label="關閉展區故事"><Icon name="close"/></button></header>
     <figure className="story-dialog-photo"><img src={stationImage(station.id)} alt={`${station.name}主題 AI 概念圖，非該建築實景`} width="1200" height="800"/><figcaption>AI 主題示意・非該建築實景</figcaption></figure>
     <StationCulture stationId={station.id}/><p className="culture-context-note">{stationCulture[station.id]?.status}</p>
-    <button className="story-return-button" onClick={onClose}>回到探索，繼續這一站<Icon name="arrow" size={18}/></button>
+    <button className="story-return-button" onClick={onClose}>{returnLabel}<Icon name="arrow" size={18}/></button>
   </dialog>
 }
