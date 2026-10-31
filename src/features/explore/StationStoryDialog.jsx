@@ -27,7 +27,7 @@ export default function StationStoryDialog({ station, onClose, returnLabel = '�
     if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) onClose()
   }}>
     <header><div><p className="eyebrow">讀一段故事，再走近一點</p><h2 id="station-story-title" ref={heading} tabIndex={-1}>{station.name}・展區故事</h2></div><button className="icon-button" onClick={onClose} aria-label="關閉展區故事"><Icon name="close"/></button></header>
-    <figure className="story-dialog-photo"><img src={stationImage(station.id)} alt={`${station.name}主題 AI 概念圖，非該建築實景`} width="1200" height="800"/><figcaption>AI 主題示意・非該建築實景</figcaption></figure>
+    <figure className="story-dialog-photo"><img src={stationImage(station.id)} alt={`${station.name}主題示意圖，非該建築實景`} width="1200" height="800"/><figcaption>主題示意・非該建築實景</figcaption></figure>
     <StationCulture stationId={station.id}/><p className="culture-context-note">{stationCulture[station.id]?.status}</p>
     <button className="story-return-button" onClick={onClose}>{returnLabel}<Icon name="arrow" size={18}/></button>
   </dialog>

@@ -8,18 +8,18 @@ import './AppNavigation.css'
 const brandMark = `${import.meta.env.BASE_URL}images/railway-arch-mark.svg`
 const navigation = [
   { id: 'explore', name: '探索', icon: 'map' },
-  { id: 'train', name: '兌換區', icon: 'train', preview: true },
+  { id: 'train', name: '兌換區', icon: 'train' },
   { id: 'photos', name: '紀念照', icon: 'camera' },
   { id: 'puzzles', name: '我的拼圖', icon: 'puzzle' },
 ]
-const locationLabels = { explore: '園區探索', train: '兌換區', photos: '旅程紀念照', family: '登入與親子同行', more: '旅程服務', puzzles: '我的拼圖' }
+const locationLabels = { explore: '園區探索', train: '兌換區', photos: '旅程紀念照', family: '登入與親子同行', more: '旅程服務', puzzles: '我的拼圖', revisit: '第二輪自由探索示範' }
 
 export default function AppShell({ children, page, onNavigate }) {
   const dialogRef = useRef(null)
   const menuButtonRef = useRef(null)
   const restoreMenuFocus = useRef(true)
   const [menuOpen, setMenuOpen] = useState(false)
-  const activePage = page
+  const activePage = page === 'revisit' ? 'explore' : page
 
   useEffect(() => {
     if (!menuOpen) return undefined

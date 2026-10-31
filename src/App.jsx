@@ -5,13 +5,15 @@ import AssetPreviewPage from './features/assets/AssetPreviewPage'
 import FamilyPage from './features/family/FamilyPage'
 import MorePage from './features/more/MorePage'
 import PuzzlePage from './features/puzzle/PuzzlePage'
+import RedemptionPuzzleBar from './features/redemption/RedemptionPuzzleBar'
+import RevisitPage from './features/revisit/RevisitPage'
 import useJourney from './features/arrival/useJourney'
 import { syncBonusVisits } from './features/bonus/bonusStore'
 import IntroExperience from './features/intro/IntroExperience'
 import useIntro from './features/intro/useIntro'
 import './App.css'
 import './styles/StitchVisual.css'
-const currentPage = () => ['train','photos','family','more','puzzles'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'explore'
+const currentPage = () => ['train','photos','family','more','puzzles','revisit'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'explore'
 function focusPage() {
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0 })
@@ -43,5 +45,5 @@ export default function App() {
     if (next===page) focusPage()
     else window.location.hash=next
   }
-  return <><AppShell page={page} onNavigate={navigate}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">啟動設定目前僅本次有效，無法保證下次記住；不影響這次使用。</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><IntroExperience state={intro} onAction={introAction}/></>
+  return <><AppShell page={page} onNavigate={navigate}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">啟動設定目前僅本次有效，無法保證下次記住；不影響這次使用。</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><IntroExperience state={intro} onAction={introAction}/></>
 }

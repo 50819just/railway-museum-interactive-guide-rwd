@@ -8,9 +8,9 @@ import { startLocalPhotoDownload } from './photoDownload'
 import './TravelAlbum.css'
 
 const samplePhotos = [
-  { image: 'group-entrance.jpg', title: '一起出發', description: '把旅程起點，留給並肩的你們。', alt: 'AI 示意：成年照顧者與學齡孩子在鐵道建築前合照' },
-  { image: 'group-locomotive.jpg', title: '遇見大火車', description: '今天的發現，和重要的人一起記住。', alt: 'AI 示意：成年照顧者與學齡孩子在蒸汽機車旁合照' },
-  { image: 'group-carriage.jpg', title: '坐進時光裡', description: '車廂裡的一張合照，也是一段小故事。', alt: 'AI 示意：成年照顧者與學齡孩子坐在車廂內合照' },
+  { image: 'group-entrance.jpg', title: '一起出發', description: '把旅程起點，留給並肩的你們。', alt: '示意：成年照顧者與學齡孩子在鐵道建築前合照' },
+  { image: 'group-locomotive.jpg', title: '遇見大火車', description: '今天的發現，和重要的人一起記住。', alt: '示意：成年照顧者與學齡孩子在蒸汽機車旁合照' },
+  { image: 'group-carriage.jpg', title: '坐進時光裡', description: '車廂裡的一張合照，也是一段小故事。', alt: '示意：成年照顧者與學齡孩子坐在車廂內合照' },
 ]
 function LocalPhotoCard({ photo, onDeleted }) {
   const image = useRef(null)
@@ -36,7 +36,7 @@ function LocalPhotoCard({ photo, onDeleted }) {
   }
   return <article className="album-photo-card album-local-card" aria-labelledby={`local-photo-${photo.id}`}>
     <div className="album-photo-frame"><img ref={image} alt={`${photoSourceLabel(photo.source)}：第 ${stationNumber(photo.stationId)} 站 ${photo.stationName}`} width="1200" height="800" loading="lazy"/><span>{photoSourceLabel(photo.source)}</span></div>
-    <div className="album-local-caption"><small>僅存於本機・{new Date(photo.savedAt).toLocaleString('zh-TW')}</small><h3 id={`local-photo-${photo.id}`}>第 {stationNumber(photo.stationId)} 站 {photo.stationName}</h3><p>{photo.source === 'ai-demo' ? '主動選擇保存的 AI 虛構合照，不是你本人或現場真拍。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。'}</p>
+    <div className="album-local-caption"><small>僅存於本機・{new Date(photo.savedAt).toLocaleString('zh-TW')}</small><h3 id={`local-photo-${photo.id}`}>第 {stationNumber(photo.stationId)} 站 {photo.stationName}</h3><p>{photo.source === 'ai-demo' ? '主動選擇保存的 虛構合照，不是你本人或現場真拍。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。'}</p>
       <div className="album-local-actions"><button className="album-download" type="button" disabled={deleting} aria-label={`下載第 ${stationNumber(photo.stationId)} 站照片`} onClick={downloadPhoto}>下載照片</button><button ref={deleteButton} className="album-delete" disabled={deleting} aria-expanded={confirm} onClick={() => { setConfirm(true); requestAnimationFrame(() => confirmButton.current?.focus()) }}>刪除這張照片</button></div>
       {downloadNotice && <p className="album-download-notice" role="status">{downloadNotice}</p>}
       {downloadError && <p className="album-storage-error" role="alert">{downloadError}</p>}
@@ -71,8 +71,8 @@ function PhotoPreviewPage({ page, onNavigate }) {
       {error && <div className="album-storage-error" role="alert"><p>{error}</p><button className="album-delete-cancel" onClick={() => { setLoading(true); setReload(value => value + 1) }}>重試讀取</button></div>}
       {!loading && !error && (photos.length ? <div className="album-photo-grid">{photos.map(photo => <LocalPhotoCard key={photo.id} photo={photo} onDeleted={afterDelete}/>)}</div> : <div className="travel-album-empty"><span className="album-camera"><Icon name="camera" size={28}/></span><h3>還沒有儲存的旅程合照</h3><p>從第 01 站開始，掃碼領片後可以拍照、選擇本機照片，或用示意合照體驗。記得按儲存，就能回到這裡看；也可以不拍照繼續。</p><button className="album-start" onClick={() => onNavigate('explore')}>前往探索，留下合照 →</button></div>)}
     </section>
-    <section className="album-samples" aria-labelledby="album-samples-title"><header className="album-section-heading"><p className="eyebrow">INSPIRATION, NOT YOUR PHOTOS</p><h2 id="album-samples-title">每一站，都有你們</h2><p>下方是獨立的親子合照範例・AI 示意，不是你的照片或實際到站紀錄；不會自動加入上方清單。</p></header><div className="album-photo-grid">{samplePhotos.map((photo, index) => <figure className="album-photo-card" key={photo.image}><div className="album-photo-frame"><img src={`${import.meta.env.BASE_URL}images/${photo.image}`} alt={photo.alt} width="1200" height="800" loading="lazy" decoding="async"/><span>AI 合照範例</span></div><figcaption><small>回憶範例 0{index + 1}</small><h3>{photo.title}</h3><p>{photo.description}</p></figcaption></figure>)}</div></section>
-    <p className="album-optional">拍不拍照都能領片、繼續下一站。選照、拍照或預覽 AI 示意照後，都要按「確認儲存到紀念照區」才保存；AI 範例不冒充你的真實合照。</p>
+    <section className="album-samples" aria-labelledby="album-samples-title"><header className="album-section-heading"><p className="eyebrow">INSPIRATION, NOT YOUR PHOTOS</p><h2 id="album-samples-title">每一站，都有你們</h2><p>下方是獨立的親子合照範例，不是你的照片或實際到站紀錄；不會自動加入上方清單。</p></header><div className="album-photo-grid">{samplePhotos.map((photo, index) => <figure className="album-photo-card" key={photo.image}><div className="album-photo-frame"><img src={`${import.meta.env.BASE_URL}images/${photo.image}`} alt={photo.alt} width="1200" height="800" loading="lazy" decoding="async"/><span>合照範例</span></div><figcaption><small>回憶範例 0{index + 1}</small><h3>{photo.title}</h3><p>{photo.description}</p></figcaption></figure>)}</div></section>
+    <p className="album-optional">拍不拍照都能領片、繼續下一站。選照、拍照或預覽 示意照後，都要按「確認儲存到紀念照區」才保存；合照範例不冒充你的真實合照。</p>
     <footer className="asset-page-footer"><button className="footer-top" onClick={() => jumpTo(`${page}-title`)}>回到頁首 ↑</button><button className="footer-explore" onClick={() => onNavigate('explore')}>返回園區探索 →</button></footer>
   </section>
 }

@@ -74,11 +74,11 @@ export default function ExplorePage({ active = true }) {
       <h1 ref={heading} tabIndex={-1} className="sr-only">園區探索</h1>
       <div ref={feature} className="station-feature-anchor" tabIndex={-1}>
         {!completeSummary && <section className="station-feature" aria-labelledby="station-feature-title">
-          <img key={selectedId} className="station-feature-image" src={stationImage(selectedId)} alt={`${selected.name}主題 AI 概念圖，非該建築實景`} width="1200" height="800" decoding="async"/>
+          <img key={selectedId} className="station-feature-image" src={stationImage(selectedId)} alt={`${selected.name}主題示意圖，非該建築實景`} width="1200" height="800" decoding="async"/>
           <span className="station-feature-badge">第 {stationNumber(selectedId)} 站</span>
           <div className="station-feature-copy"><p className="eyebrow">{selected.kind}</p><h2 id="station-feature-title">{selected.name}</h2><p className="station-feature-intro">{selected.intro}</p><button onClick={() => setStoryOpen(true)} aria-haspopup="dialog">閱讀展區故事<Icon name="arrow" size={17}/></button></div>
         </section>}
-        {!completeSummary && <p className="station-feature-caption">AI 主題示意・非該建築實景</p>}
+        {!completeSummary && <p className="station-feature-caption">主題示意・非該建築實景</p>}
       <div className="explore-visit-summary" aria-label="到訪紀錄"><p><strong>已到訪 {count} / {total} 站</strong><span>{lastStation ? `最後確認：${stationNumber(lastStation.id)} ${lastStation.name}・非即時定位` : '首輪依動線參觀，到站後再確認到訪。'}</span></p></div>
         <article className="station-card task-panel station-task-card" aria-label={completeSummary ? '首輪探索完成' : '本站探索互動'}>
           {completeSummary ? <>

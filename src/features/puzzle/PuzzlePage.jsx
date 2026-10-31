@@ -40,7 +40,7 @@ export default function PuzzlePage() {
 
     <section className="puzzle-collection" aria-labelledby="puzzle-collection-title">
       <header className="puzzle-section-heading"><div><p className="eyebrow">旅程收藏</p><h2 id="puzzle-collection-title" tabIndex={-1}>收集你的十站故事</h2></div><span>{count}／{total} 已收集</span></header>
-      <p className="puzzle-section-note">拼圖包含到站收集與答題補收，收藏不等於實際到訪；圖片為 AI 概念圖，非建築實景。</p>
+      <p className="puzzle-section-note">拼圖包含到站收集與答題補收，收藏不等於實際到訪；圖片為概念示意圖，非建築實景。</p>
       <div className="puzzle-filters" role="group" aria-label="篩選拼圖收藏">{[
         ['all', '全部', total], ['collected', '已收集', count], ['missing', '待收集', remaining],
       ].map(([value, label, amount]) => <button key={value} type="button" aria-pressed={filter === value} aria-controls="puzzle-collection-list" onClick={() => setFilter(value)}>{label}<span>{amount}</span></button>)}</div>
