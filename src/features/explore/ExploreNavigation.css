@@ -6,9 +6,9 @@
 .app-shell #main .explore-collection-entry { background: #eee3cd; color: #5b431c; justify-content: center; border-left: 1px solid #d0bc94; }
 .app-shell #main .explore-collection-entry:hover { background: #e6d5b6; }
 .app-shell #main .explore-entry-bar > button:focus-visible { outline: 3px solid #f4c66e; outline-offset: -4px; }
-.app-shell #main .explore-chevron { position: absolute; right: 12px; font-size: 21px; line-height: 1; transition: transform 180ms ease; }
-.app-shell #main .explore-chevron.is-open { transform: rotate(180deg); }
-.app-shell #main .explore-new-dot { position: absolute; right: 35px; top: 8px; width: 9px; height: 9px; border-radius: 50%; background: #ff7471; box-shadow: 0 0 0 3px #153e42, 0 0 12px #ffaaa4; }
+.app-shell #main .explore-chevron { position: absolute; right: 14px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); transition: transform 180ms ease; pointer-events: none; }
+.app-shell #main .explore-chevron.is-open { transform: translateY(-50%) rotate(180deg); }
+.app-shell #main .explore-new-dot { position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: #ff7471; box-shadow: 0 0 0 2px #153e42; pointer-events: none; }
 .app-shell #main .explore-map-entry.has-new-task { box-shadow: inset 0 -3px #e8bb70; }
 .app-shell #main .explore-menu-help { position: absolute; top: 2px; right: calc(30% + 28px); z-index: 4; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; color: #fffaf0; background: transparent; border-radius: 8px; }
 .app-shell #main .explore-menu-help:hover { background: #ffffff18; }
@@ -75,6 +75,3 @@
 .app-shell #main .explore-toolbar-progress progress::-webkit-progress-value { background: var(--teal); border-radius: 99px; }
 .app-shell #main .explore-toolbar-progress progress::-moz-progress-bar { background: var(--teal); border-radius: 99px; }
 .app-shell #main .explore-entry-support .explore-menu-help { min-width: 92px; min-height: 48px; }
-.app-shell #main .explore-visit-summary { margin: 12px 0 20px; }
-.app-shell #main .explore-visit-summary p { display: flex; flex-wrap: wrap; gap: 5px 14px; font-size: 11px; line-height: 1.8; color: var(--muted); }
-.app-shell #main .explore-visit-summary strong { color: var(--teal); font-weight: 600; }

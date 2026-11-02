@@ -1,3 +1,5 @@
+import { copyQuestionSet, selectQuestionSet } from './museumQuestionSelection.js'
+
 // Frontend demonstration proposal only. Not museum policy or anti-cheat protection.
 export const BONUS_KEY = 'railway.puzzle-bonus-demo.v1'
 export const BONUS_POLICY_NOTE = '暫定示範規則，非館方定案；所有機率、次數與時間門檻仍可調整。'
@@ -58,7 +60,7 @@ export function normalizeBonus(value) {
   return {
     version: 1, bonusPieces: [...value.bonusPieces], checks: [...value.checks],
     generalIssued: value.generalIssued, availableChances: value.availableChances,
-    quiz: value.quiz ? { step: value.quiz.step, consecutiveWrong: value.quiz.consecutiveWrong, totalWrong: value.quiz.totalWrong } : null, pendingDraw: value.pendingDraw,
+    quiz: value.quiz ? { step: value.quiz.step, consecutiveWrong: value.quiz.consecutiveWrong, totalWrong: value.quiz.totalWrong, ...copyQuestionSet(value.quiz) } : null, pendingDraw: value.pendingDraw,
     drawsUsed: value.drawsUsed, departureAt: value.departureAt,
     timeIssued: value.timeIssued, lastVisitCount: value.lastVisitCount,
   }
@@ -110,7 +112,7 @@ export function beginBonusChallenge(state, completed) {
   if (state.quiz) return result(state, false, 'quiz-active', '先完成目前的三題挑戰。')
   if (state.pendingDraw) return result(state, false, 'draw-pending', '你已有一次待抽取機會，先收下這片拼圖。')
   if (!state.availableChances) return result(state, false, 'no-chance', '目前沒有可用的額外答題機會。')
-  return result({ ...state, availableChances: state.availableChances - 1, quiz: { step: 0, consecutiveWrong: 0, totalWrong: 0 } }, true, 'quiz-started', '依序答對三題，即可取得一次拼圖抽取機會。')
+  return result({ ...state, availableChances: state.availableChances - 1, quiz: { step: 0, consecutiveWrong: 0, totalWrong: 0, ...selectQuestionSet(completed, state.drawsUsed) } }, true, 'quiz-started', '依序答對三題，即可取得一次拼圖抽取機會。')
 }
 export function answerBonusChallenge(state, correct) {
   if (!state.quiz) return result(state, false, 'no-quiz', '目前沒有進行中的答題挑戰。')

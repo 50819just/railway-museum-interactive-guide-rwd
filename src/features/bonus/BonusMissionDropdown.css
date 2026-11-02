@@ -1,13 +1,13 @@
 /* One-line event notice; the 7:3 navigation and reward flow are unchanged. */
-.bonus-mission-strip { --mission-ink: #514461; --mission-accent: #665077; --mission-surface: #eeebf3; --mission-line: #d6cede; display: flex; align-items: center; flex-wrap: wrap; margin: 4px 12px; padding: 0 4px; border: 1px solid var(--mission-line); border-radius: 8px; color: var(--mission-ink); background: var(--mission-surface); }
-.bonus-mission-toggle { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0; min-height: 44px; padding: 4px; background: transparent; color: var(--mission-ink); text-align: left; border-radius: 6px; }
-.bonus-mission-toggle > svg { flex-shrink: 0; }
+.bonus-mission-strip { --mission-ink: var(--gold-ink); --mission-accent: var(--gold-action); --mission-surface: #f3e7ca; --mission-line: #c3a569; position: relative; display: flex; align-items: center; flex-wrap: wrap; margin: 4px 12px; padding: 0 4px; border: 1px solid var(--mission-line); border-radius: 8px; color: var(--mission-ink); background: var(--mission-surface); }
+.bonus-mission-notice-dot { position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: #ff7471; box-shadow: 0 0 0 2px var(--mission-surface); pointer-events: none; }
+.bonus-mission-summary { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0; min-height: 44px; padding: 4px; background: transparent; color: var(--mission-ink); text-align: left; border-radius: 6px; }
+.bonus-mission-summary > svg { flex-shrink: 0; }
 .bonus-mission-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 1.5; font-weight: 700; }
-.bonus-mission-badge { flex-shrink: 0; padding: 2px 4px; border-radius: 999px; background: #fffafc; font-size: 10px; line-height: 1.5; color: var(--mission-ink); font-weight: 700; }
-.bonus-mission-toggle:hover { background: #e5dfec; }
-.bonus-mission-toggle:focus-visible, .bonus-mission-action:focus-visible { outline: 3px solid var(--mission-accent); outline-offset: -3px; }
-.bonus-mission-body { flex: 0 0 auto; }
-.bonus-mission-action { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; padding: 4px 6px; border-radius: 6px; background: transparent; color: var(--mission-accent); font-size: 12px; font-weight: 700; line-height: 1.5; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
-.bonus-mission-action:hover { background: #e5dfec; }
+.bonus-mission-badge { flex-shrink: 0; padding: 2px 4px; border-radius: 999px; background: #fffaf0; font-size: 10px; line-height: 1.5; color: var(--mission-ink); font-weight: 700; }
+.bonus-mission-action:focus-visible { outline: 3px solid var(--mission-accent); outline-offset: -3px; }
+.bonus-mission-action { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; padding: 4px 6px; border-radius: 6px; background: transparent; color: var(--mission-accent); font-size: 12px; font-weight: 700; line-height: 1.5; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+.bonus-mission-action:hover { background: #e6d5b6; }
 .bonus-mission-feedback { flex-basis: 100%; margin: 0; padding: 0 8px 6px; font-size: 12px; line-height: 1.8; }
-@media(prefers-reduced-motion:no-preference) { .bonus-mission-strip { animation: bonus-mission-reveal .2s ease-out; } @keyframes bonus-mission-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } } }
+.bonus-mission-strip::before { content: ""; position: absolute; inset: 0; border: 1px solid var(--mission-line); border-radius: inherit; pointer-events: none; opacity: 0; }
+@media(prefers-reduced-motion:no-preference) { .bonus-mission-strip::before { animation: bonus-mission-breathe 2.8s ease-in-out infinite; } .bonus-mission-strip:focus-within::before, .bonus-mission-strip:hover::before { animation-play-state: paused; } @keyframes bonus-mission-breathe { 0%, 100% { transform: scale(1); opacity: .25; box-shadow: 0 0 0 0 #c3a56900; } 50% { transform: scale(1.008, 1.055); opacity: .85; box-shadow: 0 0 0 2px #c3a5691a; } } .bonus-mission-strip { animation: bonus-mission-reveal .2s ease-out; } @keyframes bonus-mission-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } } }

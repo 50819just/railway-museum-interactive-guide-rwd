@@ -59,3 +59,6 @@
 .more-about summary:focus-visible{outline:3px solid var(--teal);outline-offset:4px}
 .more-about>div{max-width:680px;padding:8px 0 16px}
 .more-about p+p{margin-top:8px}
+
+.more-release-version { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.8; }
+.more-release-version strong { color: var(--teal); font-weight: 600; }

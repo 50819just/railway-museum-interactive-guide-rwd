@@ -1,4 +1,5 @@
 const paths = {
+  chest: <><path d="M3 11V9a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v2M3 11h18v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8ZM7 5v6m10-6v6M7 12v7m10-7v7"/><rect x="10" y="9" width="4" height="5" rx="1"/><path d="M12 11v1"/></>,
   puzzle: <path d="M9 3H4v6h1a3 3 0 1 1 0 6H4v6h6v-1a3 3 0 1 1 6 0v1h5v-6h-1a3 3 0 1 1 0-6h1V3h-6v1a3 3 0 1 1-6 0V3Z"/>,
   menu: <path d="M4 6h16M4 12h16M4 18h16"/>,
   user: <><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></>,

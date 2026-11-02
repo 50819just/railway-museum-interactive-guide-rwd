@@ -36,7 +36,6 @@ export default function ExplorePage({ active = true }) {
   const current = selectedId === nextId
   const completed = progress.completed.includes(selectedId)
   const completeSummary = !nextId && !previewId
-  const lastStation = count ? stations[count - 1] : null
 
   useEffect(() => {
     function routeChanged() { setArrivalId(null); setStoryOpen(false) }
@@ -79,7 +78,6 @@ export default function ExplorePage({ active = true }) {
           <div className="station-feature-copy"><p className="eyebrow">{selected.kind}</p><h2 id="station-feature-title">{selected.name}</h2><p className="station-feature-intro">{selected.intro}</p><button onClick={() => setStoryOpen(true)} aria-haspopup="dialog">閱讀展區故事<Icon name="arrow" size={17}/></button></div>
         </section>}
         {!completeSummary && <p className="station-feature-caption">主題示意・非該建築實景</p>}
-      <div className="explore-visit-summary" aria-label="到訪紀錄"><p><strong>已到訪 {count} / {total} 站</strong><span>{lastStation ? `最後確認：${stationNumber(lastStation.id)} ${lastStation.name}・非即時定位` : '首輪依動線參觀，到站後再確認到訪。'}</span></p></div>
         <article className="station-card task-panel station-task-card" aria-label={completeSummary ? '首輪探索完成' : '本站探索互動'}>
           {completeSummary ? <>
             <p className="eyebrow">首輪探索完成</p><h2>沿途的拼圖，都收下了。</h2><p className="station-description">謝謝你走過這趟旅程。看看喜歡的禮物，或回看留下的紀念照。</p>

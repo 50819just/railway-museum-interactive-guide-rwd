@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import usePuzzleCollection from '../bonus/usePuzzleCollection'
 import { firstRoundProducts, getRedemptionProduct } from '../redemption/redemptionCatalog'
 import useRedemption, { submitRedemption, updateRedemption } from '../redemption/redemptionStore'
@@ -6,9 +6,14 @@ import { redemptionEligibility } from '../redemption/redemptionModel'
 import useRedemptionOperations from '../redemption/useRedemptionOperations'
 import RedemptionOperations from '../redemption/RedemptionOperations'
 import RedemptionDialog from '../redemption/RedemptionDialog'
+import useGiftCarousel from '../redemption/useGiftCarousel'
 import './RedemptionPage.css'
 
 const base = import.meta.env.BASE_URL
+const giftSlides = [
+  { image: 'product-transparent-frame.jpg', alt: '透明層疊鐵道紀念框', title: '把旅程，收藏成一份禮物', text: '透明層疊紀念框，讓沿途風景留在日常。', tag: '精選禮物' },
+  { image: 'product-ticket-keyring.jpg', alt: '木質鐵道票牌鑰匙圈', title: '下一站，把回憶帶著走', text: '一枚木質鐵道票牌，收藏今天的小小發現。', tag: '隨身收藏' },
+]
 function ProductCard({ product, revisit = false, onSelect, actionLabel, availability, blocked }) {
   return <article className="redeem-card" aria-labelledby={`product-${product.id}`}>
     {product.image ? <img className="redeem-product-image" src={`${base}images/${product.image}`} alt={`${product.name}的商品示意圖`} width="900" height="900" loading="lazy" decoding="async"/> : <div className="redeem-placeholder"><span aria-hidden="true">▱</span><strong>圖片製作中</strong><p>{product.id === 'transparent' ? '透明層疊紀念框・原創示意待補' : '木質鐵道票牌鑰匙圈・原創示意待補'}</p></div>}
@@ -22,7 +27,6 @@ function ProductCard({ product, revisit = false, onSelect, actionLabel, availabi
 
 export default function RedemptionPage({ onNavigate }) {
   const { collectedCount: completed } = usePuzzleCollection()
-  const [giftSlide, setGiftSlide] = useState(0)
   const redemption = useRedemption()
   const operations = useRedemptionOperations()
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -44,17 +48,19 @@ export default function RedemptionPage({ onNavigate }) {
     if (operations.availabilityById[product.id]?.canCreate === false) return '查看替代與說明'
     return '選擇這份禮物'
   }
-  const giftSlides = [
-    { image: 'product-transparent-frame.jpg', title: '把旅程，收藏成一份禮物', text: '透明層疊紀念框，讓沿途風景留在日常。', tag: '精選禮物' },
-    { image: 'product-ticket-keyring.jpg', title: '下一站，把回憶帶著走', text: '一枚木質鐵道票牌，收藏今天的小小發現。', tag: '隨身收藏' },
-  ]
-  const gift = giftSlides[giftSlide]
+  const carouselRoot = useRef(null)
+  const carousel = useGiftCarousel(giftSlides.length, !dialogOpen, carouselRoot)
   return <section className="explore-page redemption-page" aria-labelledby="train-title">
     <header className="page-heading"><div><p className="eyebrow">把沿途的故事，帶回日常</p><h1 id="train-title" tabIndex={-1}>兌換區</h1><p className="heading-description">先逛逛喜歡的紀念品。集滿整套拼圖後，再慢慢決定。</p></div></header>
-    <section className="redeem-hero" aria-label="精選禮物輪播" aria-roledescription="輪播">
-      <img className="redeem-hero-image" src={`${base}images/${gift.image}`} alt={giftSlide === 0 ? '透明層疊鐵道紀念框' : '木質鐵道票牌鑰匙圈'} width="900" height="900"/>
-      <div className="redeem-hero-copy" aria-live="polite"><p className="eyebrow">{gift.tag}</p><h2>{gift.title}</h2><p>{gift.text}</p><button onClick={()=>{const target=document.getElementById('redeem-first-title');target?.scrollIntoView({block:'start'});target?.focus({preventScroll:true})}}>看看旅程禮物 ↓</button></div>
-      <div className="redeem-hero-controls" aria-label="選擇禮物廣告">{giftSlides.map((slide,index)=><button key={slide.title} aria-label={`第 ${index+1} 張：${slide.tag}`} aria-pressed={giftSlide===index} onClick={()=>setGiftSlide(index)}><span/></button>)}</div>
+    <section ref={carouselRoot} className="redeem-hero" aria-label="精選禮物輪播" aria-roledescription="輪播" {...carousel.interactionProps}>
+      {giftSlides.map((gift, index) => <div key={gift.image} className={`redeem-hero-slide ${carousel.index === index ? 'is-active' : ''}`} role="group" aria-roledescription="投影片" aria-label={`${index + 1} / ${giftSlides.length}：${gift.tag}`} aria-hidden={carousel.index !== index} inert={carousel.index !== index}>
+        <img className="redeem-hero-image" src={`${base}images/${gift.image}`} alt={gift.alt} width="900" height="900"/>
+        <div className="redeem-hero-copy"><p className="eyebrow">{gift.tag}</p><h2>{gift.title}</h2><p>{gift.text}</p><button onClick={()=>{const target=document.getElementById('redeem-first-title');target?.scrollIntoView({block:'start'});target?.focus({preventScroll:true})}}>看看旅程禮物 ↓</button></div>
+      </div>)}
+      <div className="redeem-hero-controls" aria-label="禮物輪播控制">{giftSlides.map((slide,index)=><button key={slide.title} type="button" aria-label={`第 ${index+1} 張：${slide.tag}`} aria-pressed={carousel.index===index} onClick={()=>carousel.select(index)}><span className="redeem-slide-dot"/></button>)}
+        {!carousel.reducedMotion && <button className="redeem-hero-playback" type="button" aria-label={carousel.paused ? '播放禮物輪播' : '暫停禮物輪播'} onClick={carousel.togglePlayback}>{carousel.paused ? <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="m3 1 8 5-8 5z" fill="currentColor"/></svg> : <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2v8M8 2v8" stroke="currentColor" strokeWidth="2"/></svg>}<span>{carousel.paused ? '播放' : '暫停'}</span></button>}
+      </div>
+      <span className="sr-only" aria-live={carousel.paused || carousel.reducedMotion ? 'polite' : 'off'}>{carousel.paused || carousel.reducedMotion ? `第 ${carousel.index+1} 張，共 ${giftSlides.length} 張：${giftSlides[carousel.index].tag}` : ''}</span>
     </section>
     <RedemptionOperations/>
     {(redemption.record || redemption.blocked || redemption.storageMessage) && <section className="redeem-receipt-summary" aria-labelledby="redeem-receipt-summary-title"><div><p className="eyebrow">MY DEMO RECEIPT</p><h2 id="redeem-receipt-summary-title">{redemption.blocked ? '示範領取紀錄待確認' : redemption.record?.status === 'pending' ? '你的示範領取單，先收在這裡。' : redemption.record?.status === 'collected' ? '這份旅程，已完成示範領取。' : '示範單已取消，可以重新選擇。'}</h2><p>{redemption.storageMessage || (currentProduct ? `${currentProduct.name}・${redemption.record.status === 'pending' ? '待領取（示範）' : redemption.record.status === 'collected' ? '已領取（示範）' : '已取消（示範）'}` : '沒有連結正式庫存、付款或領獎資格。')}</p></div>{redemption.record && <button type="button" onClick={viewReceipt} aria-haspopup="dialog">查看示範單 →</button>}</section>}

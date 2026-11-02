@@ -1,4 +1,5 @@
 import Icon from '../../components/Icon'
+import { APP_VERSION, RELEASE_DATE } from '../../data/release'
 import './MorePage.css'
 
 const officialResources = [
@@ -44,5 +45,6 @@ export default function MorePage({ onNavigate, onOpenGuide, onReplayWelcome }) {
       </div>
       <p className="more-source-note">這裡提供官方消息入口，不會自動同步或代替館方公告。</p>
     </section>
+    <p className="more-release-version">鐵道巡禮 <strong>v{APP_VERSION}</strong><span aria-hidden="true">・</span><time dateTime={RELEASE_DATE}>{RELEASE_DATE}</time></p>
   </div>
 }

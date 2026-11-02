@@ -86,7 +86,7 @@ export default function ExploreNavigation({ active = true, progress, collectedCo
   return <div ref={root} className={`explore-navigation ${visiblePanel ? 'has-panel' : ''}`}>
     <nav className="explore-entry-bar" aria-label="探索選單">
       <button ref={mapTrigger} className={`explore-map-entry ${notice.unread ? 'has-new-task' : ''}`} aria-expanded={visiblePanel === 'map'} aria-controls="explore-map-dropdown" aria-haspopup="dialog" onClick={() => visiblePanel === 'map' ? close() : openMap()}>
-        <Icon name="map" size={18}/><span>園區探索地圖</span>{notice.unread && <i className="explore-new-dot" aria-hidden="true"/>}<span className={`explore-chevron ${visiblePanel === 'map' ? 'is-open' : ''}`} aria-hidden="true">⌄</span>
+        <Icon name="map" size={18}/><span>園區探索地圖</span>{notice.unread && <i className="explore-new-dot" aria-hidden="true"/>}<svg className={`explore-chevron ${visiblePanel === 'map' ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <button ref={collectionTrigger} className="explore-collection-entry" aria-haspopup="dialog" aria-expanded={visiblePanel === 'collection'} onClick={openCollection}><Icon name="list" size={16}/><span>探索旅程</span></button>
     </nav>
@@ -104,7 +104,7 @@ export default function ExploreNavigation({ active = true, progress, collectedCo
         <header className="explore-popup-heading"><div><p>找一站，慢慢探索</p><h2 id="explore-map-title">園區探索地圖</h2></div><button className="icon-button" aria-label="關閉園區探索地圖" onClick={() => close()}><Icon name="close"/></button></header>
         <p className="explore-map-instruction">點站點看圖片與故事；首輪依序掃碼領片，觀察與拍照自由參加。</p>
         <ParkMap selectedId={selectedId} onSelect={select} progress={progress}/>
-        <p className="explore-map-disclaimer"><Icon name="info" size={15}/>文化預覽・集片點與動線為原型，非館方確認、非即時定位；請依當日開放範圍參觀。</p>
+        <p className="explore-map-disclaimer"><Icon name="info" size={15}/>園區示意，請依當日開放範圍與現場指示參觀。</p>
         <button className="explore-popup-collection" onClick={openCollection}><Icon name="list" size={17}/>用清單查看探索旅程<Icon name="arrow" size={16}/></button>
       </section>
     </>}
@@ -118,7 +118,7 @@ export default function ExploreNavigation({ active = true, progress, collectedCo
         <div className="explore-guide-minibar" aria-hidden="true"><span className={guideStep === 0 ? 'highlight' : ''}>園區探索地圖</span><span className={guideStep === 1 ? 'highlight' : ''}>探索旅程</span></div>
         <p className="explore-guide-arrow" aria-hidden="true">{guideStep === 0 ? '↖' : '↗'}</p>
         <p className="explore-guide-copy">{guideStep === 0 ? '跑馬燈下方的深綠入口，點開就能看園區示意與站點。收下拼圖後，下方進度會更新；若出現額外挑戰，會另顯示可收合的異色任務條。' : '右邊的淺金入口，可回顧已搜集的站點，也能先看其他站點的圖片與故事；預覽不會跳站領片。'}</p>
-        <div className="explore-guide-rules"><strong>探索的小約定</strong><p>所有站點可先預覽，首輪依序到站掃碼領片。觀察與拍照都不強制，不影響搜集進度。</p></div>
+        <div className="explore-guide-rules"><strong>探索的小約定</strong><p>所有站點可先預覽，首輪依序到站掃碼領片。觀察與拍照都不強制，不影響搜集進度。</p><p>地圖與動線為原型示意，非館方確認，不提供即時定位。到訪紀錄與拼圖收藏分開保存；答題取得的拼圖不代表實際到訪，可在「探索旅程」查看各站紀錄。</p></div>
         <div className="explore-guide-actions"><button onClick={() => close()}>略過</button><button className="explore-guide-next" onClick={() => guideStep === 0 ? setGuideStep(1) : close()}>{guideStep === 0 ? '下一個入口' : '知道了，開始探索'}<Icon name="arrow" size={16}/></button></div>
       </>}
     </dialog>}

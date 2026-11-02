@@ -1,3 +1,4 @@
+import { selectQuestionSet } from '../src/features/bonus/museumQuestionSelection.js'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
@@ -77,7 +78,7 @@ test('invalid departure is rejected without altering existing state', () => {
 test('starting a challenge consumes one chance once; active challenge blocks another start', () => {
   let state = beginBonusChallenge(eligibleState(), visits(5)).state
   assert.equal(state.availableChances, 2)
-  assert.deepEqual(state.quiz, { step: 0, consecutiveWrong: 0, totalWrong: 0 })
+  assert.deepEqual(state.quiz, { step: 0, consecutiveWrong: 0, totalWrong: 0, ...selectQuestionSet(visits(5), 0) })
   const result = beginBonusChallenge(state, visits(5))
   assert.equal(result.kind, 'quiz-active')
   assert.equal(result.state, state)

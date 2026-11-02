@@ -29,3 +29,16 @@ test('mock checkout retains its non-payment and collection safeguards', () => {
   assert.ok(source.includes('不會付款、預留商品或取得館方正式領獎資格'))
   assert.ok(source.includes('不扣拼圖'))
 })
+
+test('explore keeps collection progress in the toolbar instead of repeating visit totals', () => {
+  const page = readFileSync(join(root, 'src/features/explore/ExplorePage.jsx'), 'utf8')
+  const navigation = readFileSync(join(root, 'src/features/explore/ExploreNavigation.jsx'), 'utf8')
+  assert.doesNotMatch(page, /explore-visit-summary|已到訪|最後確認|非即時定位/u)
+  assert.ok(navigation.includes('已收集 {collectedCount} / {total} 片'))
+  assert.ok(navigation.includes('done ? \'已到訪・可回顧\''))
+  const map = navigation.split("{visiblePanel === 'map' && <>")[1].split("{(visiblePanel === 'collection'")[0]
+  assert.doesNotMatch(map, /即時定位|最後確認/u)
+  const guideRules = navigation.split('className="explore-guide-rules"')[1].split('</div>')[0]
+  assert.ok(guideRules.includes('不提供即時定位'))
+  assert.ok(guideRules.includes('答題取得的拼圖不代表實際到訪'))
+})
