@@ -21,7 +21,7 @@ function commit(result) {
   if (result.state !== state) {
     state = result.state
     const saved = persistRedemption(getStorage(), state)
-    snapshot = { ...state, sessionOnly: !saved, blocked: false, storageMessage: saved ? '' : '示範紀錄無法儲存，目前僅本次頁面有效；請勿把此單當成正式憑證。', message: result.message }
+    snapshot = { ...state, sessionOnly: !saved, blocked: false, storageMessage: saved ? '' : '紀錄無法儲存，離開頁面後可能遺失；不能作為領取憑證。', message: result.message }
   } else snapshot = { ...snapshot, message: result.message }
   emit()
   const { state: _state, ...publicResult } = result
@@ -49,7 +49,7 @@ if (typeof window !== 'undefined') window.addEventListener('storage', event => {
   if (event.key !== REDEMPTION_KEY && event.key !== null) return
   loaded = readRedemption(getStorage())
   state = loaded.state
-  snapshot = { ...state, sessionOnly: loaded.sessionOnly, blocked: loaded.blocked, storageMessage: loaded.storageMessage, message: '示範領取紀錄已更新。' }
+  snapshot = { ...state, sessionOnly: loaded.sessionOnly, blocked: loaded.blocked, storageMessage: loaded.storageMessage, message: '登記紀錄已更新。' }
   emit()
 })
 // No reset action here: changing screens or resetting arrival must not silently

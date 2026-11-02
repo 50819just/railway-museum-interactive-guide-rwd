@@ -97,7 +97,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
         setCamera('unsupported'); setMessage('相機需要安全連線，請以 HTTPS 網址開啟本頁。'); return
       }
       if (!navigator.mediaDevices?.getUserMedia) {
-        setCamera('unsupported'); setMessage('目前環境無法使用相機，請在完整瀏覽器中開啟，或使用下方示範碼。'); return
+        setCamera('unsupported'); setMessage('目前環境無法使用相機，請在完整瀏覽器中開啟，或使用下方站點碼。'); return
       }
       const media = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false })
       if (token !== generation.current) { media.getTracks().forEach(track => track.stop()); return }
@@ -120,7 +120,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
           timer.current = setTimeout(scan, 250)
         } catch {
           if (token !== generation.current) return
-          stopCamera(); setCamera('error'); setMessage('QR 辨識暫時中斷，請重試或使用下方示範碼。')
+          stopCamera(); setCamera('error'); setMessage('QR 辨識暫時中斷，請重試或使用下方站點碼。')
         }
       }
       scan()
@@ -128,7 +128,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
       if (token !== generation.current) return
       stopCamera()
       setCamera(error.name === 'NotAllowedError' ? 'denied' : 'error')
-      setMessage(cameraOpened ? 'QR 辨識無法啟動，請重試或使用下方示範碼。' : error.name === 'NotAllowedError' ? '沒有取得相機權限，請檢查此網站與瀏覽器的相機授權，或使用示範碼。' : '目前無法開啟相機，請關閉其他使用相機的程式後重試，或使用示範碼。')
+      setMessage(cameraOpened ? 'QR 辨識無法啟動，請重試或使用下方站點碼。' : error.name === 'NotAllowedError' ? '沒有取得相機權限，請檢查此網站與瀏覽器的相機授權，或使用站點碼。' : '目前無法開啟相機，請關閉其他使用相機的程式後重試，或使用站點碼。')
     }
   }
   function claim() {
@@ -169,7 +169,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     photoTask(async () => {
       const images = ['group-entrance.jpg', 'group-locomotive.jpg', 'group-carriage.jpg']
       const response = await fetch(`${import.meta.env.BASE_URL}images/${images[(station.id - 1) % images.length]}`)
-      if (!response.ok) throw Error('示範合照讀取失敗，請重試或選擇自己的照片。')
+      if (!response.ok) throw Error('情境合照讀取失敗，請重試或選擇自己的照片。')
       const blob = await preparePhoto(await response.blob())
       if (!mounted.current) return
       previewPhoto(blob, 'ai-demo')
@@ -217,15 +217,15 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     onContinue()
   }
   return <dialog ref={dialog} className={`arrival-dialog ${phase === 'success' ? 'is-success' : ''}`} aria-labelledby="arrival-title" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); closeFlow() }} onClose={closeFlow}>
-    <header className="arrival-header"><div><p className="eyebrow">到站確認・本機 Demo</p><h2 id="arrival-title" ref={stepHeading} tabIndex={-1}>{phase === 'scan' ? '掃一下，留下這一站。' : phase === 'confirm' ? '確認這一站' : alreadyCollected ? '到站確認成功' : '拼圖領取成功'}</h2></div><button className="icon-button" aria-label="關閉到站確認" onClick={closeFlow}><Icon name="close"/></button></header>
+    <header className="arrival-header"><div><p className="eyebrow">到站確認</p><h2 id="arrival-title" ref={stepHeading} tabIndex={-1}>{phase === 'scan' ? '掃一下，留下這一站。' : phase === 'confirm' ? '確認這一站' : alreadyCollected ? '到站確認成功' : '拼圖領取成功'}</h2></div><button className="icon-button" aria-label="關閉到站確認" onClick={closeFlow}><Icon name="close"/></button></header>
     {phase === 'scan' ? <>
-      <p className="arrival-description">目前前往第 {stationNumber(stationId)} 站 {stations[stationId - 1].name}。請掃描這一站的示範碼。</p>
-      <div className={`arrival-viewfinder ${camera === 'scanning' ? 'is-scanning' : ''}`}><video ref={video} playsInline muted aria-label="相機掃碼預覽" hidden={!['starting', 'scanning'].includes(camera)}/>{!['starting', 'scanning'].includes(camera) && <><Icon name="camera" size={44}/><strong>對準站點 QR Code</strong><span>相機只用於掃碼，不會上傳影像</span></>}<span className="arrival-camera-status" role="status">{camera === 'starting' ? '正在開啟相機…' : camera === 'scanning' ? '掃描中，請將示範 QR 碼置於鏡頭前' : camera === 'unsupported' ? '目前環境無法啟用相機・請見下方說明' : camera === 'denied' ? '相機未授權・可使用示範碼' : camera === 'error' ? '相機暫不可用・可重新嘗試' : '相機尚未開啟'}</span></div>
+      <p className="arrival-description">目前前往第 {stationNumber(stationId)} 站 {stations[stationId - 1].name}。請掃描這一站的站點碼。</p>
+      <div className={`arrival-viewfinder ${camera === 'scanning' ? 'is-scanning' : ''}`}><video ref={video} playsInline muted aria-label="相機掃碼預覽" hidden={!['starting', 'scanning'].includes(camera)}/>{!['starting', 'scanning'].includes(camera) && <><Icon name="camera" size={44}/><strong>對準站點 QR Code</strong><span>相機只用於掃碼，不會上傳影像</span></>}<span className="arrival-camera-status" role="status">{camera === 'starting' ? '正在開啟相機…' : camera === 'scanning' ? '掃描中，請將站點 QR 碼置於鏡頭前' : camera === 'unsupported' ? '目前環境無法啟用相機・請見下方說明' : camera === 'denied' ? '相機未授權・可使用站點碼' : camera === 'error' ? '相機暫不可用・可重新嘗試' : '相機尚未開啟'}</span></div>
       <button className="primary-button" onClick={startCamera} disabled={camera === 'starting'}><Icon name="camera"/>開啟相機掃碼</button>
       {camera === 'scanning' && <button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>停止相機</button>}
-      <section className="arrival-demo-code"><img src={`${import.meta.env.BASE_URL}images/qr/station-${stationNumber(stationId)}-demo-qr.png`} alt={`第 ${stationNumber(stationId)} 站 QR 示範碼，內容 ${stationPayload(stationId)}`} width="396" height="396"/><div><strong>在電腦上 Demo？</strong><p>可在另一台裝置顯示示範碼，再用本頁相機掃描；也能直接按下方按鈕。</p><button className="arrival-solid-action" onClick={() => verify(stationPayload(stationId))}>使用本頁示範碼</button></div></section>
-      <details className="arrival-manual"><summary>手動貼上示範碼／遇到無法掃描</summary><form onSubmit={event => { event.preventDefault(); verify(input) }}><label htmlFor="arrival-payload">站點示範碼</label><input id="arrival-payload" value={input} onChange={event => setInput(event.target.value)} placeholder={stationPayload(stationId)} autoComplete="off" spellCheck="false"/><button className="arrival-solid-action" type="submit">驗證示範碼</button></form><p>現場 QR 損壞或站點關閉時，請向服務台求助；此原型不能代替人工補登。</p></details>
-    </> : phase === 'confirm' ? <div className="arrival-confirm"><span className="arrival-stamp"><Icon name="pin" size={36}/></span><p className="eyebrow">示範碼已辨識・尚未領片</p><h3>第 {stationNumber(station.id)} 站<br/>{station.name}</h3><p>確認後記錄到訪並收下本站拼圖；若已透過答題補收同片，不會重複加片。拍照可自由選擇。</p><button className="primary-button" onClick={claim}>{bonus.bonusPieces.includes(station.id) ? '確認到站，不重複領片' : '確認到站，領一片'}<Icon name="check"/></button><button className="arrival-text-action" onClick={() => { setPhase('scan'); setVerifiedId(null) }}>重新掃描</button></div> : <div className="arrival-success">
+      <section className="arrival-demo-code"><img src={`${import.meta.env.BASE_URL}images/qr/station-${stationNumber(stationId)}-demo-qr.png`} alt={`第 ${stationNumber(stationId)} 站 QR Code`} width="396" height="396"/><div><strong>用另一台裝置掃碼</strong><p>可在另一台裝置顯示站點碼，再用本頁相機掃描；也能直接按下方按鈕。</p><button className="arrival-solid-action" onClick={() => verify(stationPayload(stationId))}>使用本頁站點碼</button></div></section>
+      <details className="arrival-manual"><summary>手動貼上站點碼／遇到無法掃描</summary><form onSubmit={event => { event.preventDefault(); verify(input) }}><label htmlFor="arrival-payload">站點站點碼</label><input id="arrival-payload" value={input} onChange={event => setInput(event.target.value)} placeholder="請貼上完整站點碼" autoComplete="off" spellCheck="false"/><button className="arrival-solid-action" type="submit">驗證站點碼</button></form><p>站點碼僅記錄本裝置旅程，不驗證現場位置或入園資格，也不能代替人工補登。</p></details>
+    </> : phase === 'confirm' ? <div className="arrival-confirm"><span className="arrival-stamp"><Icon name="pin" size={36}/></span><p className="eyebrow">站點碼已辨識・尚未領片</p><h3>第 {stationNumber(station.id)} 站<br/>{station.name}</h3><p>確認後記錄到訪並收下本站拼圖；若已透過答題補收同片，不會重複加片。拍照可自由選擇。</p><button className="primary-button" onClick={claim}>{bonus.bonusPieces.includes(station.id) ? '確認到站，不重複領片' : '確認到站，領一片'}<Icon name="check"/></button><button className="arrival-text-action" onClick={() => { setPhase('scan'); setVerifiedId(null) }}>重新掃描</button></div> : <div className="arrival-success">
       <section className="arrival-celebration" aria-label="拼圖收集成功">
         <span className="arrival-stamp arrival-check-animation" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><circle className="success-ring" cx="32" cy="32" r="27" pathLength="1"/><path className="success-check" d="m19 32 9 9 18-19" pathLength="1"/></svg></span>
         <p className="eyebrow">到站確認成功</p>
@@ -240,16 +240,16 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
         {!savedPhoto && <>
           <label className="arrival-photo-label" htmlFor="arrival-photo"><Icon name="camera"/>選擇本機合照<input id="arrival-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={photoBusy}/></label>
           <p className="arrival-photo-note">JPG／PNG／WebP，10 MB 內。先預覽，再按確認儲存；僅保存在此裝置，不上傳雲端。</p>
-          <details className="arrival-photo-tools"><summary>拍一張，或使用 示意照</summary><div className="arrival-photo-actions"><button className="arrival-solid-action" onClick={startPhotoCamera} disabled={photoBusy || camera === 'photo-starting'}>開啟相機拍合照</button><button className="arrival-solid-action" onClick={saveDemoPhoto} disabled={photoBusy}>預覽 示意合照</button></div><p className="arrival-photo-note">示意照是虛構親子合照，不是你本人或現場真拍，也需要確認才會儲存。</p></details>
+          <details className="arrival-photo-tools"><summary>拍一張，或使用情境照</summary><div className="arrival-photo-actions"><button className="arrival-solid-action" onClick={startPhotoCamera} disabled={photoBusy || camera === 'photo-starting'}>開啟相機拍合照</button><button className="arrival-solid-action" onClick={saveDemoPhoto} disabled={photoBusy}>預覽情境合照</button></div><p className="arrival-photo-note">情境照是虛構親子合照，不是你本人或現場真拍，也需要確認才會儲存。</p></details>
         </>}
         <div hidden={!['photo-starting', 'photo-ready'].includes(camera)} className="arrival-photo-camera"><video ref={photoVideo} autoPlay playsInline muted aria-label="合照相機即時預覽"/>{camera === 'photo-starting' ? <p role="status">正在開啟合照相機…</p> : <button className="arrival-solid-action" onClick={takePhoto} disabled={photoBusy}>拍下這張合照</button>}<button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>停止拍照</button></div>
-        {photo && <figure className="arrival-photobooth-preview"><img src={photo} alt={photoSource === 'ai-demo' ? '虛構親子合照示範預覽' : '剛選擇或拍攝的本機合照預覽'}/><figcaption>第 {stationNumber(station.id)} 站・{station.name}<br/>{photoSourceLabel(photoSource)}・{savedPhoto ? '已存本機相簿' : '尚未儲存'}</figcaption></figure>}
+        {photo && <figure className="arrival-photobooth-preview"><img src={photo} alt={photoSource === 'ai-demo' ? '虛構親子合照預覽' : '剛選擇或拍攝的本機合照預覽'}/><figcaption>第 {stationNumber(station.id)} 站・{station.name}<br/>{photoSourceLabel(photoSource)}・{savedPhoto ? '已存本機相簿' : '尚未儲存'}</figcaption></figure>}
         {photo && !savedPhoto && <button className="primary-button arrival-confirm-photo" onClick={savePreview} disabled={photoBusy}>{photoBusy ? '正在儲存，請稍候…' : '確認儲存到紀念照區'}<Icon name="check" size={20}/></button>}
         {photoBusy && <p role="status">正在處理並檢查本機照片，請稍候…</p>}
         {savedPhoto && <div ref={savedNotice} className="arrival-photo-saved" role="status" tabIndex={-1}><strong>您的照片已儲存在紀念照區</strong><p>已加入本機拍貼機相冊。清除網站資料可能遺失；未備份到雲端。</p><a href="#photos" onClick={() => { skipReturnFocus.current = true }}>查看紀念照 →</a></div>}
       </section>
     </div>}
-    {phase === 'success' && <footer className="arrival-success-actions"><p>{photoBusy ? '離開不會取消已開始的本機儲存，結果可到紀念照區查看。' : '不拍照也能繼續，收藏與到訪紀錄不受影響。'}</p><button className="primary-button" onClick={finish}>{photoBusy ? '照片處理中，可先繼續' : station.id === 10 ? '完成首輪 Demo，回地圖' : savedPhoto ? '繼續下一站' : photo ? '先不儲存，繼續下一站' : '略過合照，繼續下一站'}<Icon name="arrow"/></button></footer>}
+    {phase === 'success' && <footer className="arrival-success-actions"><p>{photoBusy ? '離開不會取消已開始的本機儲存，結果可到紀念照區查看。' : '不拍照也能繼續，收藏與到訪紀錄不受影響。'}</p><button className="primary-button" onClick={finish}>{photoBusy ? '照片處理中，可先繼續' : station.id === 10 ? '完成首輪，回地圖' : savedPhoto ? '繼續下一站' : photo ? '先不儲存，繼續下一站' : '略過合照，繼續下一站'}<Icon name="arrow"/></button></footer>}
     {message && <p className="arrival-feedback" role="alert">{message}</p>}
 
   </dialog>

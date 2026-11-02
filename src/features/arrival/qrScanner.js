@@ -27,7 +27,7 @@ export async function createQrScanner({
     if (!canvas) {
       canvas = createCanvas()
       context = canvas.getContext('2d', { willReadFrequently: true })
-      if (!context) throw Error('此裝置無法讀取掃碼影像，請改用示範碼。')
+      if (!context) throw Error('此裝置無法讀取掃碼影像，請改用站點碼。')
     }
     // Bound CPU/memory use on high-resolution phone cameras; preserve aspect ratio.
     const scale = Math.min(1, 960 / Math.max(video.videoWidth, video.videoHeight))

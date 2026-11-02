@@ -118,7 +118,7 @@ export default function ExploreNavigation({ active = true, progress, collectedCo
         <div className="explore-guide-minibar" aria-hidden="true"><span className={guideStep === 0 ? 'highlight' : ''}>園區探索地圖</span><span className={guideStep === 1 ? 'highlight' : ''}>探索旅程</span></div>
         <p className="explore-guide-arrow" aria-hidden="true">{guideStep === 0 ? '↖' : '↗'}</p>
         <p className="explore-guide-copy">{guideStep === 0 ? '跑馬燈下方的深綠入口，點開就能看園區示意與站點。收下拼圖後，下方進度會更新；若出現額外挑戰，會另顯示可收合的異色任務條。' : '右邊的淺金入口，可回顧已搜集的站點，也能先看其他站點的圖片與故事；預覽不會跳站領片。'}</p>
-        <div className="explore-guide-rules"><strong>探索的小約定</strong><p>所有站點可先預覽，首輪依序到站掃碼領片。觀察與拍照都不強制，不影響搜集進度。</p><p>地圖與動線為原型示意，非館方確認，不提供即時定位。到訪紀錄與拼圖收藏分開保存；答題取得的拼圖不代表實際到訪，可在「探索旅程」查看各站紀錄。</p></div>
+        <div className="explore-guide-rules"><strong>探索的小約定</strong><p>所有站點可先預覽，首輪依序到站掃碼領片。觀察與拍照都不強制，不影響搜集進度。</p><p>地圖與動線僅供參考，未經館方確認，不提供即時定位。到訪紀錄與拼圖收藏分開保存；答題取得的拼圖不代表實際到訪，可在「探索旅程」查看各站紀錄。</p></div>
         <div className="explore-guide-actions"><button onClick={() => close()}>略過</button><button className="explore-guide-next" onClick={() => guideStep === 0 ? setGuideStep(1) : close()}>{guideStep === 0 ? '下一個入口' : '知道了，開始探索'}<Icon name="arrow" size={16}/></button></div>
       </>}
     </dialog>}

@@ -48,7 +48,7 @@ export function drawBonus(completed = visits) {
 }
 export function resetBonusDemo() {
   visits = []
-  return commit({ state: initialBonus(), ok: true, kind: 'reset', message: '額外答題與抽取示範已重設；到訪紀錄由探索功能另行管理。' })
+  return commit({ state: initialBonus(), ok: true, kind: 'reset', message: '額外答題與抽取紀錄已重設；到訪紀錄由探索功能另行管理。' })
 }
 window.addEventListener('storage', event => {
   if (event.key !== BONUS_KEY && event.key !== null) return

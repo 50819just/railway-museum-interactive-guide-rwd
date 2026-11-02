@@ -1,6 +1,6 @@
 // Local demonstration settings only. Never represents official stock or service approval.
 export const OPERATIONS_KEY = 'railway.redemption-operations-demo.v1'
-export const PICKUP_LOCATION = '禮品店附近（候選，待館方確認）'
+export const PICKUP_LOCATION = '領取地點待確認'
 export const CUTOFF_MINUTES = 30
 export const initialOperations = () => ({ version: 1, serviceDate: '', opensAt: '', closesAt: '', closed: false, simulationAt: null, outOfStockIds: [], hiddenProductIds: [] })
 const datePattern = /^\d{4}-\d{2}-\d{2}$/
@@ -33,17 +33,17 @@ export function normalizeOperations(value, catalogue = []) {
 export function serviceAvailability(settings, now = Date.now()) {
   const effectiveNow = settings.simulationAt ? Date.parse(settings.simulationAt) : now
   const result = (status, canCreate, reason, extra = {}) => ({ status, canCreate, canCollect: canCreate, reason, cutoffAt: null, opensAt: null, closesAt: null, effectiveNow, simulatedClock: Boolean(settings.simulationAt), ...extra })
-  if (!Number.isFinite(effectiveNow)) return result('invalid-time', false, '無法判斷示範時間，請重新設定；收藏與原領取單不會清除。')
-  if (settings.closed) return result('closed', false, '已設定本日示範暫停受理；收藏與原領取單保留。')
-  if (!settings.serviceDate) return result('unconfigured', true, '尚未設定示範服務時間；可體驗流程，但不代表正式可領。')
+  if (!Number.isFinite(effectiveNow)) return result('invalid-time', false, '無法判斷受理時間，請重新設定；收藏與原領取單不會清除。')
+  if (settings.closed) return result('closed', false, '已設定本日暫停受理；收藏與原領取單保留。')
+  if (!settings.serviceDate) return result('unconfigured', true, '領取時間待確認；目前僅可儲存登記，不代表商品已保留。')
   const opening = taipeiDateTime(settings.serviceDate, settings.opensAt)
   const closing = taipeiDateTime(settings.serviceDate, settings.closesAt)
   const cutoff = closing - CUTOFF_MINUTES * 60000
   const times = { opensAt: new Date(opening).toISOString(), closesAt: new Date(closing).toISOString(), cutoffAt: new Date(cutoff).toISOString() }
-  if (effectiveNow < opening) return result('before-service', false, '尚未到示範受理時間；收藏與原領取單保留。', times)
-  if (effectiveNow >= closing) return result('closed', false, '本日示範服務已結束；收藏與原領取單保留，正式改期規則待確認。', times)
-  if (effectiveNow >= cutoff) return result('cutoff', false, '本日示範受理已截止（服務結束前 30 分鐘）；收藏與原領取單保留。', times)
-  return result('available', true, '示範受理中；本頁不預留實際庫存。', times)
+  if (effectiveNow < opening) return result('before-service', false, '尚未到受理時間；收藏與原領取單保留。', times)
+  if (effectiveNow >= closing) return result('closed', false, '本日服務已結束；收藏與原領取單保留，正式改期規則待確認。', times)
+  if (effectiveNow >= cutoff) return result('cutoff', false, '本日受理已截止（服務結束前 30 分鐘）；收藏與原領取單保留。', times)
+  return result('available', true, '可儲存登記；商品尚未保留。', times)
 }
 export function getRedemptionAvailability(settings, productId, { now = Date.now(), catalogue = [] } = {}) {
   const service = serviceAvailability(settings, now)
@@ -52,25 +52,25 @@ export function getRedemptionAvailability(settings, productId, { now = Date.now(
   const stock = new Set(settings.outOfStockIds)
   const alternatives = product ? catalogue.filter(item => item.id !== productId && !hidden.has(item.id) && !stock.has(item.id) && item.fee <= product.fee).map(item => item.id) : []
   const result = (status, canCreate, reason) => ({ status, canCreate, canCollect: canCreate, reason, service, alternativeProductIds: alternatives, demoOnly: true })
-  if (!product) return result('unknown-product', false, '找不到這個示範品項，請重新選擇。')
+  if (!product) return result('unknown-product', false, '找不到這個品項，請重新選擇。')
   if (hidden.has(productId)) return result('hidden', false, '此品項暫停展示；原領取單與收藏保留，可取消未領單後重新選擇。')
-  if (stock.has(productId)) return result('out-of-stock', false, alternatives.length ? '此品項目前為示範缺貨；可取消未領單後自行挑選替代候選，補差額會重新確認。' : '此品項目前為示範缺貨，暫無同價或較低補差額替代候選；收藏與原領取單保留。')
+  if (stock.has(productId)) return result('out-of-stock', false, alternatives.length ? '此品項目前為暫無庫存；可取消未領單後自行挑選替代選項，補差額會重新確認。' : '此品項目前為暫無庫存，暫無同價或較低補差額替代選項；收藏與原領取單保留。')
   return result(service.status, service.canCreate, service.reason)
 }
 export function updateOperations(state, patch, catalogue = []) {
   const candidate = { ...state, ...patch, version: 1 }
-  if (!validOperations(candidate, catalogue)) return { ok: false, state, message: '設定未儲存：服務起迄需同日且超過 30 分鐘；至少保留 ¾ 展示品項及一種免補差額候選。' }
-  return { ok: true, state: normalizeOperations(candidate, catalogue), message: '示範設定已更新；不影響拼圖與原領取單。' }
+  if (!validOperations(candidate, catalogue)) return { ok: false, state, message: '設定未儲存：服務起迄需同日且超過 30 分鐘；至少保留 ¾ 展示品項及一種免加購品項。' }
+  return { ok: true, state: normalizeOperations(candidate, catalogue), message: '服務設定已更新；不影響拼圖與原領取單。' }
 }
 export function readOperations(storage, catalogue = []) {
   try {
     const raw = storage?.getItem(OPERATIONS_KEY)
-    if (!storage) return { settings: initialOperations(), sessionOnly: true, storageMessage: '示範設定目前僅本次有效。' }
+    if (!storage) return { settings: initialOperations(), sessionOnly: true, storageMessage: '服務設定目前僅本次有效。' }
     if (raw === null) return { settings: initialOperations(), sessionOnly: false, storageMessage: '' }
     const parsed = JSON.parse(raw)
-    if (!validOperations(parsed, catalogue)) return { settings: initialOperations(), sessionOnly: true, storageMessage: '示範設定格式不相容，已回到初始設定；拼圖與領取單不受影響。' }
+    if (!validOperations(parsed, catalogue)) return { settings: initialOperations(), sessionOnly: true, storageMessage: '服務設定格式不相容，已回到初始設定；拼圖與領取單不受影響。' }
     return { settings: normalizeOperations(parsed, catalogue), sessionOnly: false, storageMessage: '' }
-  } catch { return { settings: initialOperations(), sessionOnly: true, storageMessage: '無法讀取示範設定；拼圖與領取單不受影響。' } }
+  } catch { return { settings: initialOperations(), sessionOnly: true, storageMessage: '無法讀取服務設定；拼圖與領取單不受影響。' } }
 }
 export function persistOperations(storage, settings, catalogue = []) {
   try { if (!storage || !validOperations(settings, catalogue)) return false; storage.setItem(OPERATIONS_KEY, JSON.stringify(normalizeOperations(settings, catalogue))); return true } catch { return false }

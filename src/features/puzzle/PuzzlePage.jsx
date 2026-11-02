@@ -30,7 +30,7 @@ export default function PuzzlePage() {
     <header className="page-heading"><div><p className="eyebrow">把沿途的故事，一片片收好</p><h1 tabIndex={-1}>我的拼圖</h1><p className="heading-description">看見每一站的收穫，也為下一次出發留個記號。</p>{(bonus.quiz || bonus.pendingDraw || bonus.availableChances > 0) && <button className="puzzle-bonus-shortcut" type="button" onClick={() => { const target = document.getElementById('bonus-title'); target?.scrollIntoView({ block: 'start' }); target?.focus({ preventScroll: true }) }}>{bonus.quiz ? `繼續第 ${bonus.quiz.step + 1} 題挑戰` : bonus.pendingDraw ? '三題已完成，前往抽取拼圖' : `有 ${bonus.availableChances} 次額外答題機會`}<Icon name="arrow" size={18}/></button>}</div></header>
 
     <section className="puzzle-overview" aria-labelledby="puzzle-progress-title">
-      <div className="puzzle-overview-copy"><span className="puzzle-round">首輪旅程・探索示範</span><h2 id="puzzle-progress-title">{complete ? '這趟旅程的拼圖，收齊了。' : count === 0 ? '第一片故事，等你出發。' : '收下的每一片故事，都在這裡。'}</h2><p>{complete ? '回看一路收集的片段，或到兌換區看看紀念品。' : `還差 ${remaining} 片。首輪沿著動線探索，不用一次走完。`}</p><a className="puzzle-primary" href={complete ? '#train' : '#explore'}>{complete ? '前往兌換區' : count ? '繼續探索' : '開始探索'}<Icon name="arrow" size={20}/></a></div>
+      <div className="puzzle-overview-copy"><span className="puzzle-round">首輪旅程</span><h2 id="puzzle-progress-title">{complete ? '這趟旅程的拼圖，收齊了。' : count === 0 ? '第一片故事，等你出發。' : '收下的每一片故事，都在這裡。'}</h2><p>{complete ? '回看一路收集的片段，或到兌換區看看紀念品。' : `還差 ${remaining} 片。首輪沿著動線探索，不用一次走完。`}</p><a className="puzzle-primary" href={complete ? '#train' : '#explore'}>{complete ? '前往兌換區' : count ? '繼續探索' : '開始探索'}<Icon name="arrow" size={20}/></a></div>
       <div className="puzzle-counter"><Icon name="puzzle" size={34}/><p><strong>{count}</strong><span>／{total} 片</span></p><label htmlFor="puzzle-progress">拼圖收集進度</label><progress id="puzzle-progress" value={count} max={total}/></div>
     </section>
 
@@ -58,7 +58,7 @@ export default function PuzzlePage() {
     <BonusChallenge completed={journey.completed} bonus={bonus} onSetDeparture={saveDeparture} onStart={startChallenge} onAnswer={answerChallenge} onDraw={() => drawBonus(journey.completed)}/>
     <div className="puzzle-support-grid">
 
-      <section className="puzzle-support-card" aria-labelledby="puzzle-redeem-title"><span className="puzzle-card-icon"><Icon name="train" size={25}/></span><h2 id="puzzle-redeem-title">{complete ? '拼圖集滿・可查看兌換選項' : `再收集 ${remaining} 片，完成整套`}</h2><p>{complete ? '此處顯示原型收集狀態，不代表館方已核發領取資格。正式兌換、領取紀錄與庫存尚未串接。' : '先到兌換區看看喜歡的紀念品。預覽不會扣除拼圖，也不會保留商品。'}</p><a className="puzzle-secondary" href="#train">查看兌換區<Icon name="arrow" size={18}/></a><small>商品與規則為原型展示，非正式領獎憑證。</small></section>
+      <section className="puzzle-support-card" aria-labelledby="puzzle-redeem-title"><span className="puzzle-card-icon"><Icon name="train" size={25}/></span><h2 id="puzzle-redeem-title">{complete ? '拼圖集滿・可查看兌換選項' : `再收集 ${remaining} 片，完成整套`}</h2><p>{complete ? '10 片拼圖已收齊，挑一份喜歡的旅程紀念品吧。' : '先到兌換區看看喜歡的紀念品。預覽不會扣除拼圖，也不會保留商品。'}</p><a className="puzzle-secondary" href="#train">查看兌換區<Icon name="arrow" size={18}/></a><small>付款、商品預留與現場核銷尚未開放。</small></section>
     </div>
     {storyStation && <StationStoryDialog station={storyStation} onClose={() => setStoryStation(null)} returnLabel="回到我的拼圖"/>}
     <footer className="puzzle-footer"><Icon name="info" size={18}/><p>需要玩法、登入或親子同行？從右上角選單開啟「旅程服務與玩法說明」。</p></footer>

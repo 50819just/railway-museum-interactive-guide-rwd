@@ -17,8 +17,8 @@ export default function MorePage({ onNavigate, onOpenGuide, onReplayWelcome }) {
   return <div className="more-page">
     <header className="page-heading"><div><p className="eyebrow">你的鐵道旅程</p><h1 tabIndex={-1}>旅程服務</h1><p className="heading-description">登入、親子同行與玩法說明，都在這裡。</p></div></header>
     <section className="more-explore-card" aria-labelledby="more-explore-title">
-      <div><p className="more-explore-eyebrow">探索任務 Demo</p><h2 id="more-explore-title">一站一片，開始你的鐵道旅程</h2><p>先看今日路線與下一站，再體驗探索任務。</p></div>
-      <button className="more-explore-action" type="button" onClick={() => onNavigate('explore')}>前往探索任務 Demo<Icon name="arrow" size={22}/></button>
+      <div><p className="more-explore-eyebrow">探索任務</p><h2 id="more-explore-title">一站一片，開始你的鐵道旅程</h2><p>先看今日路線與下一站，再體驗探索任務。</p></div>
+      <button className="more-explore-action" type="button" onClick={() => onNavigate('explore')}>前往探索任務<Icon name="arrow" size={22}/></button>
     </section>
     <section className="more-family-card" aria-labelledby="more-family-title">
       <span className="more-feature-icon"><Icon name="user" size={28}/></span>
@@ -30,10 +30,10 @@ export default function MorePage({ onNavigate, onOpenGuide, onReplayWelcome }) {
       <div className="more-link-group">
         <button className="more-service-link" type="button" onClick={onOpenGuide} disabled={!onOpenGuide}><span className="more-service-icon"><Icon name="info"/></span><span><strong>新手說明</strong><small>從頭認識探索、集片與合照玩法</small></span><Icon name="arrow" size={19}/></button>
         <button className="more-service-link" type="button" onClick={onReplayWelcome} disabled={!onReplayWelcome}><span className="more-service-icon"><Icon name="train"/></span><span><strong>重看歡迎畫面</strong><small>再看一次這趟旅程的開場</small></span><Icon name="arrow" size={19}/></button>
-        <button className="more-service-link" type="button" onClick={() => onNavigate('train')}><span className="more-service-icon"><Icon name="train"/></span><span><strong>兌換區</strong><small>查看 10 塊拼圖與候選紀念品</small></span><Icon name="arrow" size={19}/></button>
+        <button className="more-service-link" type="button" onClick={() => onNavigate('train')}><span className="more-service-icon"><Icon name="train"/></span><span><strong>兌換區</strong><small>查看拼圖與旅程紀念品</small></span><Icon name="arrow" size={19}/></button>
         <button className="more-service-link" type="button" onClick={() => onNavigate('photos')}><span className="more-service-icon"><Icon name="camera"/></span><span><strong>紀念照</strong><small>合照自由選擇，不影響集片</small></span><Icon name="arrow" size={19}/></button>
       </div>
-      <details className="more-rules"><summary><span className="more-service-icon"><Icon name="info"/></span><span>玩法說明</span></summary><div><p>首輪依動線到站收集拼圖，也可在「我的拼圖」參加示範答題補收。集滿整套 10 片後查看兌換選項；收藏不等於實際到訪。</p><p>合照上傳是選擇性步驟；不拍照，也不影響集片。第二輪才開放自由踩點。</p><p>可從第 01 站依序體驗十站掃碼與領片，並將自選合照或示意照片儲存在這個瀏覽器的紀念照區；不會上傳雲端。</p></div></details>
+      <details className="more-rules"><summary><span className="more-service-icon"><Icon name="info"/></span><span>玩法說明</span></summary><div><p>首輪依動線到站收集拼圖，也可在「我的拼圖」參加答題補收。集滿整套 10 片後查看兌換選項；收藏不等於實際到訪。</p><p>儲存合照是選擇性步驟；不拍照，也不影響集片。第二輪才開放自由踩點。</p><p>可從第 01 站依序體驗十站掃碼與領片，並將自選合照或示意照片儲存在這個瀏覽器的紀念照區；不會上傳雲端。</p></div></details>
     </section>
     <section className="more-services more-official-services" aria-labelledby="more-official-title">
       <div className="more-section-heading"><h2 id="more-official-title">官方資訊</h2><span>外部連結</span></div>

@@ -13,6 +13,6 @@ export default function StationCulture({ stationId }) {
       <small>自由參加，不需作答，不影響掃碼領片。</small>
     </aside>
     <div className="culture-sources"><span>資料依據</span>{story.sources.map(id => <a key={id} href={cultureSources[id].url} target="_blank" rel="noopener noreferrer" aria-label={`${cultureSources[id].label}（另開新視窗）`}>{cultureSources[id].label} ↗</a>)}</div>
-    <p className="culture-context-note">原型站點，非館方實際配置；導讀依來源整理，非正式展文。</p>
+    <p className="culture-context-note">站點配置僅供參考；導讀依公開資料整理，非館方展文。</p>
   </section>
 }

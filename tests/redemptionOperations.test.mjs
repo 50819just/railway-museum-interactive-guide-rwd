@@ -7,7 +7,7 @@ const service = () => ({ ...initialOperations(), serviceDate: '2026-10-30', open
 test('unconfigured permits demo without claiming real service or inventing stock', () => {
   assert.equal(validOperations(initialOperations(), catalogue), true)
   const result = getRedemptionAvailability(initialOperations(), 'a', { catalogue, now: at('12:00') })
-  assert.equal(result.status, 'unconfigured'); assert.equal(result.canCreate, true); assert.match(result.reason, /不代表正式可領/); assert.equal(result.demoOnly, true)
+  assert.equal(result.status, 'unconfigured'); assert.equal(result.canCreate, true); assert.match(result.reason, /僅可儲存登記.*不代表商品已保留/); assert.equal(result.demoOnly, true)
 })
 test('service cutoff subtracts 30 minutes in Taiwan time with exclusive closing boundary', () => {
   assert.equal(serviceAvailability(service(), at('09:29')).status, 'before-service')

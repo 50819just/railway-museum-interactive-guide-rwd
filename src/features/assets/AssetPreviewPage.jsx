@@ -36,7 +36,7 @@ function LocalPhotoCard({ photo, onDeleted }) {
   }
   return <article className="album-photo-card album-local-card" aria-labelledby={`local-photo-${photo.id}`}>
     <div className="album-photo-frame"><img ref={image} alt={`${photoSourceLabel(photo.source)}：第 ${stationNumber(photo.stationId)} 站 ${photo.stationName}`} width="1200" height="800" loading="lazy"/><span>{photoSourceLabel(photo.source)}</span></div>
-    <div className="album-local-caption"><small>僅存於本機・{new Date(photo.savedAt).toLocaleString('zh-TW')}</small><h3 id={`local-photo-${photo.id}`}>第 {stationNumber(photo.stationId)} 站 {photo.stationName}</h3><p>{photo.source === 'ai-demo' ? '主動選擇保存的 虛構合照，不是你本人或現場真拍。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。'}</p>
+    <div className="album-local-caption"><small>僅存於本機・{new Date(photo.savedAt).toLocaleString('zh-TW')}</small><h3 id={`local-photo-${photo.id}`}>第 {stationNumber(photo.stationId)} 站 {photo.stationName}</h3><p>{photo.source === 'ai-demo' ? '自行保存的虛構合照，不是你本人或現場真拍。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。'}</p>
       <div className="album-local-actions"><button className="album-download" type="button" disabled={deleting} aria-label={`下載第 ${stationNumber(photo.stationId)} 站照片`} onClick={downloadPhoto}>下載照片</button><button ref={deleteButton} className="album-delete" disabled={deleting} aria-expanded={confirm} onClick={() => { setConfirm(true); requestAnimationFrame(() => confirmButton.current?.focus()) }}>刪除這張照片</button></div>
       {downloadNotice && <p className="album-download-notice" role="status">{downloadNotice}</p>}
       {downloadError && <p className="album-storage-error" role="alert">{downloadError}</p>}

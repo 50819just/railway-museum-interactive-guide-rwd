@@ -1,7 +1,7 @@
 export const STORAGE_KEY = 'railway.family-demo.v1'
 export const emptyState = () => ({ version: 1, group: null, actor: null })
 export function joinReason(group) {
-  if (!group) return '請先建立示範組別。'
+  if (!group) return '請先建立同行組別。'
   if (group.members.length >= 2) return '這組已有兩人，不能加入第三人。'
   if (group.completed >= 6) return '已完成第 6 站起停止新加入；既有成員可重連。'
   return ''

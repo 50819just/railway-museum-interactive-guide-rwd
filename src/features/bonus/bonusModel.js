@@ -2,7 +2,7 @@ import { copyQuestionSet, selectQuestionSet } from './museumQuestionSelection.js
 
 // Frontend demonstration proposal only. Not museum policy or anti-cheat protection.
 export const BONUS_KEY = 'railway.puzzle-bonus-demo.v1'
-export const BONUS_POLICY_NOTE = '暫定示範規則，非館方定案；所有機率、次數與時間門檻仍可調整。'
+export const BONUS_POLICY_NOTE = '規則尚未經館方確認；機率、次數與時間門檻可能調整。'
 export const BONUS_POLICY = Object.freeze({
   totalPieces: 10,
   checkpoints: Object.freeze([
@@ -129,7 +129,7 @@ export function drawBonusPiece(state, completed, { random = Math.random } = {}) 
   if (!state.pendingDraw) return result(state, false, 'no-draw', '請先完成三題挑戰，取得抽取機會。')
   const missing = remainingPuzzleIds(completed, state)
   if (!missing.length) return result(state, false, 'complete', '拼圖已收齊，保留這次抽取機會，不會消耗。')
-  if (state.drawsUsed >= BONUS_POLICY.maxDraws) return result(state, false, 'draw-limit', '已達本次示範的額外抽取上限。')
+  if (state.drawsUsed >= BONUS_POLICY.maxDraws) return result(state, false, 'draw-limit', '已達本次額外抽取上限。')
   const piece = missing[Math.floor(roll(random) * missing.length)]
   return result({ ...state, bonusPieces: [...state.bonusPieces, piece], pendingDraw: false, drawsUsed: state.drawsUsed + 1 }, true, 'drawn', `收下第 ${String(piece).padStart(2, '0')} 片拼圖。到訪紀錄不會因此改變。`, { piece })
 }
@@ -139,7 +139,7 @@ export function readBonus(storage) {
     const raw = storage.getItem(BONUS_KEY)
     if (raw === null) return { state: initialBonus(), sessionOnly: false, storageMessage: '' }
     const parsed = JSON.parse(raw)
-    if (!validBonus(parsed)) return { state: initialBonus(), sessionOnly: true, storageMessage: '額外答題紀錄格式不相容，已回到示範初始狀態；原到訪紀錄不受影響。' }
+    if (!validBonus(parsed)) return { state: initialBonus(), sessionOnly: true, storageMessage: '額外答題紀錄格式不相容，已回到初始狀態；原到訪紀錄不受影響。' }
     return { state: normalizeBonus(parsed), sessionOnly: false, storageMessage: '' }
   } catch {
     return { state: initialBonus(), sessionOnly: true, storageMessage: '無法讀取額外答題紀錄，目前僅保留本次進度；原到訪紀錄不受影響。' }

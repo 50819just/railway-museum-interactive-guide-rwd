@@ -4,9 +4,7 @@ import { nextGiftSlide, startGiftCarouselTimer } from './giftCarouselModel'
 const motionQuery = '(prefers-reduced-motion: reduce)'
 export default function useGiftCarousel(count, enabled, root) {
   const [index, setIndex] = useState(0)
-  const [paused, setPaused] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const [readingOverride, setReadingOverride] = useState(false)
   const [focused, setFocused] = useState(false)
   const [inView, setInView] = useState(true)
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia?.(motionQuery).matches ?? false)
@@ -25,25 +23,17 @@ export default function useGiftCarousel(count, enabled, root) {
       observer?.disconnect()
     }
   }, [root])
-  useEffect(() => startGiftCarouselTimer(() => setIndex(current => nextGiftSlide(current, count)), { count, paused, hovered: hovered && !readingOverride, focused: focused && !readingOverride, inView, reducedMotion, hidden, enabled }), [count, paused, hovered, focused, readingOverride, inView, reducedMotion, hidden, enabled])
+  const paused = hovered || focused
+  useEffect(() => startGiftCarouselTimer(() => setIndex(current => nextGiftSlide(current, count)), { count, paused, hovered, focused, inView, reducedMotion, hidden, enabled }), [count, paused, hovered, focused, inView, reducedMotion, hidden, enabled])
   function select(next) {
     if (!Number.isInteger(next) || next < 0 || next >= count) return
     setIndex(next)
-    setPaused(true)
-    setReadingOverride(false)
   }
-  function togglePlayback() {
-    setPaused(!paused)
-    setReadingOverride(paused)
-    // Explicit Play resumes even while the control still has focus or hover.
-    setFocused(false)
-    setHovered(false)
-  }
-  return { index, paused, reducedMotion, select, togglePlayback,
+  return { index, paused, reducedMotion, select,
     interactionProps: {
-      onMouseEnter: () => { setHovered(true); setReadingOverride(false) },
+      onMouseEnter: () => setHovered(true),
       onMouseLeave: () => setHovered(false),
-      onFocusCapture: event => { if (!event.target.closest('.redeem-hero-playback')) { setFocused(true); setReadingOverride(false) } },
+      onFocusCapture: () => setFocused(true),
       onBlurCapture: event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) },
     },
   }

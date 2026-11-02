@@ -1,4 +1,4 @@
-export const GIFT_CAROUSEL_INTERVAL_MS = 5000
+export const GIFT_CAROUSEL_INTERVAL_MS = 3000
 export function nextGiftSlide(current, count) {
   if (!Number.isInteger(count) || count < 1) return 0
   return ((Number.isInteger(current) ? current : 0) + 1) % count

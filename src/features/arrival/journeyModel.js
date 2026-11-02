@@ -9,7 +9,7 @@ export function normalizeJourney(value) {
 }
 export function inspectPayload(state, input) {
   const match = typeof input === 'string' && /^railway-demo:station:(0[1-9]|10)$/.exec(input.trim())
-  if (!match) return { ok: false, kind: 'invalid', message: '這不是本原型的站點示範碼，請重新掃描或貼上完整示範碼。' }
+  if (!match) return { ok: false, kind: 'invalid', message: '無法辨識站點碼，請重新掃描或貼上完整站點碼。' }
   const id = Number(match[1])
   if (state.completed.includes(id)) return { ok: false, kind: 'duplicate', stationId: id, message: `第 ${match[1]} 站已領過拼圖，不會重複發片。` }
   const next = nextStationId(state)
