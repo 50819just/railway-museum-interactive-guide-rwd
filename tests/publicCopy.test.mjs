@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync, readdirSync } from 'node:fs'
+import { readdirSync } from 'node:fs'
+import { readUiSource as readFileSync } from './helpers/readUiSource.mjs'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
 import { photoSourceLabel, PHOTO_SOURCES } from '../src/features/arrival/photoModel.js'
@@ -50,15 +51,29 @@ test('explore keeps collection progress in the toolbar instead of repeating visi
 test('consumer UI has no development-facing labels, including collapsed content and model messages', () => {
   for (const file of scripts(join(root, 'src'))) {
     if (file.endsWith('PaymentSandboxPanel.jsx')) continue
-    const content = readFileSync(file, 'utf8').replace(/^\s*\/\/.*$/gm, '')
+    let content = readFileSync(file, 'utf8').replace(/^\s*\/\/.*$/gm, '')
+    // 2026-11-03: user explicitly requested a public, clearly disclosed display demo.
+    // Only its new UI files/entry copy are exempt; all unrelated consumer copy stays checked.
+    const displayDemoFiles = ['DemoLoginCard.jsx', 'PaymentDemoPage.jsx', 'PaymentDemoReturnDialog.jsx']
+    if (displayDemoFiles.some(name => file === join(root, 'src/features/payment', name))) {
+      assert.match(content, /畫面 Demo|畫面示範|畫面 Demo|情境示範/u, file)
+      assert.doesNotMatch(content, /createPaymentClient|submitStageCheckout|\bfetch\s*\(/u, file)
+      continue
+    }
+    if (file === join(root, 'src/components/AppShell.jsx')) content = content.replace("'payment-demo': '付款流程 Demo',", "'payment-demo': '付款流程',")
+    if (file === join(root, 'src/features/assets/RedemptionPage.jsx')) content = content.replace(/^    <section className="pd-entry"[^\n]*<\/section>\n/m, '')
     assert.doesNotMatch(content, /示範|測試|原型|候選|模擬|樣本|沙盒|演示|\bDemo\b/u, file)
   }
 })
-test('this release excludes payment integration and protects internal receipt IDs', () => {
+test('payment environment remains explicitly gated and local receipt IDs do not leak through title', () => {
   const source = readFileSync(join(root, 'src/features/redemption/RedemptionDialog.jsx'), 'utf8')
-  assert.doesNotMatch(source, /PaymentSandboxPanel|paymentSandboxEnabled/)
+  assert.ok(source.includes('import.meta.env.DEV &&'))
+  assert.ok(source.includes("VITE_PAYMENT_SANDBOX_ENABLED === 'true'"))
   assert.ok(source.includes('title={receiptDisplayId(record.id)}'))
   assert.ok(!source.includes('title={record.id}'))
+  const payment = readFileSync(join(root, 'src/features/payment/PaymentSandboxPanel.jsx'), 'utf8')
+  assert.ok(payment.includes('不收真實款項'))
+  assert.ok(payment.includes('STAGE'))
 })
 
 test('gift prices use the shared puzzle icon and keep an accessible ten-piece label', () => {
@@ -68,4 +83,15 @@ test('gift prices use the shared puzzle icon and keep an accessible ten-piece la
   assert.ok(source.includes('<span aria-hidden="true">10</span>'))
   assert.doesNotMatch(source, /拼圖10/u)
   assert.ok(source.includes('＋ NT$${product.fee}'))
+})
+
+test('layout controls are icon-only while retaining accessible labels and pressed state', () => {
+  const source = readFileSync(join(root, 'src/features/assets/RedemptionPage.jsx'), 'utf8')
+  const controls = source.split('className="redeem-layout-switch redeem-layout-compact"')[1].split('</div>')[0]
+  assert.ok(controls.includes('<LayoutIcon columns={count}/></button>'))
+  assert.doesNotMatch(controls, /<span>|直列/u)
+  assert.ok(controls.includes('aria-label='))
+  assert.ok(controls.includes('aria-pressed={columns===count}'))
+  const css = readFileSync(join(root, 'src/features/assets/RedemptionPage.css'), 'utf8')
+  assert.ok(css.includes('.redeem-layout-compact button{min-height:44px;min-width:44px;'))
 })

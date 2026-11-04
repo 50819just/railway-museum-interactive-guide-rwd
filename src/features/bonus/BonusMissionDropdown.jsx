@@ -1,3 +1,4 @@
+import { t, localize } from '../../i18n/runtime.js'
 import { useEffect, useId, useState } from 'react'
 import Icon from '../../components/Icon'
 import BonusDialog from './BonusDialog'
@@ -33,15 +34,15 @@ export default function BonusMissionDropdown({ bonus, completed, collectedCount,
   }
 
   return <>
-    <p className="sr-only" role="status" aria-live="polite">{active && content ? `${content.title}，${content.badge}` : ''}</p>
-    {active && content && <section className={`bonus-mission-strip is-${content.kind}`} aria-label="額外挑戰任務">
+    <p className="sr-only" role="status" aria-live="polite">{localize(active && content ? `${content.title}，${content.badge}` : '')}</p>
+    {active && content && <section className={`bonus-mission-strip is-${content.kind}`} aria-label={t('bonusMissionDropdown.section.aria.label')}>
       <i className="bonus-mission-notice-dot" aria-hidden="true"/>
       <div className="bonus-mission-summary">
-        <Icon name="chest" size={18}/><span className="bonus-mission-title">{content.title}</span><span className="bonus-mission-badge">{content.badge}</span>
+        <Icon name="chest" size={18}/><span className="bonus-mission-title">{localize(content.title)}</span><span className="bonus-mission-badge">{localize(content.badge)}</span>
       </div>
-      <p id={descriptionId} className="sr-only">{content.description}</p>
-      <button className="bonus-mission-action" type="button" onClick={openChallenge} aria-haspopup="dialog" aria-describedby={descriptionId}>{content.action}<Icon name="arrow" size={14}/></button>
-      {message && <p className="bonus-mission-feedback" role="status">{message}</p>}
+      <p id={descriptionId} className="sr-only">{localize(content.description)}</p>
+      <button className="bonus-mission-action" type="button" onClick={openChallenge} aria-haspopup="dialog" aria-describedby={descriptionId}>{localize(content.action)}<Icon name="arrow" size={14}/></button>
+      {message && <p className="bonus-mission-feedback" role="status">{localize(message)}</p>}
     </section>}
     {visiblePopup && <BonusDialog returnFocusId="explore-collection-progress-title" bonus={bonus} onAnswer={answerChallenge} onDraw={() => drawBonus(completed)} onClose={closePopup}/>}
   </>

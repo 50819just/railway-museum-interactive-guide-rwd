@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readUiSource as readFileSync } from './helpers/readUiSource.mjs'
 import { GIFT_CAROUSEL_INTERVAL_MS, nextGiftSlide, canRotateGifts, startGiftCarouselTimer } from '../src/features/redemption/giftCarouselModel.js'
 
 test('gift rotation advances and loops through six slides every three seconds', () => {

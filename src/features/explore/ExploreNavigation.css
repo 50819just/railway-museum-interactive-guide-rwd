@@ -47,7 +47,6 @@
 @keyframes explore-map-reveal { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 700px) {
   .app-shell #main .explore-entry-bar > button { font-size: 12px; padding: 9px 12px; gap: 7px; }
-  .app-shell #main .explore-collection-entry svg { display: none; }
   .app-shell #main .explore-map-dropdown { padding: 14px 12px; }
   .app-shell #main .explore-menu-meta.has-notice { padding-inline: 10px; }
   .app-shell #main .explore-entry-bar > .explore-map-entry { padding-right: 40px; }
@@ -63,7 +62,8 @@
 .explore-bonus-notice { padding: 16px 18px; border-radius: 14px; background: #eee3cd; color: #5b431c; margin: 16px 0; font-size: 13px; line-height: 1.8; }
 .explore-bonus-notice a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; font-weight: 700; text-underline-offset: 4px; }
 
-.app-shell #main .explore-entry-bar > .explore-collection-entry { color: #5b431c; }
+.app-shell #main .explore-entry-bar > .explore-collection-entry { color: #5b431c; padding-inline: 8px; gap: 6px; white-space: nowrap; }
+.app-shell #main .explore-collection-entry > svg { display: block; flex-shrink: 0; }
 
 /* The support rail is the single collection indicator on Explore. */
 .app-shell #main .explore-entry-support { min-height: 64px; padding: 8px 12px; gap: 16px; }

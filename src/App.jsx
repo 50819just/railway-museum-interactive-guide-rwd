@@ -1,3 +1,6 @@
+import { t } from './i18n/runtime.js'
+import useLocale from './i18n/useLocale'
+import { getLocale } from './i18n/runtime'
 import { useEffect, useRef, useState } from 'react'
 import AppShell from './components/AppShell'
 import ExplorePage from './features/explore/ExplorePage'
@@ -11,9 +14,12 @@ import useJourney from './features/arrival/useJourney'
 import { syncBonusVisits } from './features/bonus/bonusStore'
 import IntroExperience from './features/intro/IntroExperience'
 import useIntro from './features/intro/useIntro'
+import PaymentDemoPage from './features/payment/PaymentDemoPage'
+import PaymentDemoReturnDialog from './features/payment/PaymentDemoReturnDialog'
 import './App.css'
 import './styles/StitchVisual.css'
-const currentPage = () => ['train','photos','family','more','puzzles','revisit'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'explore'
+import './styles/TextLayout.css'
+const currentPage = () => ['train','photos','family','more','puzzles','revisit','payment-demo'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'explore'
 function focusPage() {
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0 })
@@ -21,6 +27,8 @@ function focusPage() {
   })
 }
 export default function App() {
+  const locale = useLocale()
+  useEffect(() => { document.documentElement.lang = getLocale(); document.title = t('app.title') }, [locale])
   const [page, setPage] = useState(currentPage)
   const journey = useJourney()
   useEffect(() => {
@@ -45,5 +53,5 @@ export default function App() {
     if (next===page) focusPage()
     else window.location.hash=next
   }
-  return <><AppShell page={page} onNavigate={navigate}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">啟動設定目前僅本次有效，無法保證下次記住；不影響這次使用。</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><IntroExperience state={intro} onAction={introAction}/></>
+  return <><AppShell page={page} onNavigate={navigate}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">{t('app.intro.session.notice.text')}</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='payment-demo'&&<PaymentDemoPage onNavigate={navigate}/>} {page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><PaymentDemoReturnDialog active={page==='train' && intro.phase==='closed'}/><IntroExperience state={intro} onAction={introAction}/></>
 }

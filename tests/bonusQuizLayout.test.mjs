@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readUiSource as readFileSync } from './helpers/readUiSource.mjs'
 const source = readFileSync(new URL('../src/features/bonus/BonusDialog.jsx', import.meta.url), 'utf8')
 const css = readFileSync(new URL('../src/features/bonus/BonusDialog.css', import.meta.url), 'utf8')
 

@@ -1,3 +1,4 @@
+import { t, localize, formatDate } from '../../i18n/runtime.js'
 import Icon from '../../components/Icon'
 import { APP_VERSION, RELEASE_DATE } from '../../data/release'
 import './MorePage.css'
@@ -15,36 +16,36 @@ function ExternalLinkIcon() {
 
 export default function MorePage({ onNavigate, onOpenGuide, onReplayWelcome }) {
   return <div className="more-page">
-    <header className="page-heading"><div><p className="eyebrow">你的鐵道旅程</p><h1 tabIndex={-1}>旅程服務</h1><p className="heading-description">登入、親子同行與玩法說明，都在這裡。</p></div></header>
+    <header className="page-heading"><div><p className="eyebrow">{t('appShell.nav.caption.text')}</p><h1 tabIndex={-1}>{t('appShell.copy.more.copy')}</h1><p className="heading-description">{t('morePage.heading.description.text')}</p></div></header>
     <section className="more-explore-card" aria-labelledby="more-explore-title">
-      <div><p className="more-explore-eyebrow">探索任務</p><h2 id="more-explore-title">一站一片，開始你的鐵道旅程</h2><p>先看今日路線與下一站，再體驗探索任務。</p></div>
-      <button className="more-explore-action" type="button" onClick={() => onNavigate('explore')}>前往探索任務<Icon name="arrow" size={22}/></button>
+      <div><p className="more-explore-eyebrow">{t('morePage.more.explore.eyebrow.text')}</p><h2 id="more-explore-title">{t('morePage.more.explore.title.text')}</h2><p>{t('morePage.p.text')}</p></div>
+      <button className="more-explore-action" type="button" onClick={() => onNavigate('explore')}>{t('morePage.more.explore.action.text')}<Icon name="arrow" size={22}/></button>
     </section>
     <section className="more-family-card" aria-labelledby="more-family-title">
       <span className="more-feature-icon"><Icon name="user" size={28}/></span>
-      <div><h2 id="more-family-title">登入與親子同行</h2><p>票根免登入，也可以選擇單人或雙人同行。</p></div>
-      <button type="button" onClick={() => onNavigate('family')}>登入／同行<Icon name="arrow" size={20}/></button>
+      <div><h2 id="more-family-title">{t('appShell.copy.family.copy')}</h2><p>{t('morePage.p.text.2')}</p></div>
+      <button type="button" onClick={() => onNavigate('family')}>{t('morePage.button.text')}<Icon name="arrow" size={20}/></button>
     </section>
     <section className="more-services" aria-labelledby="more-services-title">
-      <h2 id="more-services-title">玩法與旅程</h2>
+      <h2 id="more-services-title">{t('morePage.more.services.title.text')}</h2>
       <div className="more-link-group">
-        <button className="more-service-link" type="button" onClick={onOpenGuide} disabled={!onOpenGuide}><span className="more-service-icon"><Icon name="info"/></span><span><strong>新手說明</strong><small>從頭認識探索、集片與合照玩法</small></span><Icon name="arrow" size={19}/></button>
-        <button className="more-service-link" type="button" onClick={onReplayWelcome} disabled={!onReplayWelcome}><span className="more-service-icon"><Icon name="train"/></span><span><strong>重看歡迎畫面</strong><small>再看一次這趟旅程的開場</small></span><Icon name="arrow" size={19}/></button>
-        <button className="more-service-link" type="button" onClick={() => onNavigate('train')}><span className="more-service-icon"><Icon name="train"/></span><span><strong>兌換區</strong><small>查看拼圖與旅程紀念品</small></span><Icon name="arrow" size={19}/></button>
-        <button className="more-service-link" type="button" onClick={() => onNavigate('photos')}><span className="more-service-icon"><Icon name="camera"/></span><span><strong>紀念照</strong><small>合照自由選擇，不影響集片</small></span><Icon name="arrow" size={19}/></button>
+        <button className="more-service-link" type="button" onClick={onOpenGuide} disabled={!onOpenGuide}><span className="more-service-icon"><Icon name="info"/></span><span><strong>{t('onboardingDialog.span.text.2')}</strong><small>{t('morePage.small.text')}</small></span><Icon name="arrow" size={19}/></button>
+        <button className="more-service-link" type="button" onClick={onReplayWelcome} disabled={!onReplayWelcome}><span className="more-service-icon"><Icon name="train"/></span><span><strong>{t('morePage.strong.text')}</strong><small>{t('morePage.small.text.2')}</small></span><Icon name="arrow" size={19}/></button>
+        <button className="more-service-link" type="button" onClick={() => onNavigate('train')}><span className="more-service-icon"><Icon name="train"/></span><span><strong>{t('appShell.copy.name.copy.2')}</strong><small>{t('morePage.small.text.3')}</small></span><Icon name="arrow" size={19}/></button>
+        <button className="more-service-link" type="button" onClick={() => onNavigate('photos')}><span className="more-service-icon"><Icon name="camera"/></span><span><strong>{t('appShell.copy.name.copy.3')}</strong><small>{t('morePage.small.text.4')}</small></span><Icon name="arrow" size={19}/></button>
       </div>
-      <details className="more-rules"><summary><span className="more-service-icon"><Icon name="info"/></span><span>玩法說明</span></summary><div><p>首輪依動線到站收集拼圖，也可在「我的拼圖」參加答題補收。集滿整套 10 片後查看兌換選項；收藏不等於實際到訪。</p><p>儲存合照是選擇性步驟；不拍照，也不影響集片。第二輪才開放自由踩點。</p><p>可從第 01 站依序體驗十站掃碼與領片，並將自選合照或示意照片儲存在這個瀏覽器的紀念照區；不會上傳雲端。</p></div></details>
+      <details className="more-rules"><summary><span className="more-service-icon"><Icon name="info"/></span><span>{t('morePage.span.text')}</span></summary><div><p>{t('morePage.p.text.3')}</p><p>{t('morePage.p.text.4')}</p><p>{t('morePage.p.text.5')}</p></div></details>
     </section>
     <section className="more-services more-official-services" aria-labelledby="more-official-title">
-      <div className="more-section-heading"><h2 id="more-official-title">官方資訊</h2><span>外部連結</span></div>
-      <p className="more-section-note" id="more-external-note">以下連結會在新分頁開啟官方網站。園區消息與參觀安排，請以館方最新公告為準。</p>
+      <div className="more-section-heading"><h2 id="more-official-title">{t('morePage.more.official.title.text')}</h2><span>{t('morePage.span.text.2')}</span></div>
+      <p className="more-section-note" id="more-external-note">{t('morePage.more.section.note.text')}</p>
       <div className="more-link-group">
         {officialResources.map(resource => <a className="more-service-link more-official-link" href={resource.url} target="_blank" rel="noopener noreferrer" key={resource.url} aria-describedby="more-external-note">
-          <span className="more-service-icon"><Icon name={resource.icon}/></span><span><strong>{resource.title}</strong><small>{resource.description}</small><span className="more-external-caption">官方網站・新分頁開啟</span></span><ExternalLinkIcon/>
+          <span className="more-service-icon"><Icon name={resource.icon}/></span><span><strong>{localize(resource.title)}</strong><small>{localize(resource.description)}</small><span className="more-external-caption">{t('morePage.more.external.caption.text')}</span></span><ExternalLinkIcon/>
         </a>)}
       </div>
-      <p className="more-source-note">這裡提供官方消息入口，不會自動同步或代替館方公告。</p>
+      <p className="more-source-note">{t('morePage.more.source.note.text')}</p>
     </section>
-    <p className="more-release-version">鐵道巡禮 <strong>v{APP_VERSION}</strong><span aria-hidden="true">・</span><time dateTime={RELEASE_DATE}>{RELEASE_DATE}</time></p>
+    <p className="more-release-version">{t('appShell.brand.name.text')}<strong>v{APP_VERSION}</strong><span aria-hidden="true">・</span><time dateTime={RELEASE_DATE}>{formatDate(RELEASE_DATE, {year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'})}</time></p>
   </div>
 }

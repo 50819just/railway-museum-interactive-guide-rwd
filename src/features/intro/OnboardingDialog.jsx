@@ -1,3 +1,5 @@
+import LanguageSwitcher from '../../i18n/LanguageSwitcher'
+import { t, localize } from '../../i18n/runtime.js'
 import { useEffect, useRef } from 'react'
 import Icon from '../../components/Icon'
 import { trapIntroDialogTab } from './dialogFocus'
@@ -9,13 +11,13 @@ const steps = [
 ]
 
 function RouteGraphic() {
-  return <div className="guide-graphic" aria-hidden="true"><span className="guide-graphic-label">路線圖解</span><div className="guide-route-nodes">{[{ number: '01', name: '起點' }, { number: '02', name: '依序' }, { number: '03', name: '探索' }, { number: '10', name: '終點' }].map((node, index) => <div key={node.number}><span className={`guide-route-node guide-route-node-${index}`}>{node.number}</span><small>{node.name}</small></div>)}</div><p>每站依固定順序解鎖，順暢走訪全區</p></div>
+  return <div className="guide-graphic" aria-hidden="true"><span className="guide-graphic-label">{t('onboardingDialog.guide.graphic.label.text')}</span><div className="guide-route-nodes">{[{ number: '01', name: '起點' }, { number: '02', name: '依序' }, { number: '03', name: '探索' }, { number: '10', name: '終點' }].map((node, index) => <div key={node.number}><span className={`guide-route-node guide-route-node-${index}`}>{localize(node.number)}</span><small>{localize(node.name)}</small></div>)}</div><p>{t('onboardingDialog.p.text')}</p></div>
 }
 function CollectionGraphic() {
-  return <div className="guide-graphic" aria-hidden="true"><span className="guide-graphic-label">票根免登入</span><div className="guide-collection-visual"><div className="guide-people"><Icon name="user" size={29}/><Icon name="user" size={23}/><strong>1～2人</strong></div><div className="guide-puzzle"><span>首輪 10 片拼圖</span><div>{Array.from({ length: 10 }, (_, index) => <i key={index}/>)}</div></div></div><p>1～2 人共享首輪 10 塊拼圖・圖解</p></div>
+  return <div className="guide-graphic" aria-hidden="true"><span className="guide-graphic-label">{t('onboardingDialog.guide.graphic.label.text.2')}</span><div className="guide-collection-visual"><div className="guide-people"><Icon name="user" size={29}/><Icon name="user" size={23}/><strong>{t('onboardingDialog.strong.text')}</strong></div><div className="guide-puzzle"><span>{t('onboardingDialog.span.text')}</span><div>{Array.from({ length: 10 }, (_, index) => <i key={index}/>)}</div></div></div><p>{t('onboardingDialog.p.text.2')}</p></div>
 }
 function PhotoGraphic() {
-  return <div className="guide-graphic" aria-hidden="true"><div className="guide-photo-visual"><div className="guide-photo-card"><span><Icon name="user" size={28}/><Icon name="user" size={21}/></span><strong>自選合照卡</strong></div><Icon name="arrow" size={22}/><div className="guide-photo-card"><Icon name="camera" size={30}/><strong>紀念照典藏</strong></div></div><p>可從右上角選單的「旅程服務與玩法說明」重看新手說明。</p></div>
+  return <div className="guide-graphic" aria-hidden="true"><div className="guide-photo-visual"><div className="guide-photo-card"><span><Icon name="user" size={28}/><Icon name="user" size={21}/></span><strong>{t('onboardingDialog.strong.text.2')}</strong></div><Icon name="arrow" size={22}/><div className="guide-photo-card"><Icon name="camera" size={30}/><strong>{t('onboardingDialog.strong.text.3')}</strong></div></div><p>{t('onboardingDialog.p.text.3')}</p></div>
 }
 
 export default function OnboardingDialog({ step, onAction, sessionOnly }) {
@@ -30,10 +32,10 @@ export default function OnboardingDialog({ step, onAction, sessionOnly }) {
   useEffect(() => { headingRef.current?.focus({ preventScroll: true }); dialogRef.current?.scrollTo({ top: 0 }) }, [step])
 
   return <dialog ref={dialogRef} className="intro-guide" aria-labelledby="intro-guide-title" aria-describedby="intro-guide-description" onCancel={event => { event.preventDefault(); onAction('skip') }} onKeyDown={trapIntroDialogTab}>
-    <header className="guide-topbar"><div><span>新手說明</span><p aria-live="polite" aria-atomic="true">{step + 1} / 3</p></div><button type="button" onClick={() => onAction('skip')} aria-label="略過新手說明">略過</button></header>
+    <header className="guide-topbar"><LanguageSwitcher/><div><span>{t('onboardingDialog.span.text.2')}</span><p aria-live="polite" aria-atomic="true">{localize(step + 1)} / 3</p></div><button type="button" onClick={() => onAction('skip')} aria-label={t('onboardingDialog.button.aria.label')}>{t('exploreNavigation.button.text')}</button></header>
     {step === 0 ? <RouteGraphic/> : step === 1 ? <CollectionGraphic/> : <PhotoGraphic/>}
-    <div className="guide-copy"><h2 ref={headingRef} tabIndex={-1} id="intro-guide-title">{content.title}</h2><p id="intro-guide-description">{content.description}</p><small>{content.note}</small></div>
-    {sessionOnly && <p className="intro-storage-notice" role="status">目前僅本次有效，無法保證下次記住啟動狀態；仍可繼續使用。</p>}
-    <footer className="guide-actions">{step > 0 && <button className="guide-previous" type="button" onClick={() => onAction('previous')}>上一步</button>}<button className="guide-next" type="button" onClick={() => onAction(step === 2 ? 'finish' : 'next')}>{step === 2 ? '完成說明' : '下一步'}</button></footer>
+    <div className="guide-copy"><h2 ref={headingRef} tabIndex={-1} id="intro-guide-title">{localize(content.title)}</h2><p id="intro-guide-description">{localize(content.description)}</p><small>{localize(content.note)}</small></div>
+    {sessionOnly && <p className="intro-storage-notice" role="status">{t('onboardingDialog.intro.storage.notice.text')}</p>}
+    <footer className="guide-actions">{step > 0 && <button className="guide-previous" type="button" onClick={() => onAction('previous')}>{t('onboardingDialog.guide.previous.text')}</button>}<button className="guide-next" type="button" onClick={() => onAction(step === 2 ? 'finish' : 'next')}>{localize(step === 2 ? '完成說明' : '下一步')}</button></footer>
   </dialog>
 }

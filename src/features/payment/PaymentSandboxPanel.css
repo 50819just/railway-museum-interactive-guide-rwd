@@ -1,0 +1,8 @@
+.payment-sandbox { border: 1px solid currentColor; border-radius: 16px; padding: 16px; margin-block: 16px; display: grid; gap: 12px; min-width: 0; }
+.payment-sandbox h3, .payment-sandbox p { margin: 0; }
+.payment-sandbox label { display: grid; gap: 8px; }
+.payment-sandbox input { width: 100%; box-sizing: border-box; padding: 10px; min-width: 0; }
+.payment-sandbox button { min-height: 44px; border: 1px solid currentColor; border-radius: 8px; padding: 8px 12px; background: transparent; color: inherit; cursor: pointer; }
+.payment-sandbox button:disabled { opacity: .55; cursor: not-allowed; }
+.payment-sandbox dd { margin: 0 0 8px; overflow-wrap: anywhere; }
+.payment-sandbox button:focus-visible, .payment-sandbox input:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }

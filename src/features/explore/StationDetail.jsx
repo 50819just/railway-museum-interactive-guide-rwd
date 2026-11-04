@@ -1,3 +1,4 @@
+import { t, localize } from '../../i18n/runtime.js'
 import { useState } from 'react'
 import './ExploreDetails.css'
 
@@ -19,14 +20,14 @@ const stationDetails = {
 function DetailView({ stationId, detail }) {
   const [expanded, setExpanded] = useState(false)
   return <details className="station-detail" onToggle={event => setExpanded(event.currentTarget.open)}>
-    <summary><span><strong>細節圖示</strong><small>{expanded ? '收起細節' : '有空，再走近看看'}</small></span></summary>
+    <summary><span><strong>{t('stationDetail.strong.text')}</strong><small>{localize(expanded ? '收起細節' : '有空，再走近看看')}</small></span></summary>
     {expanded && <div className="station-detail-content" id={`station-detail-${stationId}`}>
-      <h3>{detail.title}</h3>
+      <h3>{localize(detail.title)}</h3>
       <figure>
-        <img src={`${import.meta.env.BASE_URL}images/${detail.image}`} alt={detail.alt} width="1200" height="675" loading="lazy" decoding="async"/>
-        <figcaption>細節示意・非館內實拍，非工程依據</figcaption>
+        <img src={`${import.meta.env.BASE_URL}images/${detail.image}`} alt={localize(detail.alt)} width="1200" height="675" loading="lazy" decoding="async"/>
+        <figcaption>{t('stationDetail.figcaption.text')}</figcaption>
       </figure>
-      <p>{detail.description}</p>
+      <p>{localize(detail.description)}</p>
     </div>}
   </details>
 }

@@ -1,0 +1,95 @@
+/* Text resilience for zh-TW / en / ko. Keep content visible, never mask page overflow. */
+.app-shell, .intro-welcome, .onboarding-dialog {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+:lang(ko) { word-break: keep-all; overflow-wrap: anywhere; }
+:where(button, a, summary) { line-height: 1.5; }
+.app-shell svg { flex-shrink: 0; }
+.app-shell :is(.page-heading, .route-list button, .navigation-dialog-content header,
+  .explore-popup-heading, .bonus-popup-header) > div,
+.app-shell :is(.navigation-family-link, .navigation-dialog-content nav button) > span,
+.app-shell .route-list button > span:nth-child(2) { min-width: 0; }
+.app-shell :is(.page-heading, .puzzle-section-heading, .more-section-heading) { flex-wrap: wrap; }
+.app-shell :is(.brand-name, .mobile-brand, .desktop-location) { min-width: 0; white-space: normal; }
+.app-shell .brand-name { line-height: 1.35; }
+.app-shell .app-header { height: auto; min-height: 82px; padding-block: 8px; }
+.app-shell :is(button, summary, .puzzle-primary, .puzzle-secondary, .more-explore-action) { overflow-wrap: anywhere; }
+/* Both entry labels may grow; retain the existing 7:3 navigation rhythm. */
+.app-shell #main .explore-entry-bar { grid-template-columns: minmax(0,7fr) minmax(0,3fr); }
+.app-shell #main .explore-entry-bar > button > span { min-width: 0; }
+.app-shell #main .explore-entry-bar > .explore-collection-entry { white-space: normal; }
+.app-shell #main .explore-map-dropdown { top: 100%; }
+/* Do not truncate the task or hide the action when translated text grows. */
+.bonus-mission-summary { flex: 1 1 170px; flex-wrap: wrap; }
+.bonus-mission-title { flex: 1 1 100px; overflow: visible; text-overflow: clip; white-space: normal; }
+.bonus-mission-badge { max-width: 100%; overflow-wrap: anywhere; }
+.bonus-mission-action { max-width: 100%; white-space: normal; text-align: start; }
+.app-shell :is(.bonus-popup-options button, .bonus-answer-options button) { min-width: 0; height: auto; }
+.app-shell .bonus-popup-options button > span:nth-child(2) { overflow-wrap: anywhere; }
+.app-shell :is(.bonus-popup-rewards li > div, .puzzle-support-card, .puzzle-overview-copy,
+  .more-family-card > div, .family-members li > div) { min-width: 0; }
+.app-shell .redemption-puzzle-bar { grid-template-columns: minmax(0,1fr) minmax(50px,1fr) minmax(0,1fr); }
+.app-shell :is(.redemption-puzzle-balance, .redemption-puzzle-hint, .redemption-puzzle-link) { white-space: normal; }
+.app-shell .redemption-puzzle-amount { flex-wrap: wrap; line-height: 1.3; }
+.app-shell .redemption-puzzle-link { min-width: 0; text-align: center; }
+.app-shell .redemption-puzzle-link > span { min-width: 0; }
+@media (max-width:1000px) {
+  .app-shell .app-header { min-height: 64px; }
+  .app-shell .mobile-header-start { flex: 1; }
+  .app-shell .bottom-nav { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .app-shell .bottom-nav button { min-width: 0; line-height: 1.4; }
+  .app-shell .bottom-nav button > span { max-width: 100%; overflow-wrap: anywhere; text-align: center; }
+}
+@media (max-width:380px) {
+  /* Familiar account icon keeps a full accessible name without squeezing the brand. */
+  .app-shell .header-login-button { min-width: 44px; width: 44px; min-height: 44px; padding: 10px; }
+  .app-shell .header-login-button > span { display: none; }
+  .app-shell #main .explore-entry-bar > button { gap: 6px; }
+  .app-shell #main .explore-entry-bar > .explore-map-entry { padding-right: 30px; }
+}
+
+:root:lang(ko) {
+  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-display: var(--font-body);
+}
+@media (max-width:1000px) {
+  .app-shell .bottom-nav button { padding-inline: 2px; }
+  .app-shell .app-content { padding-bottom: calc(var(--mobile-nav-height, 74px) + 96px); }
+  .app-shell #main .map-first .explore-task-dock { bottom: var(--mobile-nav-height, 74px); }
+  html { scroll-padding-bottom: calc(var(--mobile-nav-height, 74px) + 100px); }
+  .app-shell #main :is(button, a, summary, input, select, textarea, [tabindex]) {
+    scroll-margin-bottom: calc(var(--mobile-nav-height, 74px) + 100px);
+  }
+}
+@media (max-width:380px) {
+  .app-shell #main .explore-entry-bar > .explore-collection-entry { flex-direction: column; gap: 2px; }
+}
+
+/* If even a single word cannot fit at the chosen text size, keep the labelled icon. */
+@media (max-width:1000px) {
+  .app-shell .bottom-nav button.is-icon-only > span,
+  .app-shell #main .explore-collection-entry.is-icon-only > span { display: none; }
+}
+
+/* The language action must not squeeze enlarged brand words into letter fragments. */
+@media(max-width:1000px){
+ .app-shell .app-header:has(.language-switcher){flex-wrap:wrap}
+ .app-shell .app-header:has(.language-switcher) .mobile-header-start{flex:1 1 8em}
+ .app-shell .app-header:has(.language-switcher) .mobile-brand .brand-name{max-width:none;overflow-wrap:normal;word-break:normal}
+}
+/* Tutorial diagrams reflow rather than compress translated words. */
+dialog.intro-guide{overflow-wrap:anywhere;word-break:normal}
+.intro-guide .guide-route-nodes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.intro-guide .guide-route-nodes>div{min-width:0;text-align:center}
+.intro-guide .guide-topbar>div{min-width:0}
+@media(max-width:480px){
+ .intro-guide .guide-route-nodes{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:18px}
+ .intro-guide .guide-route-nodes>div:nth-child(2)::after{display:none}
+ .intro-guide .guide-collection-visual{flex-wrap:wrap}
+}
+
+.intro-guide:lang(ko){word-break:keep-all;overflow-wrap:anywhere}
+
+:root:lang(ja){--font-body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;--font-display:var(--font-body)}
+:lang(ja){word-break:normal;line-break:strict;overflow-wrap:anywhere}

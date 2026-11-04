@@ -1,10 +1,14 @@
+import { getLocale } from '../../i18n/runtime.js'
+import { t, localize } from '../../i18n/runtime.js'
 import { useEffect, useRef, useState } from 'react'
 import RedemptionPage from './RedemptionPage'
+import PhotoServicePage from '../photo-service/PhotoServicePage'
 import Icon from '../../components/Icon'
 import { deleteLocalPhoto, listLocalPhotos, subscribeLocalPhotos } from '../arrival/photoStore'
 import { photoSourceLabel } from '../arrival/photoModel'
 import { stationNumber } from '../../data/stations'
 import { startLocalPhotoDownload } from './photoDownload'
+import ConfirmActionDialog from '../../components/ConfirmActionDialog'
 import './TravelAlbum.css'
 
 const samplePhotos = [
@@ -15,10 +19,8 @@ const samplePhotos = [
 function LocalPhotoCard({ photo, onDeleted }) {
   const image = useRef(null)
   const deleteButton = useRef(null)
-  const confirmButton = useRef(null)
   const [confirm, setConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [error, setError] = useState('')
   const [downloadNotice, setDownloadNotice] = useState('')
   const [downloadError, setDownloadError] = useState('')
   useEffect(() => { const url = URL.createObjectURL(photo.blob); image.current.src = url; return () => URL.revokeObjectURL(url) }, [photo.blob])
@@ -30,26 +32,25 @@ function LocalPhotoCard({ photo, onDeleted }) {
     } catch (failure) { setDownloadError(failure.message || '無法啟動下載，照片仍保留在本機相簿，請稍後再試。') }
   }
   async function removePhoto() {
-    setDeleting(true); setError('')
+    setDeleting(true)
     try { await deleteLocalPhoto(photo.id); onDeleted() }
-    catch (failure) { setError(failure.message); setDeleting(false) }
+    catch (failure) { setDeleting(false); throw failure }
   }
   return <article className="album-photo-card album-local-card" aria-labelledby={`local-photo-${photo.id}`}>
-    <div className="album-photo-frame"><img ref={image} alt={`${photoSourceLabel(photo.source)}：第 ${stationNumber(photo.stationId)} 站 ${photo.stationName}`} width="1200" height="800" loading="lazy"/><span>{photoSourceLabel(photo.source)}</span></div>
-    <div className="album-local-caption"><small>僅存於本機・{new Date(photo.savedAt).toLocaleString('zh-TW')}</small><h3 id={`local-photo-${photo.id}`}>第 {stationNumber(photo.stationId)} 站 {photo.stationName}</h3><p>{photo.source === 'ai-demo' ? '自行保存的虛構合照，不是你本人或現場真拍。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。'}</p>
-      <div className="album-local-actions"><button className="album-download" type="button" disabled={deleting} aria-label={`下載第 ${stationNumber(photo.stationId)} 站照片`} onClick={downloadPhoto}>下載照片</button><button ref={deleteButton} className="album-delete" disabled={deleting} aria-expanded={confirm} onClick={() => { setConfirm(true); requestAnimationFrame(() => confirmButton.current?.focus()) }}>刪除這張照片</button></div>
-      {downloadNotice && <p className="album-download-notice" role="status">{downloadNotice}</p>}
-      {downloadError && <p className="album-storage-error" role="alert">{downloadError}</p>}
-      {confirm && <div className="album-delete-confirm" role="group" aria-label="確認刪除此照片"><p>只刪除這張本機照片，不影響拼圖或其他照片。此操作無法復原。</p><button ref={confirmButton} className="album-delete" disabled={deleting} onClick={removePhoto}>{deleting ? '正在刪除…' : '確認刪除這張'}</button><button className="album-delete-cancel" disabled={deleting} onClick={() => { setConfirm(false); requestAnimationFrame(() => deleteButton.current?.focus()) }}>取消，保留照片</button></div>}
-      {error && <p className="album-storage-error" role="alert">{error}</p>}
+    <div className="album-photo-frame"><img ref={image} alt={localize(`${photoSourceLabel(photo.source)}：第 ${stationNumber(photo.stationId)} 站 ${photo.stationName}`)} width="1200" height="800" loading="lazy"/><span>{localize(photoSourceLabel(photo.source))}</span></div>
+    <div className="album-local-caption"><small>{t('assetPreviewPage.small.text', { value1: localize(new Date(photo.savedAt).toLocaleString(getLocale())) })}</small><h3 id={`local-photo-${photo.id}`}>{t('assetPreviewPage.h3.text', { value1: localize(stationNumber(photo.stationId)), value2: localize(photo.stationName) })}</h3><p>{localize(photo.source === 'ai-demo' ? '自行保存的虛構合照，不是你本人或現場真拍。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。')}</p>
+      <div className="album-local-actions"><button className="album-download" type="button" disabled={deleting} aria-label={localize(`下載第 ${stationNumber(photo.stationId)} 站照片`)} onClick={downloadPhoto}>{t('assetPreviewPage.album.download.text')}</button><button ref={deleteButton} className="album-delete" disabled={deleting} aria-haspopup="dialog" onClick={() => setConfirm(true)}>{t('assetPreviewPage.album.delete.text')}</button></div>
+      {downloadNotice && <p className="album-download-notice" role="status">{localize(downloadNotice)}</p>}
+      {downloadError && <p className="album-storage-error" role="alert">{localize(downloadError)}</p>}
+      {confirm && <ConfirmActionDialog title={t('assetPreviewPage.ConfirmActionDialog.title')} confirmLabel={t('assetPreviewPage.ConfirmActionDialog.confirmLabel')} cancelLabel={t('assetPreviewPage.ConfirmActionDialog.cancelLabel')} onConfirm={removePhoto} onCancel={()=>setConfirm(false)}><p>{t('arrivalDialog.figcaption.text', { value1: localize(stationNumber(photo.stationId)), value2: localize(photo.stationName) })}</p><p>{t('assetPreviewPage.p.text')}</p></ConfirmActionDialog>}
     </div>
   </article>
 }
 export default function AssetPreviewPage({ page, onNavigate }) {
   if (page === 'train') return <RedemptionPage onNavigate={onNavigate}/>
-  return <PhotoPreviewPage page={page} onNavigate={onNavigate}/>
+  return <PhotoServicePage onNavigate={onNavigate} legacyAlbum={<LegacyPhotoPreviewPage page={page} onNavigate={onNavigate}/>}/>
 }
-function PhotoPreviewPage({ page, onNavigate }) {
+export function LegacyPhotoPreviewPage({ page, onNavigate }) {
   const [photos, setPhotos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -63,16 +64,16 @@ function PhotoPreviewPage({ page, onNavigate }) {
   }, [reload])
   function jumpTo(id) { const target = document.getElementById(id); target?.scrollIntoView({ block: 'start' }); target?.focus({ preventScroll: true }) }
   function afterDelete() { requestAnimationFrame(() => localHeading.current?.focus({ preventScroll: true })) }
-  return <section className="explore-page asset-preview-page" aria-labelledby={`${page}-title`}>
-    <header className="page-heading"><div><p className="eyebrow">沿途的故事，慢慢收藏</p><h1 id={`${page}-title`} tabIndex={-1}>旅程紀念照</h1><p className="heading-description">把你們在各站留下的合照，收藏成這趟旅程的回憶。</p></div></header>
-    <p className="preview-notice"><strong>本機紀念照</strong><span>到站後主動儲存的合照會出現在這裡，僅限這台裝置與此瀏覽器。未上傳雲端；清除網站資料或私人瀏覽結束可能遺失。</span></p>
-    <section className="album-local" aria-labelledby="album-local-title"><header className="album-section-heading"><p className="eyebrow">YOUR LOCAL PHOTOBOOTH</p><h2 id="album-local-title" ref={localHeading} tabIndex={-1}>已存的旅程合照 <small>{photos.length} 張</small></h2><p>拍貼機相冊・照片和探索進度分開保存。重設旅程，不會刪除這裡的照片。可用「下載照片」另存副本，下載不會刪除相簿原檔。</p></header>
-      {loading && <p role="status">正在讀取這台裝置的紀念照…</p>}
-      {error && <div className="album-storage-error" role="alert"><p>{error}</p><button className="album-delete-cancel" onClick={() => { setLoading(true); setReload(value => value + 1) }}>重試讀取</button></div>}
-      {!loading && !error && (photos.length ? <div className="album-photo-grid">{photos.map(photo => <LocalPhotoCard key={photo.id} photo={photo} onDeleted={afterDelete}/>)}</div> : <div className="travel-album-empty"><span className="album-camera"><Icon name="camera" size={28}/></span><h3>還沒有儲存的旅程合照</h3><p>從第 01 站開始，掃碼領片後可以拍照、選擇本機照片，或用示意合照體驗。記得按儲存，就能回到這裡看；也可以不拍照繼續。</p><button className="album-start" onClick={() => onNavigate('explore')}>前往探索，留下合照 →</button></div>)}
+  return <section className="explore-page asset-preview-page" aria-labelledby="legacy-photo-title">
+    <header className="page-heading"><div><p className="eyebrow">{t('assetPreviewPage.eyebrow.text')}</p><h2 id="legacy-photo-title" tabIndex={-1}>{t('assetPreviewPage.legacy.photo.title.text')}</h2><p className="heading-description">{t('assetPreviewPage.heading.description.text')}</p></div></header>
+    <p className="preview-notice"><strong>{t('assetPreviewPage.strong.text')}</strong><span>{t('assetPreviewPage.span.text')}</span></p>
+    <section className="album-local" aria-labelledby="album-local-title"><header className="album-section-heading"><p className="eyebrow">{t('photos.localEyebrow')}</p><h2 id="album-local-title" ref={localHeading} tabIndex={-1}>{t('assetPreviewPage.album.local.title.text')}<small>{t('assetPreviewPage.small.text.2', { value1: localize(photos.length) })}</small></h2><p>{t('assetPreviewPage.p.text.2')}</p></header>
+      {loading && <p role="status">{t('assetPreviewPage.p.text.3')}</p>}
+      {error && <div className="album-storage-error" role="alert"><p>{localize(error)}</p><button className="album-delete-cancel" onClick={() => { setLoading(true); setReload(value => value + 1) }}>{t('assetPreviewPage.album.delete.cancel.text')}</button></div>}
+      {!loading && !error && (photos.length ? <div className="album-photo-grid">{photos.map(photo => <LocalPhotoCard key={photo.id} photo={photo} onDeleted={afterDelete}/>)}</div> : <div className="travel-album-empty"><span className="album-camera"><Icon name="camera" size={28}/></span><h3>{t('assetPreviewPage.h3.text.2')}</h3><p>{t('assetPreviewPage.p.text.4')}</p><button className="album-start" onClick={() => onNavigate('explore')}>{t('assetPreviewPage.album.start.text.2')}<Icon name="arrow" size={16}/></button></div>)}
     </section>
-    <section className="album-samples" aria-labelledby="album-samples-title"><header className="album-section-heading"><p className="eyebrow">INSPIRATION, NOT YOUR PHOTOS</p><h2 id="album-samples-title">每一站，都有你們</h2><p>下方是獨立的親子合照範例，不是你的照片或實際到站紀錄；不會自動加入上方清單。</p></header><div className="album-photo-grid">{samplePhotos.map((photo, index) => <figure className="album-photo-card" key={photo.image}><div className="album-photo-frame"><img src={`${import.meta.env.BASE_URL}images/${photo.image}`} alt={photo.alt} width="1200" height="800" loading="lazy" decoding="async"/><span>合照範例</span></div><figcaption><small>回憶範例 0{index + 1}</small><h3>{photo.title}</h3><p>{photo.description}</p></figcaption></figure>)}</div></section>
-    <p className="album-optional">拍不拍照都能領片、繼續下一站。選照、拍照或預覽 示意照後，都要按「確認儲存到紀念照區」才保存；合照範例不冒充你的真實合照。</p>
-    <footer className="asset-page-footer"><button className="footer-top" onClick={() => jumpTo(`${page}-title`)}>回到頁首 ↑</button><button className="footer-explore" onClick={() => onNavigate('explore')}>返回園區探索 →</button></footer>
+    <section className="album-samples" aria-labelledby="album-samples-title"><header className="album-section-heading"><p className="eyebrow">{t('photos.examplesEyebrow')}</p><h2 id="album-samples-title">{t('assetPreviewPage.album.samples.title.text')}</h2><p>{t('assetPreviewPage.p.text.5')}</p></header><div className="album-photo-grid">{samplePhotos.map((photo, index) => <figure className="album-photo-card" key={photo.image}><div className="album-photo-frame"><img src={`${import.meta.env.BASE_URL}images/${photo.image}`} alt={localize(photo.alt)} width="1200" height="800" loading="lazy" decoding="async"/><span>{t('assetPreviewPage.span.text.2')}</span></div><figcaption><small>{t('assetPreviewPage.small.text.3', { value1: localize(index + 1) })}</small><h3>{localize(photo.title)}</h3><p>{localize(photo.description)}</p></figcaption></figure>)}</div></section>
+    <p className="album-optional">{t('assetPreviewPage.album.optional.text')}</p>
+    <footer className="asset-page-footer"><button className="footer-top" onClick={() => jumpTo(`${page}-title`)}>{t('assetPreviewPage.footer.top.text.2')}<Icon name="up" size={16}/></button><button className="footer-explore" onClick={() => onNavigate('explore')}>{t('assetPreviewPage.footer.explore.text.2')}<Icon name="arrow" size={16}/></button></footer>
   </section>
 }
