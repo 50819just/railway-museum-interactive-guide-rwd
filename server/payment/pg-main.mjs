@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 import { openPostgres } from './pg-adapter.mjs'
 import { PgPaymentService } from './pg-service.mjs'
+import { PgPrintPaymentService } from './pg-print-service.mjs'
 import { digest } from './store.mjs'
 import { createHandler } from './http.mjs'
 import { runtimeOptions } from './runtime.mjs'
@@ -18,7 +19,7 @@ export async function seedPostgres(db, token) {
 }
 export async function runPostgres(env = process.env, args = process.argv.slice(2)) {
   if (env.PAYMENT_MODE !== 'stage') throw new Error('stage-only')
-  const action = args.filter(arg => ['--migrate','--seed','--listen'].includes(arg))
+  const action = args.filter(arg => ['--migrate','--migrate-prints','--seed','--listen'].includes(arg))
   if (args.length !== 1 || action.length !== 1) throw new Error('choose-one-explicit-action')
   const runtime = runtimeOptions(env)
   if (runtime.database !== 'postgres') throw new Error('postgres-mode-required')
@@ -26,6 +27,7 @@ export async function runPostgres(env = process.env, args = process.argv.slice(2
   let server
   try {
     if (action[0] === '--migrate') { await db.migrate(); await db.close(); return }
+    if (action[0] === '--migrate-prints') { await db.ready(); await db.migratePrints(); await db.close(); return }
     await db.ready() // Missing database/migration: do not bind or fall back to a local file.
     if (action[0] === '--seed') {
       if (env.PAYMENT_FIXTURE_TOKEN === env.PAYMENT_STAFF_TOKEN) throw new Error('distinct-fixture-token-required')
@@ -33,13 +35,15 @@ export async function runPostgres(env = process.env, args = process.argv.slice(2
     }
     const config = { mode:'stage',merchantId:env.ECPAY_MERCHANT_ID,hashKey:env.ECPAY_HASH_KEY,hashIV:env.ECPAY_HASH_IV,returnUrl:runtime.returnUrl,clientBackUrl:env.PAYMENT_CLIENT_BACK_URL,holdMs:Number(env.PAYMENT_HOLD_MINUTES)*60000,opensAt:Date.parse(env.PAYMENT_OPENS_AT),closesAt:Date.parse(env.PAYMENT_CLOSES_AT) }
     const service = new PgPaymentService(db,config)
+    let printService
+    if (env.PAYMENT_PRINTS_ENABLED === 'true') { await db.readyPrints(); printService = new PgPrintPaymentService(db,config) }
     if (!Number.isInteger(runtime.port) || runtime.port < 1024 || runtime.port > 65535) throw new Error('explicit-port-required')
     if (env.PAYMENT_STAFF_TOKEN && (env.PAYMENT_STAFF_TOKEN.length < 32 || await db.prepare('SELECT id FROM subjects WHERE token_hash=?').get(digest(env.PAYMENT_STAFF_TOKEN)))) throw new Error('distinct-staff-token-required')
-    server=createServer(createHandler(service,{allowedOrigin:runtime.allowedOrigin,publicOrigin:runtime.publicOrigin,staffToken:runtime.publicOrigin?undefined:env.PAYMENT_STAFF_TOKEN}))
+    server=createServer(createHandler(service,{printService,allowedOrigin:runtime.allowedOrigin,publicOrigin:runtime.publicOrigin,staffToken:runtime.publicOrigin?undefined:env.PAYMENT_STAFF_TOKEN}))
     server.requestTimeout=40000;server.headersTimeout=10000;server.maxRequestsPerSocket=100
     await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(runtime.port,runtime.host,resolve)})
     let expiring=false
-    const timer=setInterval(async()=>{if(expiring)return;expiring=true;try{await service.expire()}catch{/* next attempt/request retries; no PII logs */}finally{expiring=false}},30000)
+    const timer=setInterval(async()=>{if(expiring)return;expiring=true;try{await service.expire();if(printService)await printService.expire()}catch{/* next attempt/request retries; no PII logs */}finally{expiring=false}},30000)
     timer.unref()
     let closing=false
     const close=()=>{if(closing)return;closing=true;clearInterval(timer);server.close(()=>{void db.close()})}

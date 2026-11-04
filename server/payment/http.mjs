@@ -19,7 +19,7 @@ async function readBody(req) {
   }
   return Buffer.concat(chunks).toString('utf8')
 }
-export function createHandler(service, { allowedOrigin = 'http://localhost:5179', staffToken, publicOrigin = null } = {}) {
+export function createHandler(service, { allowedOrigin = 'http://localhost:5179', staffToken, publicOrigin = null, printService = null } = {}) {
   return async (req, res) => {
     res.setHeader('Cache-Control', 'no-store')
     res.setHeader('X-Content-Type-Options', 'nosniff')
@@ -42,14 +42,35 @@ export function createHandler(service, { allowedOrigin = 'http://localhost:5179'
       if (req.method === 'OPTIONS' && !isCallback) return send(204, '')
       if (isCallback) {
         if (!req.headers['content-type']?.startsWith('application/x-www-form-urlencoded')) throw new PaymentError('form-required', 415)
-        return send(200, await service.notify(parseUniqueForm(await readBody(req))), 'text/plain; charset=utf-8')
+        const fields = parseUniqueForm(await readBody(req))
+        const recipient = /^RP[A-Za-z0-9]{18}$/.test(fields.MerchantTradeNo || '') ? printService : service
+        if (!recipient) throw new PaymentError('print-stage-disabled',503)
+        return send(200, await recipient.notify(fields), 'text/plain; charset=utf-8')
       }
       const token = req.headers.authorization?.replace(/^Bearer /, '')
       if (req.method === 'POST' && /^\/api\/payment\/staff\/orders\/[A-Za-z0-9]+\/collect$/.test(path)) {
         if (!staffToken || typeof token !== 'string' || !timingSafeEqual(Buffer.from(digest(token)), Buffer.from(digest(staffToken)))) throw new PaymentError('staff-required', 403)
         return send(200, await service.collect(path.split('/')[5]))
       }
+      const printReturn = /^\/api\/payment\/print-return\/(RP[A-Za-z0-9]{18})$/.exec(path)
+      if (req.method === 'GET' && printReturn) {
+        if (!printService) throw new PaymentError('print-stage-disabled',503)
+        return send(200, await printService.readReturn(printReturn[1], token))
+      }
       const subject = await service.authenticate(token)
+      if (path === '/api/payment/prints' || path.startsWith('/api/payment/prints/')) {
+        if (!printService) throw new PaymentError('print-stage-disabled',503)
+        if (path === '/api/payment/prints/options' && req.method === 'GET') return send(200, await printService.options())
+        if (path === '/api/payment/prints' && req.method === 'GET') return send(200, { orders: await printService.list(subject) })
+        if (path === '/api/payment/prints' && req.method === 'POST') {
+          if (!req.headers['content-type']?.startsWith('application/json')) throw new PaymentError('json-required',415)
+          return send(201, await printService.create(subject,JSON.parse(await readBody(req)),req.headers['idempotency-key']))
+        }
+        const printMatch = /^\/api\/payment\/prints\/(RP[A-Za-z0-9]{18})(?:\/(checkout|query|cancel))?$/.exec(path)
+        if (printMatch && req.method === 'GET' && !printMatch[2]) return send(200,await printService.get(subject,printMatch[1]))
+        if (printMatch && req.method === 'POST' && printMatch[2]) return send(200,await printService[printMatch[2]](subject,printMatch[1]))
+        return send(404,{error:'not-found'})
+      }
       if (req.method === 'GET' && path === '/api/payment/orders') return send(200, { orders: await service.list(subject) })
       if (req.method === 'POST' && ['/api/payment/orders', '/api/payment/free-applications'].includes(path)) {
         if (!req.headers['content-type']?.startsWith('application/json')) throw new PaymentError('json-required', 415)
