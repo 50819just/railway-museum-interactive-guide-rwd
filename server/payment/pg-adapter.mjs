@@ -6,7 +6,7 @@ export function postgresSql(sql) {
   let count = 0
   sql = sql.replaceAll('?', () => `$${++count}`)
   if (sql.startsWith('INSERT OR IGNORE INTO ')) sql = sql.replace('INSERT OR IGNORE INTO ', 'INSERT INTO ') + ' ON CONFLICT DO NOTHING'
-  return sql.replace(/\b(FROM|INTO|UPDATE|JOIN)\s+(schema_version|subjects|products|orders|claims|query_attempts|events|print_slots|print_orders|print_events|print_query_attempts)\b/gi, '$1 railway_payment_stage.$2')
+  return sql.replace(/\b(FROM|INTO|UPDATE|JOIN)\s+(schema_version|subjects|products|orders|claims|query_attempts|events|print_slots|print_orders|print_events|print_query_attempts|public_demo_checkouts)\b/gi, '$1 railway_payment_stage.$2')
 }
 const normalize = row => row && Object.fromEntries(Object.entries(row).map(([key, value]) => [key, ['expires_at','created_at','attempted_at','received_at'].includes(key) && value !== null ? Number(value) : value]))
 export function createPgAdapter(pool) {
@@ -42,6 +42,8 @@ export function createPgAdapter(pool) {
       await this.transaction(async () => { await context.getStore().query(sql) })
     },
     async migratePrints() { const sql=await readFile(new URL('./postgres/002-print-stage.sql',import.meta.url),'utf8'); await this.transaction(async()=>{await context.getStore().query(sql)}) },
+    async migratePublic() { const sql=await readFile(new URL('./postgres/003-public-demo.sql',import.meta.url),'utf8'); await this.transaction(async()=>{await context.getStore().query(sql)}) },
+    async readyPublic() { await this.prepare('SELECT request_hash FROM public_demo_checkouts LIMIT 0').all() },
     async readyPrints() { await this.prepare('SELECT id FROM print_orders LIMIT 0').all() },
     async ready() { await this.prepare('SELECT version FROM schema_version WHERE version=1').get().then(row => { if (!row) throw new Error('database-migration-required') }) },
     close: () => pool.end(),

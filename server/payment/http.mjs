@@ -19,7 +19,7 @@ async function readBody(req) {
   }
   return Buffer.concat(chunks).toString('utf8')
 }
-export function createHandler(service, { allowedOrigin = 'http://localhost:5179', staffToken, publicOrigin = null, printService = null } = {}) {
+export function createHandler(service, { allowedOrigin = 'http://localhost:5179', staffToken, publicOrigin = null, printService = null, publicStage = null } = {}) {
   return async (req, res) => {
     res.setHeader('Cache-Control', 'no-store')
     res.setHeader('X-Content-Type-Options', 'nosniff')
@@ -56,6 +56,17 @@ export function createHandler(service, { allowedOrigin = 'http://localhost:5179'
       if (req.method === 'GET' && printReturn) {
         if (!printService) throw new PaymentError('print-stage-disabled',503)
         return send(200, await printService.readReturn(printReturn[1], token))
+      }
+      if (req.method === 'POST' && path === '/api/payment/public/checkout') {
+        if (!publicStage) throw new PaymentError('public-demo-disabled',503)
+        if (origin !== allowedOrigin) throw new PaymentError('public-demo-origin-required',403)
+        if (!req.headers['content-type']?.startsWith('application/json')) throw new PaymentError('json-required',415)
+        return send(201,await publicStage.checkout(JSON.parse(await readBody(req)),req.headers['idempotency-key']))
+      }
+      const publicReturn=/^\/api\/payment\/public-return\/((?:RM|RP)[A-Za-z0-9]{18})$/.exec(path)
+      if (req.method === 'GET' && publicReturn) {
+        if (!publicStage) throw new PaymentError('public-demo-disabled',503)
+        return send(200,await publicStage.readReturn(publicReturn[1],token))
       }
       const subject = await service.authenticate(token)
       if (path === '/api/payment/prints' || path.startsWith('/api/payment/prints/')) {
