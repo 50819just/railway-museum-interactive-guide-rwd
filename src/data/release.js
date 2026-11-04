@@ -1,3 +1,3 @@
-export const APP_VERSION = '0.1.1'
-export const RELEASE_DATE = '2026-11-02'
-export const RELEASE_BASE_COMMIT = '4b0f378e4d4f98b8448119a3d70238baf2244089'
+export const APP_VERSION = '0.1.2'
+export const RELEASE_DATE = '2026-11-04'
+export const RELEASE_BASE_COMMIT = '8e995ac10180a87d949b7aeda3a5326b44e4e53d'
