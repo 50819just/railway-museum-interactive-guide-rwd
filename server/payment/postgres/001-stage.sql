@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS subjects(id TEXT PRIMARY KEY, token_hash TEXT UNIQUE 
     CREATE TABLE IF NOT EXISTS claims(subject_id TEXT PRIMARY KEY REFERENCES subjects(id), order_id TEXT UNIQUE NOT NULL REFERENCES orders(id));
     CREATE TABLE IF NOT EXISTS query_attempts(order_id TEXT PRIMARY KEY REFERENCES orders(id), attempted_at BIGINT NOT NULL);
     CREATE TABLE IF NOT EXISTS events(event_hash TEXT PRIMARY KEY, order_id TEXT NOT NULL REFERENCES orders(id), kind TEXT NOT NULL, received_at BIGINT NOT NULL);
-  
+
 INSERT INTO schema_version(version) VALUES(1) ON CONFLICT DO NOTHING;
