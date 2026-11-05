@@ -35,7 +35,6 @@ export async function renderPrint(photos, layout, crops) {
   }
   ctx.textAlign='center';ctx.fillStyle='#123f46';ctx.font='bold 48px sans-serif';const headingBottom = drawPrintText(ctx,t('print.heading', {}, locale),canvas.width/2,canvas.height-220,canvas.width-120,54,locale)
   ctx.font='26px sans-serif';const names=photos.map(p=>t('print.stop', { number: String(p.stationId).padStart(2,'0') }, locale)).join('  /  ');drawPrintText(ctx,names || t('print.family', {}, locale),canvas.width/2,Math.max(canvas.height-125,headingBottom+48),canvas.width-120,32,locale)
-  if(photos.some(p=>p.source==='ai-demo')) {ctx.font='24px sans-serif';drawPrintText(ctx,t('print.aiNotice', {}, locale),canvas.width/2,canvas.height-65,canvas.width-120,28,locale)}
   return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error(localize('排版輸出失敗，請重試。'))),'image/png'))
 }
 export function downloadPrint(blob) {

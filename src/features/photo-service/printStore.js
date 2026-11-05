@@ -1,4 +1,5 @@
 import { PRINT_DB, validateBooking, changeStatus } from './printModel'
+import { projectStagePrint } from './printPaymentContext.mjs'
 let connection
 function open() {
   if (connection) return connection
@@ -38,3 +39,17 @@ export async function updateOrder(id, action) {
     tx.onabort=()=>reject(failure || Error('狀態未儲存成功，請重試。'))
   })
 }
+
+const stageEvent='railway-print-stage-order-updated'
+export function subscribePrintOrders(listener){window.addEventListener(stageEvent,listener);return()=>window.removeEventListener(stageEvent,listener)}
+
+async function saveStageRecord(id,remote,link){
+ const db=await open()
+ return new Promise((resolve,reject)=>{const tx=db.transaction('orders','readwrite'),store=tx.objectStore('orders'),req=store.get(id);let result,failure
+  req.onsuccess=()=>{try{const current=req.result;if(!current)throw Error('本機排版紀錄不存在。');if(link&&!current.stagePayment&&current.status!=='unpaid')throw Error('只可連結尚未付款的照片預訂。');if(!link&&!current.stagePayment)throw Error('本機預訂尚未連結此測試單。');const stage=projectStagePrint(current,remote);let status=current.status;if(stage.payment==='paid'&&stage.reservation==='confirmed'&&status==='unpaid')status='queued';else if(stage.payment!=='paid'&&['cancelled','expired','failed'].includes(stage.reservation))status='cancelled';result={...current,stagePayment:stage,paymentConfirmed:stage.payment==='paid',status};store.put(result)}catch(e){failure=e;tx.abort()}}
+  tx.oncomplete=()=>{window.dispatchEvent(new Event(stageEvent));resolve(result)}
+  tx.onabort=()=>reject(failure||Error('付款紀錄無法同步到本機；伺服器訂單仍保留。'))
+ })
+}
+export const linkStagePrintOrder=(id,remote)=>saveStageRecord(id,remote,true)
+export const recordVerifiedStagePayment=(id,remote)=>saveStageRecord(id,remote,false)

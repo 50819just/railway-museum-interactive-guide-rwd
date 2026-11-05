@@ -3,8 +3,11 @@ import { createIntroState, readIntroRecord, writeIntroRecord, introTransition } 
 
 const getStorage = () => window.localStorage
 
-export default function useIntro() {
-  const [state, setState] = useState(() => createIntroState(readIntroRecord(getStorage)))
+export default function useIntro({ autoOpen = true } = {}) {
+  const [state, setState] = useState(() => {
+    const initial = createIntroState(readIntroRecord(getStorage))
+    return autoOpen ? initial : { ...initial, phase: 'closed' }
+  })
   const replayReturnRef = useRef(null)
   const act = useCallback((action, trigger = document.activeElement) => {
     if (action === 'replayWelcome' || action === 'replayTutorial') {

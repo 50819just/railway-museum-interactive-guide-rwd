@@ -1,23 +1,23 @@
 export const JOURNEY_KEY = 'railway.journey-demo.v2'
 export const TOTAL_STATIONS = 10
 export const initialJourney = () => ({ version: 2, completed: [] })
-export const nextStationId = state => state.completed.length < TOTAL_STATIONS ? state.completed.length + 1 : null
+export const nextStationId = state => Array.from({ length: TOTAL_STATIONS }, (_, index) => index + 1).find(id => !state.completed.includes(id)) ?? null
 export const stationPayload = id => `railway-demo:station:${String(id).padStart(2, '0')}`
 export function normalizeJourney(value) {
-  if (!value || value.version !== 2 || !Array.isArray(value.completed) || value.completed.length > 10 || value.completed.some((id, index) => id !== index + 1)) return initialJourney()
+  if (!value || value.version !== 2 || !Array.isArray(value.completed) || value.completed.length > 10 || new Set(value.completed).size !== value.completed.length || value.completed.some(id => !Number.isInteger(id) || id < 1 || id > TOTAL_STATIONS)) return initialJourney()
   return { version: 2, completed: [...value.completed] }
 }
-export function inspectPayload(state, input) {
+export function inspectPayload(state, input, mode = 'sequential') {
   const match = typeof input === 'string' && /^railway-demo:station:(0[1-9]|10)$/.exec(input.trim())
   if (!match) return { ok: false, kind: 'invalid', message: '無法辨識站點碼，請重新掃描或貼上完整站點碼。' }
   const id = Number(match[1])
   if (state.completed.includes(id)) return { ok: false, kind: 'duplicate', stationId: id, message: `第 ${match[1]} 站已領過拼圖，不會重複發片。` }
   const next = nextStationId(state)
-  if (id !== next) return { ok: false, kind: 'outoforder', stationId: id, message: next ? `先完成第 ${String(next).padStart(2, '0')} 站，再來這裡。首輪必須依序集片。` : '首輪十站已完成，不會再新增拼圖。' }
+  if (mode !== 'free' && id !== next) return { ok: false, kind: 'outoforder', stationId: id, message: next ? `先完成第 ${String(next).padStart(2, '0')} 站，再來這裡。首輪必須依序集片。` : '首輪十站已完成，不會再新增拼圖。' }
   return { ok: true, kind: 'ready', stationId: id }
 }
-export function completeStation(state, payload) {
-  const result = inspectPayload(state, payload)
+export function completeStation(state, payload, mode = 'sequential') {
+  const result = inspectPayload(state, payload, mode)
   return result.ok ? { ...result, state: { version: 2, completed: [...state.completed, result.stationId] } } : { ...result, state }
 }
 export function readJourney(storage) {

@@ -1,4 +1,4 @@
-import { copyQuestionSet, selectQuestionSet } from './museumQuestionSelection.js'
+import { copyQuestionSet, selectStationQuestionSet } from './museumQuestionSelection.js'
 
 // Frontend demonstration proposal only. Not museum policy or anti-cheat protection.
 export const BONUS_KEY = 'railway.puzzle-bonus-demo.v1'
@@ -6,12 +6,12 @@ export const BONUS_POLICY_NOTE = '規則尚未經館方確認；機率、次數�
 export const BONUS_POLICY = Object.freeze({
   totalPieces: 10,
   checkpoints: Object.freeze([
-    Object.freeze({ visits: 3, probability: 0.1 }),
-    Object.freeze({ visits: 4, probability: 1 }),
-    Object.freeze({ visits: 5, probability: 0.2 }),
+    Object.freeze({ visits: 3, probability: 1 }),
+    Object.freeze({ visits: 6, probability: 1 }),
+    Object.freeze({ visits: 8, probability: 0.5 }),
   ]),
   maxGeneralChances: 3,
-  maxDraws: 4,
+  maxDraws: 3,
   quizLength: 3,
   easyAfterWrong: 2,
   departureWindowMinutes: 30,
@@ -19,7 +19,7 @@ export const BONUS_POLICY = Object.freeze({
 })
 
 export const initialBonus = () => ({
-  version: 1, bonusPieces: [], checks: [], generalIssued: 0,
+  version: 1, policyVersion: 2, policyChecks: [], bonusPieces: [], checks: [], generalIssued: 0,
   availableChances: 0, quiz: null, pendingDraw: false, drawsUsed: 0,
   departureAt: null, timeIssued: false, lastVisitCount: 0,
 })
@@ -38,11 +38,13 @@ function validDeparture(value) {
 export function validBonus(value) {
   if (!value || value.version !== 1 || !Array.isArray(value.bonusPieces) || !Array.isArray(value.checks)) return false
   if (normalizeVisitIds(value.bonusPieces).length !== value.bonusPieces.length || value.bonusPieces.some(id => !Number.isInteger(id) || id < 1 || id > BONUS_POLICY.totalPieces)) return false
-  if (new Set(value.checks).size !== value.checks.length || value.checks.some(n => !BONUS_POLICY.checkpoints.some(check => check.visits === n))) return false
+  if (new Set(value.checks).size !== value.checks.length || value.checks.some(n => ![3, 4, 5, 6, 8].includes(n))) return false
   if (!integer(value.generalIssued, BONUS_POLICY.maxGeneralChances) || value.generalIssued > value.checks.length) return false
   if (value.checks.includes(4) && value.generalIssued < 1) return false
+  if (value.policyVersion !== undefined && value.policyVersion !== 2) return false
+  if (value.policyChecks !== undefined && (!Array.isArray(value.policyChecks) || new Set(value.policyChecks).size !== value.policyChecks.length || value.policyChecks.some(n => ![3, 6, 8].includes(n) || n > value.lastVisitCount || !value.checks.includes(n)))) return false
   if (!integer(value.lastVisitCount, BONUS_POLICY.totalPieces) || value.checks.some(n => n > value.lastVisitCount)) return false
-  if (!integer(value.availableChances, BONUS_POLICY.maxDraws) || !integer(value.drawsUsed, BONUS_POLICY.maxDraws)) return false
+  if (!integer(value.availableChances, 4) || !integer(value.drawsUsed, 4)) return false
   if (typeof value.timeIssued !== 'boolean' || typeof value.pendingDraw !== 'boolean' || !validDeparture(value.departureAt)) return false
   if (value.quiz !== null) {
     const q = value.quiz
@@ -52,13 +54,13 @@ export function validBonus(value) {
   if (value.bonusPieces.length !== value.drawsUsed) return false
   const issued = value.generalIssued + Number(value.timeIssued)
   const allocated = value.availableChances + Number(value.quiz !== null) + Number(value.pendingDraw) + value.drawsUsed
-  return issued === allocated && issued <= BONUS_POLICY.maxDraws
+  return issued === allocated && issued <= 4
 }
 export function normalizeBonus(value) {
   if (!validBonus(value)) return initialBonus()
   // Strip unknown fields and never preserve UI-only flags in persisted data.
   return {
-    version: 1, bonusPieces: [...value.bonusPieces], checks: [...value.checks],
+    version: 1, policyVersion: 2, policyChecks: [...(value.policyChecks || [])], bonusPieces: [...value.bonusPieces], checks: [...value.checks],
     generalIssued: value.generalIssued, availableChances: value.availableChances,
     quiz: value.quiz ? { step: value.quiz.step, consecutiveWrong: value.quiz.consecutiveWrong, totalWrong: value.quiz.totalWrong, ...copyQuestionSet(value.quiz) } : null, pendingDraw: value.pendingDraw,
     drawsUsed: value.drawsUsed, departureAt: value.departureAt,
@@ -80,21 +82,28 @@ export function syncBonusProgress(state, completed, { random = Math.random, now 
   const count = normalizeVisitIds(completed).length
   let next = state
   let granted = 0
-  // Persist every crossed checkpoint even when the roll fails. Rendering or refresh
-  // cannot reroll it; arriving at several stations before opening this page is fine.
-  if (count > state.lastVisitCount) {
-    next = { ...state, checks: [...state.checks], lastVisitCount: count }
-    for (const checkpoint of BONUS_POLICY.checkpoints) {
-      if (checkpoint.visits > count || next.checks.includes(checkpoint.visits)) continue
-      next.checks.push(checkpoint.visits)
-      if (next.generalIssued < BONUS_POLICY.maxGeneralChances && (checkpoint.probability === 1 || roll(random) < checkpoint.probability)) {
+  // V1 checks remain historical evidence. Separate v2 checks allow idempotent
+  // catch-up at the same visit count without reinterpreting old failed rolls.
+  const policyChecks = state.policyChecks || []
+  const crossed = BONUS_POLICY.checkpoints.filter(check => check.visits <= count && !policyChecks.includes(check.visits))
+  if (count > state.lastVisitCount || crossed.length || state.policyVersion !== 2) {
+    next = { ...state, policyVersion: 2, policyChecks: [...policyChecks], checks: [...state.checks], lastVisitCount: Math.max(count, state.lastVisitCount) }
+    for (const checkpoint of crossed) {
+      next.policyChecks.push(checkpoint.visits)
+      if (!next.checks.includes(checkpoint.visits)) next.checks.push(checkpoint.visits)
+      const issued = next.generalIssued + Number(next.timeIssued)
+      // Historical grants count toward the two guarantees; never revoke them.
+      const target = checkpoint.visits === 3 ? 1 : checkpoint.visits === 6 ? 2 : 3
+      if (issued < BONUS_POLICY.maxDraws && issued < target && (checkpoint.probability === 1 || roll(random) < checkpoint.probability)) {
         next.generalIssued += 1
         next.availableChances += 1
         granted += 1
       }
     }
   }
-  if (bonusTimeEligible(next, completed, now)) {
+  // Time help shares the optional third slot, after the two guaranteed offers.
+  // A failed eighth-visit roll may still receive time help, never a fourth offer.
+  if (next.generalIssued >= 2 && next.generalIssued + Number(next.timeIssued) < BONUS_POLICY.maxDraws && bonusTimeEligible(next, completed, now)) {
     next = { ...next, timeIssued: true, availableChances: next.availableChances + 1 }
     granted += 1
   }
@@ -107,12 +116,13 @@ export function configureDeparture(state, value, completed, options = {}) {
   const synced = syncBonusProgress(next, completed, options)
   return { ...synced, kind: 'departure-set', message: synced.granted ? `離館時間已更新；${synced.message}` : departureAt ? '預計離館時間已儲存。' : '已清除預計離館時間。' }
 }
-export function beginBonusChallenge(state, completed) {
+export function beginBonusChallenge(state, completed, stationId) {
+  if (stationId !== undefined && !selectStationQuestionSet(stationId)) return result(state, false, 'invalid-station', '請先選擇有效的探索站點，原答題機會保留。')
   if (!remainingPuzzleIds(completed, state).length) return result(state, false, 'complete', '拼圖已收齊，不會消耗答題機會。')
   if (state.quiz) return result(state, false, 'quiz-active', '先完成目前的三題挑戰。')
   if (state.pendingDraw) return result(state, false, 'draw-pending', '你已有一次待抽取機會，先收下這片拼圖。')
   if (!state.availableChances) return result(state, false, 'no-chance', '目前沒有可用的額外答題機會。')
-  return result({ ...state, availableChances: state.availableChances - 1, quiz: { step: 0, consecutiveWrong: 0, totalWrong: 0, ...selectQuestionSet(completed, state.drawsUsed) } }, true, 'quiz-started', '依序答對三題，即可取得一次拼圖抽取機會。')
+  return result({ ...state, availableChances: state.availableChances - 1, quiz: { step: 0, consecutiveWrong: 0, totalWrong: 0, ...selectStationQuestionSet(stationId ?? completed.at(-1) ?? 1, state.drawsUsed) } }, true, 'quiz-started', '依序答對三題，即可取得一次拼圖抽取機會。')
 }
 export function answerBonusChallenge(state, correct) {
   if (!state.quiz) return result(state, false, 'no-quiz', '目前沒有進行中的答題挑戰。')
@@ -129,7 +139,7 @@ export function drawBonusPiece(state, completed, { random = Math.random } = {}) 
   if (!state.pendingDraw) return result(state, false, 'no-draw', '請先完成三題挑戰，取得抽取機會。')
   const missing = remainingPuzzleIds(completed, state)
   if (!missing.length) return result(state, false, 'complete', '拼圖已收齊，保留這次抽取機會，不會消耗。')
-  if (state.drawsUsed >= BONUS_POLICY.maxDraws) return result(state, false, 'draw-limit', '已達本次額外抽取上限。')
+  if (state.drawsUsed >= Math.max(BONUS_POLICY.maxDraws, state.generalIssued + Number(state.timeIssued))) return result(state, false, 'draw-limit', '已達本次額外抽取上限。')
   const piece = missing[Math.floor(roll(random) * missing.length)]
   return result({ ...state, bonusPieces: [...state.bonusPieces, piece], pendingDraw: false, drawsUsed: state.drawsUsed + 1 }, true, 'drawn', `收下第 ${String(piece).padStart(2, '0')} 片拼圖。到訪紀錄不會因此改變。`, { piece })
 }

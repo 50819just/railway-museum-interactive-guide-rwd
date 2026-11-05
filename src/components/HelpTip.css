@@ -1,0 +1,9 @@
+.help-tip{display:inline-flex;vertical-align:middle;align-items:center;flex-shrink:0;position:relative}
+.help-tip .help-tip-trigger{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:10px;border:0;border-radius:50%;background:transparent;color:var(--teal,#17474d);box-shadow:none;cursor:help;touch-action:manipulation;-webkit-touch-callout:none;user-select:none}
+.help-tip .help-tip-trigger:hover{background:transparent;color:var(--gold-ink,#795f2e)}
+.help-tip .help-tip-trigger:focus-visible{outline:2px solid currentColor;outline-offset:1px}
+.help-tip .help-tip-trigger svg{fill:none;flex-shrink:0}
+.help-tip-popover{position:fixed;inset:auto;margin:0;box-sizing:border-box;max-width:calc(100vw - 24px);max-height:min(360px,calc(100dvh - 24px));overflow:auto;padding:14px 16px;border:1px solid var(--line,#d6dfdb);border-radius:12px;background:#fff;color:var(--teal,#17474d);box-shadow:0 8px 28px #123f4624;font:400 13px/1.8 var(--font-sans,sans-serif);text-align:left;letter-spacing:normal;white-space:normal;overflow-wrap:anywhere;z-index:10000}
+.help-tip-popover[hidden]{display:none!important}.help-tip-popover p{margin:0 0 8px}.help-tip-popover p:last-child{margin-bottom:0}.help-tip-popover strong{font-weight:700}.help-tip-popover::backdrop{background:transparent;pointer-events:none}
+.entry-demo-controls{display:flex;justify-content:center;align-items:center;gap:4px;padding:22px 16px calc(var(--mobile-nav-height,76px) + 24px);background:var(--paper,#faf8f3)}
+.entry-demo-controls>button{min-height:44px;padding:10px 18px;border:1px solid var(--line,#d6dfdb);border-radius:12px;background:transparent;color:var(--teal,#17474d);font:inherit;cursor:pointer}

@@ -3,6 +3,7 @@ import useLocale from './i18n/useLocale'
 import { getLocale } from './i18n/runtime'
 import { useEffect, useRef, useState } from 'react'
 import AppShell from './components/AppShell'
+import EntryGate from './features/entry/EntryGate'
 import ExplorePage from './features/explore/ExplorePage'
 import AssetPreviewPage from './features/assets/AssetPreviewPage'
 import FamilyPage from './features/family/FamilyPage'
@@ -16,6 +17,8 @@ import IntroExperience from './features/intro/IntroExperience'
 import useIntro from './features/intro/useIntro'
 import PaymentDemoPage from './features/payment/PaymentDemoPage'
 import PaymentDemoReturnDialog from './features/payment/PaymentDemoReturnDialog'
+import GiftStageReturnDialog from './features/payment/GiftStageReturnDialog'
+import PhotoStageReturnDialog from './features/photo-service/PhotoStageReturnDialog'
 import './App.css'
 import './styles/StitchVisual.css'
 import './styles/TextLayout.css'
@@ -27,6 +30,9 @@ function focusPage() {
   })
 }
 export default function App() {
+  return <EntryGate><MuseumApp/></EntryGate>
+}
+function MuseumApp({ onOpenJourneySettings }) {
   const locale = useLocale()
   useEffect(() => { document.documentElement.lang = getLocale(); document.title = t('app.title') }, [locale])
   const [page, setPage] = useState(currentPage)
@@ -37,7 +43,7 @@ export default function App() {
     const timer = window.setInterval(sync, 30000)
     return () => window.clearInterval(timer)
   }, [journey.completed])
-  const { state: intro, act: introAction } = useIntro()
+  const { state: intro, act: introAction } = useIntro({ autoOpen: false })
   const previousPageRef = useRef(page)
   useEffect(() => {
     const update = () => setPage(currentPage())
@@ -53,5 +59,5 @@ export default function App() {
     if (next===page) focusPage()
     else window.location.hash=next
   }
-  return <><AppShell page={page} onNavigate={navigate}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">{t('app.intro.session.notice.text')}</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='payment-demo'&&<PaymentDemoPage onNavigate={navigate}/>} {page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><PaymentDemoReturnDialog active={page==='train' && intro.phase==='closed'}/><IntroExperience state={intro} onAction={introAction}/></>
+  return <><AppShell page={page} onNavigate={navigate} onOpenJourneySettings={onOpenJourneySettings}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">{t('app.intro.session.notice.text')}</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='payment-demo'&&<PaymentDemoPage onNavigate={navigate}/>} {page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><PaymentDemoReturnDialog active={page==='train' && intro.phase==='closed'}/><GiftStageReturnDialog active={['train','payment-demo'].includes(page) && intro.phase==='closed'}/><PhotoStageReturnDialog active={page==='photos' && intro.phase==='closed'}/><IntroExperience state={intro} onAction={introAction}/></>
 }

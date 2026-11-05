@@ -48,3 +48,6 @@
 .redemption-page .redeem-select-button{justify-content:center;text-align:center}
 
 .redeem-cost .redeem-cost-line{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.redeem-cost .redeem-puzzle-amount{display:inline-flex;align-items:center;gap:5px;flex-shrink:0}.redeem-puzzle-amount svg{flex-shrink:0}.redeem-cost-line>span{white-space:nowrap}
+
+/* Details browsing stays independent from the redemption CTA. */
+.redemption-page .redeem-image-details{display:block;width:100%;min-width:0;padding:0;border-radius:0;background:var(--sand);color:inherit;cursor:pointer;align-self:start}.redeem-image-details .redeem-product-image{display:block}.redemption-page .redeem-name-details{display:block;width:100%;min-height:44px;padding:0;background:transparent;color:inherit;text-align:start;font:inherit;line-height:inherit;overflow-wrap:anywhere}.redeem-name-details>span{display:block;font-family:var(--font-sans);font-size:12px;font-weight:400;color:var(--gold-ink);text-decoration:underline;text-underline-offset:4px;margin-top:4px}.redemption-page .redeem-image-details:focus-visible{outline:3px solid var(--teal);outline-offset:-5px}.redemption-page .redeem-name-details:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:3px}.redeem-name-details:hover>span{text-decoration-thickness:2px}

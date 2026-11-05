@@ -1,3 +1,4 @@
+import HelpTip from '../../components/HelpTip'
 import LanguageSwitcher from '../../i18n/LanguageSwitcher'
 import { t } from '../../i18n/runtime.js'
 import { useEffect, useRef } from 'react'
@@ -30,7 +31,7 @@ export default function WelcomeScreen({ onStart, sessionOnly }) {
     <LanguageSwitcher/><div className="welcome-composition">
       <header className="welcome-copy"><h1 ref={titleRef} tabIndex={-1} id="intro-welcome-title">{t('appShell.brand.name.text')}</h1><p className="welcome-slogan" id="intro-welcome-slogan">{t('welcomeScreen.welcome.slogan.text')}</p><p className="welcome-subtitle">{t('appShell.small.text')}</p></header>
       <div className="welcome-art"><WelcomeArt/></div>
-      <footer className="welcome-actions"><button className="welcome-start-button" type="button" onClick={onStart}>{t('familyPage.copy.3')}<Icon name="arrow" size={23}/></button><p className="welcome-keyboard-hint">{t('welcomeScreen.welcome.keyboard.hint.text')}</p><span className="sr-only">{t('welcomeScreen.sr.only.text')}</span>{sessionOnly && <p className="intro-storage-notice" role="status">{t('onboardingDialog.intro.storage.notice.text')}</p>}</footer>
+      <footer className="welcome-actions"><button className="welcome-start-button" type="button" onClick={onStart}>{t('familyPage.copy.3')}<Icon name="arrow" size={23}/></button><HelpTip label="鍵盤操作說明">{t('welcomeScreen.welcome.keyboard.hint.text')}</HelpTip><span className="sr-only">{t('welcomeScreen.sr.only.text')}</span>{sessionOnly && <p className="intro-storage-notice" role="status">{t('onboardingDialog.intro.storage.notice.text')}</p>}</footer>
     </div>
   </dialog>
 }

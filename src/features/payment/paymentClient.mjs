@@ -11,7 +11,15 @@ export function createPaymentClient({ origin, token, fetchImpl = fetch, trustedS
     return data
   }
   const orderPath = id => { if (!/^RM[A-Za-z0-9]{18}$/.test(id)) throw new Error('測試訂單編號不正確'); return `orders/${id}` }
+  const printPath = id => { if (!/^RP[A-Za-z0-9]{18}$/.test(id)) throw new Error('Invalid print order ID'); return `prints/${id}` }
   return {
+    printOptions: () => request('prints/options'),
+    createPrint: (input, requestKey) => request('prints', { method: 'POST', body: input, requestKey }),
+    listPrints: () => request('prints'),
+    getPrint: id => request(printPath(id)),
+    queryPrint: id => request(`${printPath(id)}/query`, { method: 'POST' }),
+    cancelPrint: id => request(`${printPath(id)}/cancel`, { method: 'POST' }),
+    checkoutPrint: id => request(`${printPath(id)}/checkout`, { method: 'POST' }),
     create: (productId, free, requestKey) => request(free ? 'free-applications' : 'orders', { method: 'POST', body: { productId }, requestKey }),
     list: () => request('orders'),
     get: id => request(orderPath(id)),

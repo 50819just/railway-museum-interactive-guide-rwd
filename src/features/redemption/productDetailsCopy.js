@@ -1,0 +1,48 @@
+import { getLocale } from '../../i18n/runtime.js'
+const copy = {
+  'zh-TW': {
+    materialLabel: '材質', sizeLabel: '尺寸（長 × 寬 × 高）', volumeLabel: '外框體積（長 × 寬 × 高）',
+    materials: { transparentWood: '透明壓克力片、木質底座', woodMetal: '木質票牌、金屬鑰匙環', polyesterFill: '聚酯纖維絨布、聚酯纖維填充', wood: '椴木合板' },
+    bases: { assembled: '以組裝完成後的外觀尺寸計算。', bodyOnly: '尺寸為票牌本體，不含金屬鑰匙環。', seated: '高度以坐姿計算。', full: '以商品完整外觀尺寸計算。', earsIncluded: '高度包含耳朵及站長帽。' },
+    details: '商品詳情', view: '查看商品詳情：', close: '關閉商品詳情', about: '商品介紹', specs: '商品規格', pending: '材質與尺寸待確認',
+    cost: '兌換條件與加購金額', terms: '集滿首輪 10 片拼圖，擇一登記。', free: '免加購', fee: '加購金額', pricePending: '價格待確認。',
+    revisit: '第二輪限定，具體品項與補差額待確認。', availability: '目前受理狀態', localStatus: '依目前服務設定顯示，非官方即時庫存。',
+    readOnly: '此視窗僅供查看，不會登記、付款、扣除拼圖或預留商品。',
+    statuses: { 'out-of-stock': '暫無庫存', cutoff: '本日受理已截止', 'before-service': '尚未開始受理', closed: '暫停受理', available: '受理中', unconfigured: '服務時間待確認' },
+    unknown: '受理狀態待確認',
+  },
+  en: {
+    materialLabel: 'Materials', sizeLabel: 'Dimensions (L × W × H)', volumeLabel: 'Bounding-box volume (L × W × H)',
+    materials: { transparentWood: 'Clear acrylic panels, wooden base', woodMetal: 'Wooden tag, metal key ring', polyesterFill: 'Polyester plush fabric and polyester filling', wood: 'Basswood plywood' },
+    bases: { assembled: 'Dimensions after assembly.', bodyOnly: 'Tag body only; metal key ring excluded.', seated: 'Height measured in a seated position.', full: 'Overall exterior dimensions.', earsIncluded: 'Height includes ears and stationmaster hat.' },
+    details: 'Product details', view: 'View product details: ', close: 'Close product details', about: 'About this item', specs: 'Specifications', pending: 'Materials and dimensions to be confirmed',
+    cost: 'Redemption and add-on price', terms: 'Collect all 10 first-round puzzle pieces and register for one gift.', free: 'No add-on charge', fee: 'Add-on price', pricePending: 'Price to be confirmed.',
+    revisit: 'Second round only. Item and add-on price to be confirmed.', availability: 'Current service status', localStatus: 'Based on current service settings, not official live inventory.',
+    readOnly: 'Viewing only. No registration, payment, puzzle deduction or stock reservation.',
+    statuses: { 'out-of-stock': 'Out of stock', cutoff: 'Registration closed for today', 'before-service': 'Not yet open', closed: 'Service paused', available: 'Accepting registrations', unconfigured: 'Service hours to be confirmed' },
+    unknown: 'Service status to be confirmed',
+  },
+  ja: {
+    materialLabel: '素材', sizeLabel: 'サイズ（長さ × 幅 × 高さ）', volumeLabel: '外接直方体の体積（長さ × 幅 × 高さ）',
+    materials: { transparentWood: '透明アクリル板、木製台座', woodMetal: '木製プレート、金属製キーリング', polyesterFill: 'ポリエステル生地、ポリエステル中綿', wood: 'シナ合板' },
+    bases: { assembled: '組み立て完成時の外寸です。', bodyOnly: 'プレート本体のみ。金属製キーリングは含みません。', seated: '座った状態での高さです。', full: '商品全体の外寸です。', earsIncluded: '高さには耳と駅長帽を含みます。' },
+    details: '商品詳細', view: '商品詳細を見る：', close: '商品詳細を閉じる', about: '商品紹介', specs: '商品仕様', pending: '素材・サイズは確認待ちです',
+    cost: '交換条件と追加料金', terms: '第1周のパズル10ピースを集めて、ギフトを1点選んで登録します。', free: '追加料金なし', fee: '追加料金', pricePending: '価格は確認待ちです。',
+    revisit: '第2周限定。商品と追加料金は確認待ちです。', availability: '現在の受付状況', localStatus: '現在のサービス設定に基づく表示で、公式のリアルタイム在庫ではありません。',
+    readOnly: '閲覧専用です。登録・決済・パズルの消費・商品の取り置きは行いません。',
+    statuses: { 'out-of-stock': '在庫なし', cutoff: '本日の受付終了', 'before-service': '受付開始前', closed: '受付休止中', available: '受付中', unconfigured: '受付時間は確認待ちです' },
+    unknown: '受付状況は確認待ちです',
+  },
+  ko: {
+    materialLabel: '소재', sizeLabel: '크기 (길이 × 너비 × 높이)', volumeLabel: '외곽 직육면체 부피 (길이 × 너비 × 높이)',
+    materials: { transparentWood: '투명 아크릴판, 나무 받침대', woodMetal: '나무 표찰, 금속 열쇠고리', polyesterFill: '폴리에스터 원단 및 폴리에스터 충전재', wood: '피나무 합판' },
+    bases: { assembled: '조립 완료 후 외곽 크기입니다.', bodyOnly: '표찰 본체 크기이며 금속 고리는 제외합니다.', seated: '앉은 자세 기준 높이입니다.', full: '상품 전체 외곽 크기입니다.', earsIncluded: '귀와 역장 모자를 포함한 높이입니다.' },
+    details: '상품 상세', view: '상품 상세 보기: ', close: '상품 상세 닫기', about: '상품 소개', specs: '상품 사양', pending: '소재와 크기는 확인 예정입니다',
+    cost: '교환 조건 및 추가 금액', terms: '1차 퍼즐 10조각을 모두 모은 후 선물 하나를 선택해 등록하세요.', free: '추가 금액 없음', fee: '추가 금액', pricePending: '가격은 확인 예정입니다.',
+    revisit: '2차 한정. 상품과 추가 금액은 확인 예정입니다.', availability: '현재 접수 상태', localStatus: '현재 서비스 설정에 따른 표시이며 공식 실시간 재고가 아닙니다.',
+    readOnly: '열람 전용입니다. 등록, 결제, 퍼즐 차감 또는 상품 예약은 이루어지지 않습니다.',
+    statuses: { 'out-of-stock': '품절', cutoff: '오늘 접수 마감', 'before-service': '접수 시작 전', closed: '접수 중지', available: '접수 중', unconfigured: '서비스 시간 확인 예정' },
+    unknown: '접수 상태 확인 예정',
+  },
+}
+export const getProductDetailsCopy = (locale = getLocale()) => copy[locale] || copy['zh-TW']

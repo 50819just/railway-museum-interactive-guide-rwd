@@ -14,4 +14,4 @@ export function validatePhotoRecord(record) {
 export function ensureAlbumCapacity(records, blob) {
   if (records.length >= MAX_ALBUM_COUNT || records.reduce((sum, item) => sum + (item.blob?.size || 0), 0) + blob.size > MAX_ALBUM_BYTES) throw Error('本機相簿空間已滿。請到紀念照區刪除不需要的照片後重試；拼圖不受影響。')
 }
-export const photoSourceLabel = source => source === 'ai-demo' ? '情境合照・非本人照片' : source === 'camera' ? '本機相機拍攝' : '自行選擇的照片'
+export const photoSourceLabel = source => source === 'ai-demo' ? '收藏合照' : source === 'camera' ? '本機相機拍攝' : '自行選擇的照片'

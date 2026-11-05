@@ -1,3 +1,4 @@
+import HelpTip from '../../components/HelpTip'
 import { t, localize } from '../../i18n/runtime.js'
 import { useState } from 'react'
 import Icon from '../../components/Icon'
@@ -41,7 +42,7 @@ export default function PuzzlePage() {
 
     <section className="puzzle-collection" aria-labelledby="puzzle-collection-title">
       <header className="puzzle-section-heading"><div><p className="eyebrow">{t('puzzlePage.eyebrow.text.2')}</p><h2 id="puzzle-collection-title" tabIndex={-1}>{t('puzzlePage.puzzle.collection.title.text')}</h2></div><span>{t('puzzlePage.span.text.2', { value1: localize(count), value2: localize(total) })}</span></header>
-      <p className="puzzle-section-note">{t('puzzlePage.puzzle.section.note.text')}</p>
+      <HelpTip label="拼圖收集說明">{t('puzzlePage.puzzle.section.note.text')}</HelpTip>
       <div className="puzzle-filters" role="group" aria-label={t('puzzlePage.puzzle.filters.aria.label')}>{[
         ['all', '全部', total], ['collected', '已收集', count], ['missing', '待收集', remaining],
       ].map(([value, label, amount]) => <button key={value} type="button" aria-pressed={filter === value} aria-controls="puzzle-collection-list" onClick={() => setFilter(value)}>{localize(label)}<span>{localize(amount)}</span></button>)}</div>

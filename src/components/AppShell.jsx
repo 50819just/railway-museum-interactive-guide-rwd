@@ -17,7 +17,7 @@ const navigation = [
 ]
 const locationLabels = { 'payment-demo': '付款流程 Demo', explore: '園區探索', train: '兌換區', photos: '旅程紀念照', family: '登入與親子同行', more: '旅程服務', puzzles: '我的拼圖', revisit: '第二輪自由探索' }
 
-export default function AppShell({ children, page, onNavigate }) {
+export default function AppShell({ children, page, onNavigate, onOpenJourneySettings }) {
   const locale = useLocale()
   const dialogRef = useRef(null)
   const bottomNavRef = useRef(null)
@@ -103,6 +103,7 @@ export default function AppShell({ children, page, onNavigate }) {
       </header>
       <ActivityNotice onNavigate={onNavigate}/>
       <main id="main" tabIndex={-1}>{localize(children)}</main>
+      {onOpenJourneySettings && <footer className="journey-settings-entry"><button type="button" onClick={onOpenJourneySettings} aria-haspopup="dialog">旅程設定</button></footer>}
     </div>
     <nav ref={bottomNavRef} className="bottom-nav" aria-label={t('appShell.bottom.nav.aria.label')}>{navigation.map(item => <button key={item.id} aria-label={localize(item.name)} title={localize(item.name)} onClick={() => onNavigate(item.id)} aria-current={activePage === item.id ? 'page' : undefined} className={activePage === item.id ? 'is-active' : ''}><Icon name={item.icon}/><span>{localize(item.name)}</span>{item.preview && <small className="sr-only">{t('appShell.sr.only.text')}</small>}</button>)}</nav>
     <dialog ref={dialogRef} id="app-navigation-dialog" className="app-navigation-dialog" aria-labelledby="app-navigation-title" onKeyDown={trapDialogFocus} onClose={finishClosing} onClick={event => { if (event.target === event.currentTarget) { const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) closeMenu() } }}>

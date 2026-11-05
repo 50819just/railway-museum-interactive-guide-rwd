@@ -1,13 +1,20 @@
 {
   "name": "railway-museum-interactive-guide-rwd",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.1.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "payment:test": "node --test tests/paymentStage.test.mjs",
+    "payment:seed": "node --env-file=server/payment/.env server/payment/main.mjs --seed",
+    "payment:serve": "node --env-file=server/payment/.env server/payment/main.mjs --listen",
+    "payment:pg:test": "npm --prefix server/payment test",
+    "payment:pg:migrate": "node --env-file=server/payment/.env server/payment/pg-main.mjs --migrate",
+    "payment:pg:seed": "node --env-file=server/payment/.env server/payment/pg-main.mjs --seed",
+    "payment:pg:serve": "node --env-file=server/payment/.env server/payment/pg-main.mjs --listen"
   },
   "dependencies": {
     "jsqr": "1.4.0",

@@ -1,4 +1,5 @@
-import { completeStation, initialJourney, normalizeJourney, persistJourney, readJourney, JOURNEY_KEY } from './journeyModel'
+import { completeStation, initialJourney, normalizeJourney, persistJourney, readJourney, JOURNEY_KEY } from './journeyModel.js'
+import { getExplorationMode } from '../explore/explorationMode.js'
 const listeners = new Set()
 function storage() { try { return window.localStorage } catch { return null } }
 const loaded = readJourney(storage())
@@ -10,7 +11,7 @@ export function subscribeJourney(listener) {
   return () => listeners.delete(listener)
 }
 export function claimStation(payload) {
-  const result = completeStation(snapshot, payload)
+  const result = completeStation(snapshot, payload, getExplorationMode())
   if (!result.ok) return result
   const saved = persistJourney(storage(), result.state)
   snapshot = { ...result.state, sessionOnly: !saved }

@@ -1,3 +1,4 @@
+import HelpTip from '../../components/HelpTip'
 import { t, localize } from '../../i18n/runtime.js'
 import { useRef, useState } from 'react'
 import { STORAGE_KEY, emptyState, joinReason, transition, validState } from './groupModel'
@@ -70,19 +71,7 @@ export default function FamilyPage({ onNavigate }) {
   return <section className="family-page" aria-labelledby="family-title">
     <header className="family-heading"><p className="eyebrow">{t('familyPage.eyebrow.text')}</p><h1 id="family-title" tabIndex={-1}>{t('appShell.copy.family.copy')}</h1><p>{t('familyPage.p.text')}</p></header>
     <DemoLoginCard onSuccess={() => onNavigate('payment-demo')}/>
-    <details className="family-card family-help">
-      <summary><span className="family-icon-label"><Icon name="info" size={20}/>{t('redemptionPage.span.text')}</span><Icon name="chevronDown" size={20} className="family-help-chevron"/></summary>
-      <div className="family-help-content">
-        <h2>{t('familyPage.h2.text')}</h2>
-        <p>{t('familyPage.p.text.2')}</p>
-        <dl className="family-permissions">
-          <dt><Icon name="users" size={18}/>{t('familyPage.dt.text')}</dt><dd>{t('familyPage.dd.text')}</dd>
-          <dt><Icon name="puzzle" size={18}/>{t('familyPage.dt.text.2')}</dt><dd>{t('familyPage.dd.text.2')}</dd>
-          <dt><Icon name="device" size={18}/>{t('familyPage.dt.text.3')}</dt><dd>{t('familyPage.dd.text.3')}</dd>
-          <dt><Icon name="restart" size={18}/>{t('familyPage.dt.text.4')}</dt><dd>{t('familyPage.dd.text.4')}</dd>
-        </dl>
-      </div>
-    </details>
+    <HelpTip label="親子同行玩法說明"><strong>{t('familyPage.h2.text')}</strong><br/>{t('familyPage.p.text.2')}<br/>{t('familyPage.dt.text')}：{t('familyPage.dd.text')}<br/>{t('familyPage.dt.text.2')}：{t('familyPage.dd.text.2')}<br/>{t('familyPage.dt.text.3')}：{t('familyPage.dd.text.3')}<br/>{t('familyPage.dt.text.4')}：{t('familyPage.dd.text.4')}</HelpTip>
     {problem && <p ref={errorRef} tabIndex={-1} className="family-error" role="alert">{localize(problem)}</p>}
     <p ref={feedbackRef} tabIndex={-1} className="family-feedback" role="status" aria-live="polite">{localize(notice)}</p>
     <div className="family-main">

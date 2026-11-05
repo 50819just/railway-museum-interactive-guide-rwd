@@ -63,3 +63,7 @@
 .bonus-popup-sources p { margin: 0; font-size: 11px; line-height: 1.6; color: var(--muted); }
 .bonus-popup-sources a { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; min-height: 44px; font-size: 12px; line-height: 1.7; color: var(--gold-ink); text-underline-offset: 3px; }
 .bonus-popup-sources a:focus-visible { outline: 3px solid var(--gold-action); outline-offset: 2px; border-radius: 4px; }
+
+.bonus-popup-mission { display: flex; align-items: center; gap: 4px; margin-top: 10px; }
+.bonus-popup-mission > p { flex: 1; min-width: 0; margin: 0; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+.bonus-popup .bonus-popup-options button { overflow-wrap: anywhere; }

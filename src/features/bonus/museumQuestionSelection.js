@@ -34,6 +34,22 @@ export function selectQuestionSet(completed = [], round = 0) {
   return { questionBankVersion: QUESTION_BANK_VERSION, questionIds }
 }
 
+export function selectStationQuestionSet(stationId, round = 0) {
+  const pool = museumQuestions.filter(question => question.stationId === stationId)
+  if (pool.length !== CHALLENGE_QUESTION_COUNT) return null
+  const offset = Number.isInteger(round) && round >= 0 ? round % pool.length : 0
+  return { questionBankVersion: QUESTION_BANK_VERSION, questionIds: pool.map((_, index) => pool[(index + offset) % pool.length].id) }
+}
+
+// Rebind legacy/mixed challenges without consuming a chance or losing answered steps.
+export function bindQuizToStation(quiz, stationId, round = 0) {
+  if (!quiz) return quiz
+  const set = selectStationQuestionSet(stationId, round)
+  if (!set) return quiz
+  if (validQuestionSet(quiz) && questionsForQuiz(quiz).every(question => question.stationId === stationId)) return quiz
+  return { ...quiz, ...set, consecutiveWrong: 0 }
+}
+
 export function questionsForQuiz(quiz) {
   return validQuestionSet(quiz) ? quiz.questionIds.map(id => questionById.get(id)) : legacyQuestions
 }

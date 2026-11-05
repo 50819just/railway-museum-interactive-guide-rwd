@@ -1,11 +1,12 @@
 import { t, localize } from '../../i18n/runtime.js'
 import { stations, stationNumber } from '../../data/stations'
 import Icon from '../../components/Icon'
+import { nextStationId } from '../arrival/journeyModel.js'
 const trees = [[60,50],[80,50],[360,50],[390,50],[78,115],[340,130],[385,210],[55,260],[55,330],[360,340],[270,382],[155,380],[280,55],[105,190],[320,260]]
-function Scenery({ progress }) {
+function Scenery({ progress, mode }) {
   const route = progress.completed.map(id => stations[id - 1]).map(s => `${s.x * 4.4},${s.y * 4.4}`).join(" ")
-  const last = stations[progress.completed.length - 1] || { x: 22, y: 94 }
-  const next = stations[progress.completed.length]
+  const last = stations.find(station => station.id === progress.completed.at(-1)) || { x: 22, y: 94 }
+  const next = mode === 'free' ? null : stations.find(station => station.id === nextStationId(progress))
   return <svg className="park-scenery" viewBox="0 0 440 440" role="img" aria-label={t('parkMap.park.scenery.aria.label')}>
     <defs><pattern id="map-grid" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M22 0H0V22" fill="none" stroke="#d8d5c8" strokeWidth=".5"/></pattern><pattern id="roof-lines" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 0v8" stroke="#52716c" strokeWidth="1"/></pattern></defs>
     <rect width="440" height="440" fill="#e9e8da"/><rect width="440" height="440" fill="url(#map-grid)"/>
@@ -24,14 +25,14 @@ function Scenery({ progress }) {
 
   </svg>
 }
-export default function ParkMap({ selectedId, onSelect, guide, progress }) {
+export default function ParkMap({ selectedId, onSelect, guide, progress, mode = 'sequential' }) {
   return <div className={`map-frame ${guide ? 'is-guiding' : ''}`}>
     <div className="map-toolbar"><span>{t('parkMap.span.text')}</span><span>{t('parkMap.span.text.2')}</span></div>
-    <div className="map-canvas"><Scenery progress={progress}/>{stations.map(station=> {
+    <div className="map-canvas"><Scenery progress={progress} mode={mode}/>{stations.map(station=> {
       const completed = progress.completed.includes(station.id)
-      const current = station.id === (stations[progress.completed.length]?.id)
-      return <button key={station.id} style={{left:`${station.x}%`,top:`${station.y}%`}} className={`map-point ${completed?'is-complete':''} ${current?'is-current':''} ${station.id===selectedId?'is-selected':''}`} aria-label={localize(`第${stationNumber(station.id)}站 ${station.name}，${completed?localize('已完成'):current?localize('下一站'):localize('尚未解鎖，可預覽')}`)} aria-pressed={station.id===selectedId} onClick={()=>onSelect(station.id)}>{completed?<Icon name="check" size={16}/>:stationNumber(station.id)}{current&&<span className="point-label">{localize(station.name)}</span>}</button>
+      const current = mode === 'free' ? station.id === selectedId && !completed : station.id === nextStationId(progress)
+      return <button key={station.id} style={{left:`${station.x}%`,top:`${station.y}%`}} className={`map-point ${completed?'is-complete':''} ${current?'is-current':''} ${station.id===selectedId?'is-selected':''}`} aria-label={localize(`第${stationNumber(station.id)}站 ${station.name}，${completed?localize('已完成'):mode === 'free' ? localize('可自由到訪') : current?localize('下一站'):localize('尚未解鎖，可預覽')}`)} aria-pressed={station.id===selectedId} onClick={()=>onSelect(station.id)}>{completed?<Icon name="check" size={16}/>:stationNumber(station.id)}{current&&<span className="point-label">{localize(station.name)}</span>}</button>
     })}<span className="map-caption">{t('parkMap.map.caption.text')}</span></div>
-    <div className="map-legend"><span><i className="legend-complete"/>{t('parkMap.span.text.3')}</span><span><i className="legend-current"/>{t('parkMap.span.text.4')}</span><span><i/>{t('parkMap.span.text.5')}</span></div>
+    <div className="map-legend"><span><i className="legend-complete"/>{t('parkMap.span.text.3')}</span><span><i className="legend-current"/>{mode === 'free' ? localize('本次選擇') : t('parkMap.span.text.4')}</span><span><i/>{mode === 'free' ? localize('可自由到訪') : t('parkMap.span.text.5')}</span></div>
   </div>
 }

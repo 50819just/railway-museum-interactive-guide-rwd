@@ -1,0 +1,4 @@
+.explore-page .exploration-mode-note { margin: 0 0 18px; padding: 14px 18px; border: 1px solid var(--line, #ddd8ca); border-radius: 12px; background: var(--surface, #fffdf7); }
+.explore-page .exploration-mode-note strong { color: var(--green, #315c52); }
+.explore-page .exploration-mode-note p { margin: 6px 0; font-size: .875rem; line-height: 1.7; overflow-wrap: anywhere; }
+.explore-page .exploration-mode-note summary { cursor: pointer; font-size: .875rem; padding: 8px 0; }

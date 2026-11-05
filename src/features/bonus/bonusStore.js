@@ -4,6 +4,11 @@ import {
   answerBonusChallenge, drawBonusPiece,
 } from './bonusModel.js'
 
+import { bindQuizToStation } from './museumQuestionSelection.js'
+import { getExplorationStation } from '../explore/explorationStation.js'
+import { getJourneySnapshot } from '../arrival/journeyStore.js'
+import { nextStationId } from '../arrival/journeyModel.js'
+
 const listeners = new Set()
 const storage = () => { try { return window.localStorage } catch { return null } }
 const loaded = readBonus(storage())
@@ -38,7 +43,14 @@ export function syncBonusVisits(completed) {
   return commit(syncBonusProgress(state, visits))
 }
 export function setDepartureAt(iso) { return commit(configureDeparture(state, iso, visits)) }
-export function startChallenge() { return commit(beginBonusChallenge(state, visits)) }
+export function startChallenge(stationId = getExplorationStation(nextStationId(getJourneySnapshot()) || 10)) {
+  if (!Number.isInteger(stationId) || stationId < 1 || stationId > 10) return { ok: false, kind: 'invalid-station', message: '請先選擇有效的探索站點，原答題機會保留。' }
+  if (state.quiz) {
+    const quiz = bindQuizToStation(state.quiz, stationId, state.drawsUsed)
+    return commit({ state: quiz === state.quiz ? state : { ...state, quiz }, ok: true, kind: 'quiz-resumed' })
+  }
+  return commit(beginBonusChallenge(state, visits, stationId))
+}
 // UI must lock submissions per displayed question. This local demo does not
 // authenticate answers or carry server-issued question IDs / replay protection.
 export function answerChallenge(correct) { return commit(answerBonusChallenge(state, correct)) }

@@ -1,9 +1,10 @@
+import HelpTip from '../../components/HelpTip'
 import { t, localize } from '../../i18n/runtime.js'
 import { useEffect, useRef, useState } from 'react'
 import Icon from '../../components/Icon'
 import trapDialogFocus from '../../components/trapDialogFocus'
 import { stations, stationNumber } from '../../data/stations'
-import { inspectPayload, stationPayload } from './journeyModel'
+import { inspectPayload, stationPayload, nextStationId } from './journeyModel'
 import { claimStation, getJourneySnapshot } from './journeyStore'
 import { saveLocalPhoto } from './photoStore'
 import { photoSourceLabel } from './photoModel'
@@ -13,9 +14,11 @@ import useBonus from '../bonus/useBonus'
 import { getBonusSnapshot } from '../bonus/bonusStore'
 import { collectedPuzzleIds } from '../bonus/bonusModel'
 import { createQrScanner } from './qrScanner'
+import { getExplorationMode } from '../explore/explorationMode.js'
+import { setExplorationStation } from '../explore/explorationStation.js'
 import './ArrivalFlow.css'
 
-export default function ArrivalDialog({ stationId, onClose, onContinue }) {
+export default function ArrivalDialog({ stationId, onClose, onContinue, onStationVerified }) {
   const bonus = useBonus()
   const dialog = useRef(null)
   const video = useRef(null)
@@ -80,8 +83,10 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
   function verify(payload) {
     stopCamera()
     setCamera('idle')
-    const result = inspectPayload(getJourneySnapshot(), payload)
+    const result = inspectPayload(getJourneySnapshot(), payload, getExplorationMode())
     if (!result.ok) { setMessage(result.message); return false }
+    setExplorationStation(result.stationId)
+    onStationVerified?.(result.stationId)
     setVerifiedId(result.stationId)
     setMessage('')
     setPhase('confirm')
@@ -182,7 +187,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
     stopCamera(); const token = generation.current
     setMessage(''); setCamera('photo-starting')
     try {
-      if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext) { setCamera('photo-error'); setMessage('目前不支援相機拍照，可選本機照片或示意合照。'); return }
+      if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext) { setCamera('photo-error'); setMessage('目前不支援相機拍照，可選本機照片或合照。'); return }
       const media = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } }, audio: false })
       if (token !== generation.current) { media.getTracks().forEach(track => track.stop()); return }
       stream.current = media; photoVideo.current.srcObject = media
@@ -190,7 +195,7 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
       if (token === generation.current) setCamera('photo-ready')
     } catch (error) {
       if (token !== generation.current) return
-      stopCamera(); setCamera('photo-error'); setMessage(error.name === 'NotAllowedError' ? '相機沒有授權，仍可選擇照片、使用示意合照或略過。' : '相機無法開啟，請改用本機照片或示意合照。')
+      stopCamera(); setCamera('photo-error'); setMessage(error.name === 'NotAllowedError' ? '相機沒有授權，仍可選擇照片、使用合照或略過。' : '相機無法開啟，請改用本機照片或合照。')
     }
   }
   function takePhoto() {
@@ -224,8 +229,8 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
       <div className={`arrival-viewfinder ${camera === 'scanning' ? 'is-scanning' : ''}`}><video ref={video} playsInline muted aria-label={t('arrivalDialog.video.aria.label')} hidden={!['starting', 'scanning'].includes(camera)}/>{!['starting', 'scanning'].includes(camera) && <><Icon name="camera" size={44}/><strong>{t('arrivalDialog.strong.text')}</strong><span>{t('arrivalDialog.span.text')}</span></>}<span className="arrival-camera-status" role="status">{localize(camera === 'starting' ? '正在開啟相機…' : camera === 'scanning' ? '掃描中，請將站點 QR 碼置於鏡頭前' : camera === 'unsupported' ? '目前環境無法啟用相機・請見下方說明' : camera === 'denied' ? '相機未授權・可使用站點碼' : camera === 'error' ? '相機暫不可用・可重新嘗試' : '相機尚未開啟')}</span></div>
       <button className="primary-button" onClick={startCamera} disabled={camera === 'starting'}><Icon name="camera"/>{t('arrivalDialog.primary.button.text')}</button>
       {camera === 'scanning' && <button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>{t('arrivalDialog.arrival.text.action.text')}</button>}
-      <section className="arrival-demo-code"><img src={`${import.meta.env.BASE_URL}images/qr/station-${stationNumber(stationId)}-demo-qr.png`} alt={localize(`第 ${stationNumber(stationId)} 站 QR Code`)} width="396" height="396"/><div><strong>{t('arrivalDialog.strong.text.2')}</strong><p>{t('arrivalDialog.p.text')}</p><button className="arrival-solid-action" onClick={() => verify(stationPayload(stationId))}>{t('arrivalDialog.arrival.solid.action.text')}</button></div></section>
-      <details className="arrival-manual"><summary>{t('arrivalDialog.summary.text')}</summary><form onSubmit={event => { event.preventDefault(); verify(input) }}><label htmlFor="arrival-payload">{t('arrivalDialog.label.text')}</label><input id="arrival-payload" value={input} onChange={event => setInput(event.target.value)} placeholder={t('arrivalDialog.arrival.payload.placeholder')} autoComplete="off" spellCheck="false"/><button className="arrival-solid-action" type="submit">{t('arrivalDialog.arrival.solid.action.text.2')}</button></form><p>{t('arrivalDialog.p.text.2')}</p></details>
+      <section className="arrival-demo-code"><img src={`${import.meta.env.BASE_URL}images/qr/station-${stationNumber(stationId)}-demo-qr.png`} alt={localize(`第 ${stationNumber(stationId)} 站 QR Code`)} width="396" height="396"/><div><strong>{t('arrivalDialog.strong.text.2')}</strong><HelpTip label="站點碼掃描說明">{t('arrivalDialog.p.text')}</HelpTip><button className="arrival-solid-action" onClick={() => verify(stationPayload(stationId))}>{t('arrivalDialog.arrival.solid.action.text')}</button></div></section>
+      <details className="arrival-manual"><summary>{t('arrivalDialog.summary.text')}</summary><form onSubmit={event => { event.preventDefault(); verify(input) }}><label htmlFor="arrival-payload">{t('arrivalDialog.label.text')}</label><input id="arrival-payload" value={input} onChange={event => setInput(event.target.value)} placeholder={t('arrivalDialog.arrival.payload.placeholder')} autoComplete="off" spellCheck="false"/><button className="arrival-solid-action" type="submit">{t('arrivalDialog.arrival.solid.action.text.2')}</button></form><HelpTip label="手動輸入站點碼說明">{t('arrivalDialog.p.text.2')}</HelpTip></details>
     </> : phase === 'confirm' ? <div className="arrival-confirm"><span className="arrival-stamp"><Icon name="pin" size={36}/></span><p className="eyebrow">{t('arrivalDialog.eyebrow.text.2')}</p><h3>{t('arrivalDialog.h3.text', { value1: localize(stationNumber(station.id)) })}<br/>{localize(station.name)}</h3><p>{t('arrivalDialog.p.text.3')}</p><button className="primary-button" onClick={claim}>{localize(bonus.bonusPieces.includes(station.id) ? '確認到站，不重複領片' : '確認到站，領一片')}<Icon name="check"/></button><button className="arrival-text-action" onClick={() => { setPhase('scan'); setVerifiedId(null) }}>{t('arrivalDialog.arrival.text.action.text.2')}</button></div> : <div className="arrival-success">
       <section className="arrival-celebration" aria-label={t('arrivalDialog.arrival.celebration.aria.label')}>
         <span className="arrival-stamp arrival-check-animation" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><circle className="success-ring" cx="32" cy="32" r="27" pathLength="1"/><path className="success-check" d="m19 32 9 9 18-19" pathLength="1"/></svg></span>
@@ -240,17 +245,17 @@ export default function ArrivalDialog({ stationId, onClose, onContinue }) {
         <p>{t('arrivalDialog.p.text.5')}</p>
         {!savedPhoto && <>
           <label className="arrival-photo-label" htmlFor="arrival-photo"><Icon name="camera"/>{t('arrivalDialog.arrival.photo.label.text')}<input id="arrival-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={photoBusy}/></label>
-          <p className="arrival-photo-note">{t('arrivalDialog.arrival.photo.note.text')}</p>
-          <details className="arrival-photo-tools"><summary>{t('arrivalDialog.summary.text.2')}</summary><div className="arrival-photo-actions"><button className="arrival-solid-action" onClick={startPhotoCamera} disabled={photoBusy || camera === 'photo-starting'}>{t('arrivalDialog.arrival.solid.action.text.3')}</button><button className="arrival-solid-action" onClick={saveDemoPhoto} disabled={photoBusy}>{t('arrivalDialog.arrival.solid.action.text.4')}</button></div><p className="arrival-photo-note">{t('arrivalDialog.arrival.photo.note.text.2')}</p></details>
+          <HelpTip label="照片操作說明">{t('arrivalDialog.arrival.photo.note.text')}</HelpTip>
+          <details className="arrival-photo-tools"><summary>{t('arrivalDialog.summary.text.2')}</summary><div className="arrival-photo-actions"><button className="arrival-solid-action" onClick={startPhotoCamera} disabled={photoBusy || camera === 'photo-starting'}>{t('arrivalDialog.arrival.solid.action.text.3')}</button><button className="arrival-solid-action" onClick={saveDemoPhoto} disabled={photoBusy}>{t('arrivalDialog.arrival.solid.action.text.4')}</button></div><HelpTip label="照片操作說明">{t('arrivalDialog.arrival.photo.note.text.2')}</HelpTip></details>
         </>}
         <div hidden={!['photo-starting', 'photo-ready'].includes(camera)} className="arrival-photo-camera"><video ref={photoVideo} autoPlay playsInline muted aria-label={t('arrivalDialog.video.aria.label.2')}/>{camera === 'photo-starting' ? <p role="status">{t('arrivalDialog.p.text.6')}</p> : <button className="arrival-solid-action" onClick={takePhoto} disabled={photoBusy}>{t('arrivalDialog.arrival.solid.action.text.5')}</button>}<button className="arrival-text-action" onClick={() => { stopCamera(); setCamera('idle') }}>{t('arrivalDialog.arrival.text.action.text.3')}</button></div>
-        {photo && <figure className="arrival-photobooth-preview"><img src={photo} alt={localize(photoSource === 'ai-demo' ? localize('虛構親子合照預覽') : localize('剛選擇或拍攝的本機合照預覽'))}/><figcaption>{t('arrivalDialog.figcaption.text', { value1: localize(stationNumber(station.id)), value2: localize(station.name) })}<br/>{localize(photoSourceLabel(photoSource))}・{localize(savedPhoto ? '已存本機相簿' : '尚未儲存')}</figcaption></figure>}
+        {photo && <figure className="arrival-photobooth-preview"><img src={photo} alt={localize(photoSource === 'ai-demo' ? localize('親子合照預覽') : localize('剛選擇或拍攝的本機合照預覽'))}/><figcaption>{t('arrivalDialog.figcaption.text', { value1: localize(stationNumber(station.id)), value2: localize(station.name) })}<br/>{localize(photoSourceLabel(photoSource))}・{localize(savedPhoto ? '已存本機相簿' : '尚未儲存')}</figcaption></figure>}
         {photo && !savedPhoto && <button className="primary-button arrival-confirm-photo" onClick={savePreview} disabled={photoBusy}>{localize(photoBusy ? '正在儲存，請稍候…' : '確認儲存到紀念照區')}<Icon name="check" size={20}/></button>}
         {photoBusy && <p role="status">{t('arrivalDialog.p.text.7')}</p>}
         {savedPhoto && <div ref={savedNotice} className="arrival-photo-saved" role="status" tabIndex={-1}><strong>{t('arrivalDialog.strong.text.3')}</strong><p>{t('arrivalDialog.p.text.8')}</p><a href="#photos" onClick={() => { skipReturnFocus.current = true }}>{t('arrivalDialog.a.text.2')}<Icon name="arrow" size={16}/></a></div>}
       </section>
     </div>}
-    {phase === 'success' && <footer className="arrival-success-actions"><p>{localize(photoBusy ? '離開不會取消已開始的本機儲存，結果可到紀念照區查看。' : '不拍照也能繼續，收藏與到訪紀錄不受影響。')}</p><button className="primary-button" onClick={finish}>{localize(photoBusy ? '照片處理中，可先繼續' : station.id === 10 ? '完成首輪，回地圖' : savedPhoto ? '繼續下一站' : photo ? '先不儲存，繼續下一站' : '略過合照，繼續下一站')}<Icon name="arrow"/></button></footer>}
+    {phase === 'success' && <footer className="arrival-success-actions"><p>{localize(photoBusy ? '離開不會取消已開始的本機儲存，結果可到紀念照區查看。' : '不拍照也能繼續，收藏與到訪紀錄不受影響。')}</p><button className="primary-button" onClick={finish}>{localize(photoBusy ? '照片處理中，可先繼續' : !nextStationId(getJourneySnapshot()) ? '完成首輪，回地圖' : getExplorationMode() === 'free' ? '回地圖，選下一站' : savedPhoto ? '繼續下一站' : photo ? '先不儲存，繼續下一站' : '略過合照，繼續下一站')}<Icon name="arrow"/></button></footer>}
     {message && <p className="arrival-feedback" role="alert">{localize(message)}</p>}
 
   </dialog>

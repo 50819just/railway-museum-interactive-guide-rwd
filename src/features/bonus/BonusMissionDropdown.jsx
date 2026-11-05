@@ -6,7 +6,7 @@ import { startChallenge, answerChallenge, drawBonus } from './bonusStore'
 import { missionContent } from './bonusMissionModel'
 import './BonusMissionDropdown.css'
 
-export default function BonusMissionDropdown({ bonus, completed, collectedCount, total, active = true, onOverlayChange }) {
+export default function BonusMissionDropdown({ bonus, completed, collectedCount, total, stationId, active = true, onOverlayChange }) {
   const content = missionContent(bonus, collectedCount, total)
   const [popupOpen, setPopupOpen] = useState(false)
   const [message, setMessage] = useState('')
@@ -21,8 +21,8 @@ export default function BonusMissionDropdown({ bonus, completed, collectedCount,
   }, [])
 
   function openChallenge() {
-    if (!bonus.quiz && !bonus.pendingDraw) {
-      const result = startChallenge()
+    if (!bonus.pendingDraw) {
+      const result = startChallenge(stationId)
       if (!result.ok) { setMessage(result.message || '目前無法開始，原進度保留。'); return }
     }
     setMessage('')
@@ -44,6 +44,6 @@ export default function BonusMissionDropdown({ bonus, completed, collectedCount,
       <button className="bonus-mission-action" type="button" onClick={openChallenge} aria-haspopup="dialog" aria-describedby={descriptionId}>{localize(content.action)}<Icon name="arrow" size={14}/></button>
       {message && <p className="bonus-mission-feedback" role="status">{localize(message)}</p>}
     </section>}
-    {visiblePopup && <BonusDialog returnFocusId="explore-collection-progress-title" bonus={bonus} onAnswer={answerChallenge} onDraw={() => drawBonus(completed)} onClose={closePopup}/>}
+    {visiblePopup && <BonusDialog key={stationId} returnFocusId="explore-collection-progress-title" bonus={bonus} onAnswer={answerChallenge} onDraw={() => drawBonus(completed)} onClose={closePopup}/>}
   </>
 }

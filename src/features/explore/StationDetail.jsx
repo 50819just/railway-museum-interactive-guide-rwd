@@ -6,14 +6,14 @@ const stationDetails = {
   3: {
     image: 'detail-03-wheel-hub-v07.jpg',
     title: '走近輪軸的材質',
-    alt: '深色輪轂、螺栓與金屬紋理局部概念圖',
-    description: '換個距離，看看深色金屬、螺栓與表面紋理。這是一張虛構的材質氣氛圖，不用辨認機件，也不影響集片。',
+    alt: '深色輪轂、螺栓與金屬紋理局部細節',
+    description: '換個距離，看看深色金屬、螺栓與表面紋理。自由觀察細節，不影響集片。',
   },
   4: {
     image: 'detail-04-diesel-fitting-v07.jpg',
     title: '看看機件的色彩與紋理',
-    alt: '墨綠機殼、黃銅接頭與木臺局部概念圖',
-    description: '墨綠鑄件、黃銅色接頭與木紋，是這張概念圖的小細節。自由看看就好，不是機構結構或操作說明。',
+    alt: '墨綠機殼、黃銅接頭與木臺局部細節',
+    description: '看看墨綠鑄件、黃銅色接頭與木紋的小細節。自由看看就好，不是機構結構或操作說明。',
   },
 }
 
@@ -25,7 +25,6 @@ function DetailView({ stationId, detail }) {
       <h3>{localize(detail.title)}</h3>
       <figure>
         <img src={`${import.meta.env.BASE_URL}images/${detail.image}`} alt={localize(detail.alt)} width="1200" height="675" loading="lazy" decoding="async"/>
-        <figcaption>{t('stationDetail.figcaption.text')}</figcaption>
       </figure>
       <p>{localize(detail.description)}</p>
     </div>}

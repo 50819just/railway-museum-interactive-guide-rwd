@@ -12,9 +12,9 @@ import ConfirmActionDialog from '../../components/ConfirmActionDialog'
 import './TravelAlbum.css'
 
 const samplePhotos = [
-  { image: 'group-entrance.jpg', title: '一起出發', description: '把旅程起點，留給並肩的你們。', alt: '示意：成年照顧者與學齡孩子在鐵道建築前合照' },
-  { image: 'group-locomotive.jpg', title: '遇見大火車', description: '今天的發現，和重要的人一起記住。', alt: '示意：成年照顧者與學齡孩子在蒸汽機車旁合照' },
-  { image: 'group-carriage.jpg', title: '坐進時光裡', description: '車廂裡的一張合照，也是一段小故事。', alt: '示意：成年照顧者與學齡孩子坐在車廂內合照' },
+  { image: 'group-entrance.jpg', title: '一起出發', description: '把旅程起點，留給並肩的你們。', alt: '成年照顧者與學齡孩子在鐵道建築前合照' },
+  { image: 'group-locomotive.jpg', title: '遇見大火車', description: '今天的發現，和重要的人一起記住。', alt: '成年照顧者與學齡孩子在蒸汽機車旁合照' },
+  { image: 'group-carriage.jpg', title: '坐進時光裡', description: '車廂裡的一張合照，也是一段小故事。', alt: '成年照顧者與學齡孩子坐在車廂內合照' },
 ]
 function LocalPhotoCard({ photo, onDeleted }) {
   const image = useRef(null)
@@ -38,7 +38,7 @@ function LocalPhotoCard({ photo, onDeleted }) {
   }
   return <article className="album-photo-card album-local-card" aria-labelledby={`local-photo-${photo.id}`}>
     <div className="album-photo-frame"><img ref={image} alt={localize(`${photoSourceLabel(photo.source)}：第 ${stationNumber(photo.stationId)} 站 ${photo.stationName}`)} width="1200" height="800" loading="lazy"/><span>{localize(photoSourceLabel(photo.source))}</span></div>
-    <div className="album-local-caption"><small>{t('assetPreviewPage.small.text', { value1: localize(new Date(photo.savedAt).toLocaleString(getLocale())) })}</small><h3 id={`local-photo-${photo.id}`}>{t('assetPreviewPage.h3.text', { value1: localize(stationNumber(photo.stationId)), value2: localize(photo.stationName) })}</h3><p>{localize(photo.source === 'ai-demo' ? '自行保存的虛構合照，不是你本人或現場真拍。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。')}</p>
+    <div className="album-local-caption"><small>{t('assetPreviewPage.small.text', { value1: localize(new Date(photo.savedAt).toLocaleString(getLocale())) })}</small><h3 id={`local-photo-${photo.id}`}>{t('assetPreviewPage.h3.text', { value1: localize(stationNumber(photo.stationId)), value2: localize(photo.stationName) })}</h3><p>{localize(photo.source === 'ai-demo' ? '已儲存在這台裝置的合照。' : '你在這台裝置選擇或拍攝的照片，未上傳到伺服器。')}</p>
       <div className="album-local-actions"><button className="album-download" type="button" disabled={deleting} aria-label={localize(`下載第 ${stationNumber(photo.stationId)} 站照片`)} onClick={downloadPhoto}>{t('assetPreviewPage.album.download.text')}</button><button ref={deleteButton} className="album-delete" disabled={deleting} aria-haspopup="dialog" onClick={() => setConfirm(true)}>{t('assetPreviewPage.album.delete.text')}</button></div>
       {downloadNotice && <p className="album-download-notice" role="status">{localize(downloadNotice)}</p>}
       {downloadError && <p className="album-storage-error" role="alert">{localize(downloadError)}</p>}

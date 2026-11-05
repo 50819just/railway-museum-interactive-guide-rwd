@@ -1,3 +1,4 @@
+import HelpTip from '../../components/HelpTip'
 import { t, localize, formatDate } from '../../i18n/runtime.js'
 import Icon from '../../components/Icon'
 import { APP_VERSION, RELEASE_DATE } from '../../data/release'
@@ -38,13 +39,13 @@ export default function MorePage({ onNavigate, onOpenGuide, onReplayWelcome }) {
     </section>
     <section className="more-services more-official-services" aria-labelledby="more-official-title">
       <div className="more-section-heading"><h2 id="more-official-title">{t('morePage.more.official.title.text')}</h2><span>{t('morePage.span.text.2')}</span></div>
-      <p className="more-section-note" id="more-external-note">{t('morePage.more.section.note.text')}</p>
+      <HelpTip label="外部連結說明" id="more-external-note">{t('morePage.more.section.note.text')}</HelpTip>
       <div className="more-link-group">
         {officialResources.map(resource => <a className="more-service-link more-official-link" href={resource.url} target="_blank" rel="noopener noreferrer" key={resource.url} aria-describedby="more-external-note">
           <span className="more-service-icon"><Icon name={resource.icon}/></span><span><strong>{localize(resource.title)}</strong><small>{localize(resource.description)}</small><span className="more-external-caption">{t('morePage.more.external.caption.text')}</span></span><ExternalLinkIcon/>
         </a>)}
       </div>
-      <p className="more-source-note">{t('morePage.more.source.note.text')}</p>
+      <HelpTip label="官方消息來源說明">{t('morePage.more.source.note.text')}</HelpTip>
     </section>
     <p className="more-release-version">{t('appShell.brand.name.text')}<strong>v{APP_VERSION}</strong><span aria-hidden="true">・</span><time dateTime={RELEASE_DATE}>{formatDate(RELEASE_DATE, {year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'})}</time></p>
   </div>

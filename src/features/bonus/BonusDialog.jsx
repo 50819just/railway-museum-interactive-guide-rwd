@@ -1,3 +1,5 @@
+import HelpTip from '../../components/HelpTip'
+import { bonusCopy, stationMission } from './bonusCopy.js'
 import { t, localize } from '../../i18n/runtime.js'
 import { useEffect, useRef, useState } from 'react'
 import Icon from '../../components/Icon'
@@ -27,8 +29,9 @@ function QuizQuestion({ quiz, questions, onSubmit }) {
   return <div className="bonus-popup-question">
     <ol className="bonus-popup-steps" aria-label={t('bonusDialog.bonus.popup.steps.aria.label')}>{questions.map((_, index) => <li key={index} className={index < quiz.step ? 'is-done' : index === quiz.step ? 'is-current' : ''} aria-current={index === quiz.step ? 'step' : undefined}><span>{index < quiz.step ? <Icon name="check" size={15}/> : index + 1}</span><small>{localize(index < quiz.step ? '已答對' : index === quiz.step ? '作答中' : '待作答')}</small></li>)}</ol>
     <p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text', { value1: localize(question.stationName || '接續中的玩法題'), value2: localize(quiz.step + 1), value3: localize(questions.length), value4: localize(easy ? '・簡單版本' : '') })}</p>
+    <div className="bonus-popup-mission"><p>{stationMission(question.stationId)}</p><HelpTip label={bonusCopy('context')}><p>{bonusCopy('source')}</p><QuestionSources question={question}/></HelpTip></div>
     <h3 tabIndex={-1} data-bonus-focus>{localize(easy ? question.easyTitle : question.title)}</h3>
-    {easy && <p className="bonus-popup-hint"><Icon name="info" size={18}/><span>{localize(question.hint)}</span></p>}
+    {easy && <HelpTip label={bonusCopy('hint')}>{localize(question.hint)}</HelpTip>}
     <div className="bonus-popup-options" role="group" aria-label={t('bonusDialog.bonus.popup.options.aria.label')}>{(easy ? question.easyChoices : question.choices).map((choice, index) => <button key={choice} type="button" aria-pressed={selected === index} onClick={() => choose(index)}><span className="bonus-option-letter">{localize(String.fromCharCode(65 + index))}</span><span>{localize(choice)}</span>{selected === index && <Icon name="check" size={19}/>}</button>)}</div>
     <p ref={errorNotice} tabIndex={-1} className="bonus-popup-error" role="alert">{localize(error)}</p>
     <button className="bonus-popup-primary" type="button" disabled={selected === null} onClick={confirm}>{t('bonusDialog.bonus.popup.primary.text')}<Icon name="arrow" size={18}/></button>
@@ -98,15 +101,13 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
   return <dialog ref={dialog} className="bonus-popup" aria-labelledby="bonus-popup-title" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); onClose() }} onClick={backdrop}>
     <header className="bonus-popup-header"><div><p className="eyebrow">{t('bonusDialog.eyebrow.text')}</p><h2 id="bonus-popup-title">{localize(phase === 'result' ? '旅程的新收穫' : phase === 'draw' ? '抽取拼圖' : '三題小挑戰')}</h2></div><button type="button" className="bonus-popup-close" aria-label={t('bonusDialog.bonus.popup.close.aria.label')} onClick={() => onClose()}><Icon name="close" size={21}/></button></header>
     {phase === 'quiz' && <QuizQuestion key={`${step}-${easy ? 'easy' : 'normal'}-${challengeQuestions[step]?.id || 'legacy'}`} quiz={bonus.quiz} questions={challengeQuestions} onSubmit={answer}/>}
-    {phase === 'review' && <section className="bonus-popup-review"><span className="bonus-popup-emblem"><Icon name="check" size={35}/></span><p className="bonus-popup-kicker">{localize(review.last ? '三題挑戰完成' : '這題答對了')}</p><h3 tabIndex={-1} data-bonus-focus>{localize(review.last ? '線索找齊了，準備抽拼圖。' : '答得好，下一題繼續。')}</h3><p>{localize(review.hint)}</p><QuestionSources question={review.question}/><button type="button" className="bonus-popup-primary" onClick={() => setReview(null)}>{localize(review.last ? '前往抽取拼圖' : '下一題')}<Icon name="arrow" size={18}/></button></section>}
+    {phase === 'review' && <section className="bonus-popup-review"><span className="bonus-popup-emblem"><Icon name="check" size={35}/></span><p className="bonus-popup-kicker">{localize(review.last ? '三題挑戰完成' : '這題答對了')}</p><h3 tabIndex={-1} data-bonus-focus>{localize(review.last ? '線索找齊了，準備抽拼圖。' : '答得好，下一題繼續。')}</h3><p>{localize(review.hint)}</p><HelpTip label={bonusCopy('context')}><p>{bonusCopy('source')}</p><QuestionSources question={review.question}/></HelpTip><button type="button" className="bonus-popup-primary" onClick={() => setReview(null)}>{localize(review.last ? '前往抽取拼圖' : '下一題')}<Icon name="arrow" size={18}/></button></section>}
     {phase === 'draw' && <section className="bonus-popup-draw"><span className="bonus-popup-emblem"><Icon name="puzzle" size={42}/></span><p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text.2')}</p><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text')}</h3><p>{t('bonusDialog.p.text.2')}</p><button type="button" className="bonus-popup-primary" onClick={draw}>{t('bonusDialog.bonus.popup.primary.text.2')}<Icon name="puzzle" size={20}/></button><p className="bonus-popup-error" role="alert">{localize(error)}</p></section>}
     {phase === 'result' && <section className="bonus-popup-result"><span className="bonus-popup-emblem"><Icon name="puzzle" size={42}/></span><p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text.3')}</p><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text.2', { value1: localize(rewards.length) })}</h3><ul className="bonus-popup-rewards">{rewards.map(id => <li key={id}><span>{localize(stationNumber(id))}</span><div><strong>{localize(stations.find(station => station.id === id)?.name || `第 ${id} 站拼圖`)}</strong><small>{t('bonusDialog.small.text')}</small></div><Icon name="check" size={20}/></li>)}</ul><button type="button" className="bonus-popup-primary" onClick={collect}>{t('bonusDialog.bonus.popup.primary.text.3')}<Icon name="arrow" size={18}/></button><a className="bonus-popup-secondary" href="#explore">{t('bonusDialog.bonus.popup.secondary.text')}</a></section>}
     {phase === 'idle' && <section className="bonus-popup-review"><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text.3')}</h3><p>{t('bonusDialog.p.text.3')}</p><button type="button" className="bonus-popup-primary" onClick={collect}>{t('bonusDialog.bonus.popup.primary.text.3')}</button></section>}
     <footer className="bonus-popup-footer">
       {bonus.sessionOnly && <p className="bonus-popup-storage-warning" role="status">{t('bonusDialog.bonus.popup.storage.warning.text')}</p>}
-      <details className="bonus-popup-rules">
-        <summary><Icon name="info" size={16}/><span>{t('bonusDialog.span.text')}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
-        <div className="bonus-popup-rules-body">
+      <HelpTip label={bonusCopy('rules')}>
           <ul>
             <li><strong>{t('bonusDialog.strong.text')}</strong>{t('bonusDialog.li.text')}</li>
             <li><strong>{t('bonusDialog.strong.text.2')}</strong>{t('bonusDialog.li.text.2', { value1: localize(BONUS_POLICY.easyAfterWrong) })}</li>
@@ -114,8 +115,7 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
             {phase === 'result' && <li><strong>{t('bonusDialog.strong.text.4')}</strong>{t('bonusDialog.li.text.3')}</li>}
           </ul>
           <p className="bonus-popup-rule-origin">{localize(contentNotice)}</p>
-        </div>
-      </details>
+      </HelpTip>
     </footer>
   </dialog>
 }

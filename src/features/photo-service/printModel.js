@@ -21,6 +21,7 @@ export function validateBooking(input, photos, completed, orders, slots, now = D
   return { layout: input.layout, quantity: input.quantity, payment: input.payment, photoIds: [...input.photoIds], slot: { ...slot }, total: format.price * input.quantity, status:'unpaid', preview:input.preview }
 }
 export function changeStatus(order, action) {
+  if (order.stagePayment) throw Error('已連結綠界測試單，請查詢伺服器狀態，不能使用展示按鈕更改。')
   const to = { pay: { unpaid:'queued' }, produce:{ queued:'printing' }, finish:{ printing:'ready' }, collect:{ ready:'collected' }, cancel:{ unpaid:'cancelled',queued:'cancelled' } }[action]?.[order.status]
   if (!to) throw Error('目前狀態不能執行這個操作，訂單維持原狀。')
   return { ...order, status:to, paymentConfirmed: action === 'pay' ? true : !!order.paymentConfirmed }
