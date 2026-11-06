@@ -1,3 +1,6 @@
+import { isGuestSession } from '../entry/guestSession'
+import { guestCopy } from '../entry/guestCopy'
+import { getLocale } from '../../i18n/runtime'
 import HelpTip from '../../components/HelpTip'
 import { bonusCopy, stationMission } from './bonusCopy.js'
 import { t, localize } from '../../i18n/runtime.js'
@@ -49,6 +52,8 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
   const returnTrigger = useRef(null)
   const returnFocus = useRef(true)
   const busy = useRef(false)
+  const mounted = useRef(false)
+  const [drawing,setDrawing] = useState(false)
   const [review, setReview] = useState(null)
   const [rewards, setRewards] = useState([])
   const [error, setError] = useState('')
@@ -61,11 +66,13 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
 
   useEffect(() => {
     const element = dialog.current
+    mounted.current = true
     if (!returnTrigger.current && !element.contains(document.activeElement)) returnTrigger.current = document.activeElement
     const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     if (!element.open) element.showModal()
     return () => {
+      mounted.current = false
       document.body.style.overflow = overflow
       if (element.open) element.close()
       if (returnFocus.current) requestAnimationFrame(() => { const target = returnTrigger.current?.isConnected ? returnTrigger.current : document.getElementById(returnFocusId); target?.focus({ preventScroll: true }) })
@@ -81,10 +88,13 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
     if (result?.ok && correct) setReview({ question, hint: question.hint, last: result.kind === 'quiz-complete' })
     return result
   }
-  function draw() {
+  async function draw() {
     if (busy.current) return
     busy.current = true
-    const result = onDraw()
+    setDrawing(true)
+    const result = await onDraw()
+    if (!mounted.current) return
+    setDrawing(false)
     const awarded = awardedPieceIds(result, BONUS_POLICY.totalPieces)
     if (awarded.length) { setRewards(awarded); setError('') }
     else { setError(result?.message || '目前無法確認抽取結果，請先查看拼圖收藏；不會再自動抽取。'); busy.current = false }
@@ -102,7 +112,7 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
     <header className="bonus-popup-header"><div><p className="eyebrow">{t('bonusDialog.eyebrow.text')}</p><h2 id="bonus-popup-title">{localize(phase === 'result' ? '旅程的新收穫' : phase === 'draw' ? '抽取拼圖' : '三題小挑戰')}</h2></div><button type="button" className="bonus-popup-close" aria-label={t('bonusDialog.bonus.popup.close.aria.label')} onClick={() => onClose()}><Icon name="close" size={21}/></button></header>
     {phase === 'quiz' && <QuizQuestion key={`${step}-${easy ? 'easy' : 'normal'}-${challengeQuestions[step]?.id || 'legacy'}`} quiz={bonus.quiz} questions={challengeQuestions} onSubmit={answer}/>}
     {phase === 'review' && <section className="bonus-popup-review"><span className="bonus-popup-emblem"><Icon name="check" size={35}/></span><p className="bonus-popup-kicker">{localize(review.last ? '三題挑戰完成' : '這題答對了')}</p><h3 tabIndex={-1} data-bonus-focus>{localize(review.last ? '線索找齊了，準備抽拼圖。' : '答得好，下一題繼續。')}</h3><p>{localize(review.hint)}</p><HelpTip label={bonusCopy('context')}><p>{bonusCopy('source')}</p><QuestionSources question={review.question}/></HelpTip><button type="button" className="bonus-popup-primary" onClick={() => setReview(null)}>{localize(review.last ? '前往抽取拼圖' : '下一題')}<Icon name="arrow" size={18}/></button></section>}
-    {phase === 'draw' && <section className="bonus-popup-draw"><span className="bonus-popup-emblem"><Icon name="puzzle" size={42}/></span><p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text.2')}</p><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text')}</h3><p>{t('bonusDialog.p.text.2')}</p><button type="button" className="bonus-popup-primary" onClick={draw}>{t('bonusDialog.bonus.popup.primary.text.2')}<Icon name="puzzle" size={20}/></button><p className="bonus-popup-error" role="alert">{localize(error)}</p></section>}
+    {phase === 'draw' && <section className="bonus-popup-draw"><span className="bonus-popup-emblem"><Icon name="puzzle" size={42}/></span><p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text.2')}</p><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text')}</h3><p>{t('bonusDialog.p.text.2')}</p><button type="button" className="bonus-popup-primary" onClick={draw} disabled={drawing}>{t('bonusDialog.bonus.popup.primary.text.2')}<Icon name="puzzle" size={20}/></button><p className="bonus-popup-error" role="alert">{localize(error)}</p></section>}
     {phase === 'result' && <section className="bonus-popup-result"><span className="bonus-popup-emblem"><Icon name="puzzle" size={42}/></span><p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text.3')}</p><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text.2', { value1: localize(rewards.length) })}</h3><ul className="bonus-popup-rewards">{rewards.map(id => <li key={id}><span>{localize(stationNumber(id))}</span><div><strong>{localize(stations.find(station => station.id === id)?.name || `第 ${id} 站拼圖`)}</strong><small>{t('bonusDialog.small.text')}</small></div><Icon name="check" size={20}/></li>)}</ul><button type="button" className="bonus-popup-primary" onClick={collect}>{t('bonusDialog.bonus.popup.primary.text.3')}<Icon name="arrow" size={18}/></button><a className="bonus-popup-secondary" href="#explore">{t('bonusDialog.bonus.popup.secondary.text')}</a></section>}
     {phase === 'idle' && <section className="bonus-popup-review"><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text.3')}</h3><p>{t('bonusDialog.p.text.3')}</p><button type="button" className="bonus-popup-primary" onClick={collect}>{t('bonusDialog.bonus.popup.primary.text.3')}</button></section>}
     <footer className="bonus-popup-footer">
@@ -111,7 +121,7 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
           <ul>
             <li><strong>{t('bonusDialog.strong.text')}</strong>{t('bonusDialog.li.text')}</li>
             <li><strong>{t('bonusDialog.strong.text.2')}</strong>{t('bonusDialog.li.text.2', { value1: localize(BONUS_POLICY.easyAfterWrong) })}</li>
-            <li><strong>{t('bonusDialog.strong.text.3')}</strong>{localize(bonus.sessionOnly ? '目前儲存受限，僅保留本次進度。' : '可隨時關閉，已儲存的題次與待抽機會可接續；尚未確認的選項不算已作答。')}</li>
+            <li><strong>{t('bonusDialog.strong.text.3')}</strong>{localize(isGuestSession() ? guestCopy(getLocale()).temporary : bonus.sessionOnly ? '目前儲存受限，僅保留本次進度。' : '可隨時關閉，已儲存的題次與待抽機會可接續；尚未確認的選項不算已作答。')}</li>
             {phase === 'result' && <li><strong>{t('bonusDialog.strong.text.4')}</strong>{t('bonusDialog.li.text.3')}</li>}
           </ul>
           <p className="bonus-popup-rule-origin">{localize(contentNotice)}</p>

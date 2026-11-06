@@ -1,7 +1,8 @@
+import { getProgressStorage } from '../entry/guestSession.js'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createIntroState, readIntroRecord, writeIntroRecord, introTransition } from './introModel'
 
-const getStorage = () => window.localStorage
+const getStorage = getProgressStorage
 
 export default function useIntro({ autoOpen = true } = {}) {
   const [state, setState] = useState(() => {

@@ -9,6 +9,7 @@ const errors=[]
 try {
  for (const [name,viewport,touch] of [['desktop',{width:1440,height:1000},false],['mobile',{width:390,height:844},true],['narrow',{width:320,height:740},true]]) {
  const context=await browser.newContext({viewport,hasTouch:touch,isMobile:touch})
+ await context.addInitScript(()=>localStorage.setItem('railway.entry-guide.v1','1'))
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message))
  await page.goto(url)
  await page.getByRole('button',{name:'Google 模擬登入',exact:true}).click()

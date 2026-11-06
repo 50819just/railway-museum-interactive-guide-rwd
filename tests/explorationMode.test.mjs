@@ -89,7 +89,7 @@ test('mode storage/event contract and live stores preserve unrelated data and bi
   storage.setItem('railway.journey-demo.v2', JSON.stringify({ version: 2, completed: [1, 2] }))
   storage.setItem('railway.puzzle-bonus-demo.v1', JSON.stringify(syncBonusProgress(initialBonus(), [1, 2, 3, 4], { random: () => 0 }).state))
   const target = new EventTarget()
-  globalThis.window = { localStorage: storage, addEventListener: target.addEventListener.bind(target), dispatchEvent: target.dispatchEvent.bind(target) }
+  globalThis.window = { localStorage: storage, sessionStorage: memory(), addEventListener: target.addEventListener.bind(target), dispatchEvent: target.dispatchEvent.bind(target) }
   const mode = await import('../src/features/explore/explorationMode.js')
   const station = await import('../src/features/explore/explorationStation.js')
   const journey = await import('../src/features/arrival/journeyStore.js')

@@ -1,3 +1,4 @@
+import { rememberRecord } from '../records/recordArchive.js'
 import { useSyncExternalStore } from 'react'
 import { readDemoSession, writeDemoSession, demoTransition } from './paymentDemoModel.mjs'
 let snapshot
@@ -8,6 +9,8 @@ export function updatePaymentDemo(action) {
   const current = getSnapshot()
   const next = demoTransition(current.state, action)
   if (next === current.state) return false
+  if (current.state.receiptId) rememberRecord('flow', current.state)
+  if (next.receiptId) rememberRecord('flow', next)
   let persisted = false
   try { persisted = writeDemoSession(window.sessionStorage, next) } catch { /* Presentation continues in memory, no real payment is involved. */ }
   snapshot = { state: next, sessionOnly: current.sessionOnly || !persisted }

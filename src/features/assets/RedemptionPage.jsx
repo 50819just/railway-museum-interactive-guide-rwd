@@ -1,7 +1,8 @@
+import RecordsCenter from '../records/RecordsCenter'
 import { t, localize } from '../../i18n/runtime.js'
 import { useCallback, useRef, useState, useSyncExternalStore } from 'react'
 import usePuzzleCollection from '../bonus/usePuzzleCollection'
-import { firstRoundProducts, getRedemptionProduct } from '../redemption/redemptionCatalog'
+import { firstRoundProducts } from '../redemption/redemptionCatalog'
 import useRedemption, { submitRedemption, updateRedemption } from '../redemption/redemptionStore'
 import { redemptionEligibility } from '../redemption/redemptionModel'
 import useRedemptionOperations from '../redemption/useRedemptionOperations'
@@ -55,6 +56,7 @@ export default function RedemptionPage({ onNavigate }) {
   const [layoutColumns, setLayoutColumns] = useState(1)
   const compactLayout = useSyncExternalStore(subscribeLayout, getCompactLayout, () => false)
   const columns = compactLayout ? Math.min(layoutColumns, 2) : layoutColumns
+  const [recordsOpen, setRecordsOpen] = useState(false)
   const [needsPuzzles, setNeedsPuzzles] = useState(false)
   const [rulesOpen, setRulesOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -63,7 +65,6 @@ export default function RedemptionPage({ onNavigate }) {
   const [selectedProductId, setSelectedProductId] = useState(null)
   const closeDialog = useCallback(() => setDialogOpen(false), [])
   const eligibility = redemptionEligibility(redemption, completed)
-  const currentProduct = getRedemptionProduct(redemption.record?.productId)
   const visibleProducts = firstRoundProducts.filter(product => !operations.settings.hiddenProductIds.includes(product.id))
   function selectProduct(id) {
     if (completed < 10) { setNeedsPuzzles(true); return }
@@ -80,9 +81,10 @@ export default function RedemptionPage({ onNavigate }) {
     return '選擇這份禮物'
   }
   const carouselRoot = useRef(null)
-  const carousel = useGiftCarousel(giftSlides.length, !dialogOpen && !rulesOpen && !needsPuzzles && !detailsProduct, carouselRoot)
+  const carousel = useGiftCarousel(giftSlides.length, !dialogOpen && !rulesOpen && !needsPuzzles && !detailsProduct && !recordsOpen, carouselRoot)
   return <section className="explore-page redemption-page" aria-labelledby="train-title">
     <header className="page-heading redeem-page-heading"><div><p className="eyebrow">{t('redemptionPage.eyebrow.text')}</p><h1 id="train-title" tabIndex={-1}>{t('appShell.copy.name.copy.2')}</h1><p className="heading-description">{t('redemptionPage.heading.description.text')}</p></div></header>
+    <RecordsCenter onManage={viewReceipt} onNavigate={onNavigate} onOpenChange={setRecordsOpen}/>
     <section className="pd-entry" aria-label={t('redemptionPage.pd.entry.aria.label')}><div><strong>{t('redemptionPage.strong.text.3')}</strong><small>{t('redemptionPage.small.text.3')}</small></div>{['confirming','complete'].includes(paymentDemo.phase) ? <button type="button" onClick={() => updatePaymentDemo({ type: 'openReceipt' })}>{t('redemptionPage.button.text')}</button> : <button type="button" onClick={() => onNavigate('payment-demo')}>{t('redemptionPage.button.text.4')}<Icon name="arrow" size={16}/></button>}</section>
     <section ref={carouselRoot} className="redeem-hero" aria-label={t('redemptionPage.redeem.hero.aria.label')} aria-roledescription="輪播" {...carousel.interactionProps}>
       {giftSlides.map((gift, index) => <div key={gift.image} className={`redeem-hero-slide ${carousel.index === index ? 'is-active' : ''}`} role="group" aria-roledescription="投影片" aria-label={localize(`${index + 1} / ${giftSlides.length}：${gift.tag}`)} aria-hidden={carousel.index !== index} inert={carousel.index !== index}>
@@ -95,7 +97,6 @@ export default function RedemptionPage({ onNavigate }) {
       <span className="sr-only" aria-live={carousel.paused || carousel.reducedMotion ? 'polite' : 'off'}>{localize(carousel.paused || carousel.reducedMotion ? `第 ${carousel.index+1} 張，共 ${giftSlides.length} 張：${giftSlides[carousel.index].tag}` : '')}</span>
     </section>
     <div className="redeem-layout-switch redeem-layout-compact" role="group" aria-label={t('redemptionPage.redeem.layout.switch.aria.label')}>{(compactLayout ? [1,2] : [1,2,3]).map(count=><button type="button" key={count} aria-label={localize(count===1 ? localize('由上到下，單欄排列') : localize(`${count} 欄排列`))} aria-pressed={columns===count} title={localize(count===1 ? localize('由上到下') : localize(`${count} 欄排列`))} onClick={()=>setLayoutColumns(count)}><LayoutIcon columns={count}/></button>)}</div>
-    {(redemption.record || redemption.blocked || redemption.storageMessage) && <section className="redeem-receipt-summary" aria-labelledby="redeem-receipt-summary-title"><div><p className="eyebrow">{t('rewards.receiptEyebrow')}</p><h2 id="redeem-receipt-summary-title">{localize(redemption.blocked ? '領取紀錄待確認' : redemption.record?.status === 'pending' ? '領取紀錄' : redemption.record?.status === 'collected' ? '本次紀錄已完成' : '登記已取消')}</h2><p>{localize(redemption.storageMessage || (currentProduct ? `${currentProduct.name}・${redemption.record.status === 'pending' ? '待確認' : redemption.record.status === 'collected' ? '紀錄已完成' : '已取消'}` : '沒有連結正式庫存、付款或領獎資格。'))}</p></div>{redemption.record && <button type="button" onClick={viewReceipt} aria-haspopup="dialog">{t('redemptionPage.button.text.5')}<Icon name="arrow" size={16}/></button>}</section>}
     <section aria-labelledby="redeem-first-title"><header className="redeem-section-heading redeem-catalog-heading"><div><p className="eyebrow">{t('rewards.firstEyebrow')}</p><h2 id="redeem-first-title" tabIndex={-1}>{t('redemptionPage.redeem.first.title.text')}</h2><span className="redeem-shared-cost">{t('redemptionPage.redeem.shared.cost.text')}</span></div><button type="button" className="explore-menu-help" aria-haspopup="dialog" onClick={()=>setRulesOpen(true)}><Icon name="info" size={17}/><span>{t('redemptionPage.span.text')}</span></button></header>{redemption.blocked && <p className="redeem-eligibility-copy" role="status">{localize(redemption.storageMessage)}</p>}<div className={`redeem-grid redeem-layout-${columns}`}>{visibleProducts.map(product=><ProductCard key={product.id} product={product} onDetails={setDetailsProduct} onSelect={selectProduct} actionLabel={actionLabel(product)} availability={operations.availabilityById[product.id]} blocked={redemption.blocked}/>)}</div></section>
     <section className="redeem-revisit" aria-labelledby="redeem-revisit-title"><header className="redeem-section-heading"><p className="eyebrow">{t('rewards.nextEyebrow')}</p><h2 id="redeem-revisit-title">{t('redemptionPage.redeem.revisit.title.text')}</h2><p>{t('redemptionPage.p.text')}</p><a className="redeem-revisit-link" href="#revisit">{t('redemptionPage.redeem.revisit.link.text.2')}<Icon name="arrow" size={16}/></a></header><div className={`redeem-grid redeem-layout-${columns}`}><ProductCard revisit onDetails={setDetailsProduct} product={{ id: 'revisit', image: 'product-06.jpg', name: '再訪延伸配件', material: '第二輪限定・延伸收藏', description: '讓下一趟旅程，為收藏添上新的小細節。具體品項待確認。' }}/></div></section>
     {detailsProduct && <ProductDetailsDialog product={detailsProduct} availability={operations.availabilityById[detailsProduct.id]} onClose={closeDetails}/>}

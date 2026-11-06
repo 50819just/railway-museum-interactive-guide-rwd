@@ -3,7 +3,7 @@ import { STORAGE_KEY as FAMILY_KEY, validState } from '../family/groupModel.js'
 export const ENTRY_KEY = 'railway.entry.v1'
 export const emptyEntry = () => ({ version: 1, provider: null, party: null, completed: false })
 export function validEntry(value) {
-  return value?.version === 1 && [null, 'google', 'line'].includes(value.provider)
+  return value?.version === 1 && [null, 'google', 'line', 'guest'].includes(value.provider)
     && [null, 'solo', 'family'].includes(value.party) && typeof value.completed === 'boolean'
     && (!value.party || !!value.provider) && (!value.completed || (!!value.provider && !!value.party))
 }

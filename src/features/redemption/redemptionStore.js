@@ -1,3 +1,4 @@
+import { rememberRecord } from '../records/recordArchive.js'
 import { useSyncExternalStore } from 'react'
 import { REDEMPTION_KEY, initialRedemption, createRedemption, transitionRedemption, readRedemption, persistRedemption } from './redemptionModel.js'
 import { getCurrentRedemptionAvailability } from './redemptionOperationsStore.js'
@@ -19,8 +20,10 @@ function refreshBeforeAction() {
 }
 function commit(result) {
   if (result.state !== state) {
+    if (state.record) rememberRecord('gift', state.record)
     state = result.state
     const saved = persistRedemption(getStorage(), state)
+    if (state.record) rememberRecord('gift', state.record)
     snapshot = { ...state, sessionOnly: !saved, blocked: false, storageMessage: saved ? '' : '紀錄無法儲存，離開頁面後可能遺失；不能作為領取憑證。', message: result.message }
   } else snapshot = { ...snapshot, message: result.message }
   emit()

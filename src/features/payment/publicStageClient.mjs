@@ -1,3 +1,4 @@
+import { rememberRecord } from '../records/recordArchive.js'
 import { STAGE_ACTION } from './paymentClient.mjs'
 export const PUBLIC_STAGE_ORIGIN='https://railway-museum-payment-stage.onrender.com'
 export const GIFT_RETURN_KEY='railway.gift-stage-return.v1'
@@ -9,6 +10,7 @@ export async function createPublicCheckout(input,key,{fetchImpl=fetch}={}){
  if(value.publicDemo!==true||o?.sandbox!==true||o.officialEntitlement!==false||!c||c.action!==STAGE_ACTION||c.fields?.MerchantTradeNo!==o.id||Number(c.fields?.TotalAmount)!==o.amount||!/^([a-f0-9]{64})$/.test(c.returnToken||'')||!Number.isSafeInteger(c.returnExpiresAt)||c.returnExpiresAt<=Date.now()||c.returnExpiresAt>Date.now()+86400000)throw Error('unverified-public-checkout')
  if(input.kind==='print'&&(!/^RP[A-Za-z0-9]{18}$/.test(o.id)||o.layout!==input.layout||o.quantity!==input.quantity||o.slot_id!==input.slotId))throw Error('unverified-public-checkout')
  if(input.kind==='gift'&&(!/^RM[A-Za-z0-9]{18}$/.test(o.id)||o.product_id!==input.productId))throw Error('unverified-public-checkout')
+ if(input.kind==='gift')rememberRecord('stage',o)
  return value
 }
 export function validGiftReturn(c,now=Date.now()){
@@ -26,5 +28,5 @@ export async function readPublicGiftReturn(c,{fetchImpl=fetch,signal}={}){
  if(!validGiftReturn(c))throw Error('invalid-gift-return')
  const r=await fetchImpl(`${PUBLIC_STAGE_ORIGIN}/api/payment/public-return/${c.orderId}`,{credentials:'omit',redirect:'error',headers:{Authorization:`Bearer ${c.token}`},signal})
  if(!r.ok)throw Error('gift-return-unavailable')
- const o=await r.json();if(o.id!==c.orderId||classifyGift(o)==='unknown')throw Error('gift-return-unverified');return o
+ const o=await r.json();if(o.id!==c.orderId||classifyGift(o)==='unknown')throw Error('gift-return-unverified');rememberRecord('stage',o);return o
 }

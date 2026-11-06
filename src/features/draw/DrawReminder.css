@@ -1,0 +1,7 @@
+/* Temporary under-navigation reminder, not an exploration history card. */
+.draw-reminder{display:grid;grid-template-columns:24px minmax(0,1fr) auto 40px;align-items:center;gap:10px;margin:10px 32px;padding:10px 12px;border:1px solid #d7ddce;border-radius:12px;background:#f3f1e4;color:var(--teal);font-size:13px;overflow-wrap:anywhere}
+.draw-reminder-icon{display:grid;place-items:center;color:var(--gold-ink)}.draw-reminder-copy{min-width:0}.draw-reminder-copy p{font-weight:700;line-height:1.5}.draw-reminder-copy small{display:block;font-size:11px;line-height:1.6;color:var(--muted);margin-top:2px}
+.draw-reminder-open{min-height:44px;min-width:52px;padding:8px 12px;background:var(--teal);color:var(--paper);border-radius:9px;font-size:12px;font-weight:700}.draw-reminder-close{width:40px;min-height:44px;display:grid;place-items:center;background:transparent;border-radius:8px;color:var(--muted)}
+.draw-bank-note{grid-column:2/-1;font-size:12px;color:var(--muted);margin:0!important}.draw-bank-history{grid-column:2/-1;display:inline-flex;align-items:center;justify-self:start;gap:7px;min-height:44px;font-size:13px;font-weight:600;text-underline-offset:4px}
+@media(max-width:1000px){.draw-reminder{margin:10px 20px}}
+@media(max-width:400px){.draw-reminder{margin:8px 12px;padding:9px 8px;gap:6px;grid-template-columns:20px minmax(0,1fr) auto 36px}.draw-reminder-copy p{font-size:12px}.draw-reminder-copy small{font-size:10px}.draw-reminder-open{padding-inline:10px;min-width:48px}.draw-reminder-close{width:36px}}

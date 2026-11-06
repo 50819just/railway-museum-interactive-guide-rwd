@@ -5,7 +5,8 @@ export const nextStationId = state => Array.from({ length: TOTAL_STATIONS }, (_,
 export const stationPayload = id => `railway-demo:station:${String(id).padStart(2, '0')}`
 export function normalizeJourney(value) {
   if (!value || value.version !== 2 || !Array.isArray(value.completed) || value.completed.length > 10 || new Set(value.completed).size !== value.completed.length || value.completed.some(id => !Number.isInteger(id) || id < 1 || id > TOTAL_STATIONS)) return initialJourney()
-  return { version: 2, completed: [...value.completed] }
+  if (value.journeyId !== undefined && (typeof value.journeyId !== 'string' || !/^J-[a-zA-Z0-9-]{8,80}$/.test(value.journeyId) || !Array.isArray(value.drawEligible) || new Set(value.drawEligible).size !== value.drawEligible.length || value.drawEligible.some(id => !value.completed.includes(id)))) return initialJourney()
+  return { version: 2, completed: [...value.completed], ...(value.journeyId ? { journeyId: value.journeyId, drawEligible: [...value.drawEligible] } : {}) }
 }
 export function inspectPayload(state, input, mode = 'sequential') {
   const match = typeof input === 'string' && /^railway-demo:station:(0[1-9]|10)$/.exec(input.trim())
@@ -18,11 +19,17 @@ export function inspectPayload(state, input, mode = 'sequential') {
 }
 export function completeStation(state, payload, mode = 'sequential') {
   const result = inspectPayload(state, payload, mode)
-  return result.ok ? { ...result, state: { version: 2, completed: [...state.completed, result.stationId] } } : { ...result, state }
+  return result.ok ? { ...result, state: { ...state, completed: [...state.completed, result.stationId] } } : { ...result, state }
 }
 export function readJourney(storage) {
-  try { const raw = storage?.getItem(JOURNEY_KEY); return { state: raw ? normalizeJourney(JSON.parse(raw)) : initialJourney(), sessionOnly: !storage } }
-  catch { return { state: initialJourney(), sessionOnly: true } }
+  try {
+    const raw = storage?.getItem(JOURNEY_KEY)
+    if (!raw) return { state: initialJourney(), sessionOnly: !storage }
+    const value = JSON.parse(raw), state = normalizeJourney(value)
+    if (JSON.stringify(state.completed) !== JSON.stringify(value?.completed) || value.version !== 2 || (value.journeyId !== undefined && !state.journeyId)) return { state: initialJourney(), sessionOnly: true, blocked: true }
+    return { state, sessionOnly: !storage }
+  }
+  catch { return { state: initialJourney(), sessionOnly: true, blocked: true } }
 }
 export function persistJourney(storage, state) {
   try { if (!storage) return false; storage.setItem(JOURNEY_KEY, JSON.stringify(state)); return true } catch { return false }

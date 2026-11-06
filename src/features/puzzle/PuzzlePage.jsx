@@ -1,3 +1,7 @@
+import { isGuestSession } from '../entry/guestSession'
+import { guestCopy } from '../entry/guestCopy'
+import useLocale from '../../i18n/useLocale'
+import DrawEntry from '../draw/DrawEntry.jsx'
 import HelpTip from '../../components/HelpTip'
 import { t, localize } from '../../i18n/runtime.js'
 import { useState } from 'react'
@@ -13,6 +17,7 @@ import './PuzzlePage.css'
 const stationIds = stations.map(station => station.id)
 
 export default function PuzzlePage() {
+  const guest = isGuestSession(), c = guestCopy(useLocale())
   const { journey, bonus, pieceIds } = usePuzzleCollection()
   const [filter, setFilter] = useState('all')
   const [storyStation, setStoryStation] = useState(null)
@@ -31,13 +36,14 @@ export default function PuzzlePage() {
   return <div className="puzzle-page">
     <header className="page-heading"><div><p className="eyebrow">{t('puzzlePage.eyebrow.text')}</p><h1 tabIndex={-1}>{t('appShell.copy.name.copy.4')}</h1><p className="heading-description">{t('puzzlePage.heading.description.text')}</p>{(bonus.quiz || bonus.pendingDraw || bonus.availableChances > 0) && <button className="puzzle-bonus-shortcut" type="button" onClick={() => { const target = document.getElementById('bonus-title'); target?.scrollIntoView({ block: 'start' }); target?.focus({ preventScroll: true }) }}>{localize(bonus.quiz ? `繼續第 ${bonus.quiz.step + 1} 題挑戰` : bonus.pendingDraw ? '三題已完成，前往抽取拼圖' : `有 ${bonus.availableChances} 次額外答題機會`)}<Icon name="arrow" size={18}/></button>}</div></header>
 
+    <DrawEntry blocked={!!storyStation}/>
     <section className="puzzle-overview" aria-labelledby="puzzle-progress-title">
       <div className="puzzle-overview-copy"><span className="puzzle-round">{t('puzzlePage.puzzle.round.text')}</span><h2 id="puzzle-progress-title">{localize(complete ? '這趟旅程的拼圖，收齊了。' : count === 0 ? '第一片故事，等你出發。' : '收下的每一片故事，都在這裡。')}</h2><p>{localize(complete ? '回看一路收集的片段，或到兌換區看看紀念品。' : `還差 ${remaining} 片。首輪沿著動線探索，不用一次走完。`)}</p><a className="puzzle-primary" href={complete ? '#train' : '#explore'}>{localize(complete ? '前往兌換區' : count ? '繼續探索' : '開始探索')}<Icon name="arrow" size={20}/></a></div>
       <div className="puzzle-counter"><Icon name="puzzle" size={34}/><p><strong>{localize(count)}</strong><span>{t('puzzlePage.span.text', { value1: localize(total) })}</span></p><label htmlFor="puzzle-progress">{t('exploreNavigation.explore.toolbar.progress.aria.label')}</label><progress id="puzzle-progress" value={count} max={total}/></div>
     </section>
 
     <section className={`puzzle-save-status${(journey.sessionOnly || bonus.sessionOnly) ? ' is-warning' : ''}`} aria-labelledby="puzzle-save-title">
-      <Icon name={(journey.sessionOnly || bonus.sessionOnly) ? 'info' : 'check'} size={21}/><div><h2 id="puzzle-save-title">{localize((journey.sessionOnly || bonus.sessionOnly) ? '目前僅保留本次進度' : '進度已保存在這個瀏覽器')}</h2><p>{localize((journey.sessionOnly || bonus.sessionOnly) ? '瀏覽器目前無法儲存，關閉頁面後可能遺失；目前無法保證下次接續。' : '使用同一裝置與瀏覽器可接續。尚未連結帳號；換裝置、清除網站資料或使用私人瀏覽，可能無法找回。')}</p></div>
+      <Icon name={(journey.sessionOnly || bonus.sessionOnly) ? 'info' : 'check'} size={21}/><div><h2 id="puzzle-save-title">{localize(guest ? c.guest : (journey.sessionOnly || bonus.sessionOnly) ? '目前僅保留本次進度' : '進度已保存在這個瀏覽器')}</h2><p>{localize(guest ? c.temporary : (journey.sessionOnly || bonus.sessionOnly) ? '瀏覽器目前無法儲存，關閉頁面後可能遺失；目前無法保證下次接續。' : '使用同一裝置與瀏覽器可接續。尚未連結帳號；換裝置、清除網站資料或使用私人瀏覽，可能無法找回。')}</p></div>
     </section>
 
     <section className="puzzle-collection" aria-labelledby="puzzle-collection-title">

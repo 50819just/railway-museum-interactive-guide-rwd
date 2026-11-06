@@ -1,3 +1,4 @@
+import { DRAW_OVERLAY_EVENT } from '../draw/drawNavigation.js'
 import NearbyExplore from '../nearby/NearbyExplore.jsx'
 import HelpTip from '../../components/HelpTip'
 import { t, localize } from '../../i18n/runtime.js'
@@ -16,7 +17,7 @@ import './ExplorationMode.css'
 import './ExploreDemo.css'
 
 export default function ExplorePage({ active = true }) {
-  const { journey: progress, bonus, collectedCount } = usePuzzleCollection()
+  const { journey: progress, bonus, pieceIds, collectedCount } = usePuzzleCollection()
   const mode = useExplorationMode()
   const free = mode === 'free'
   const nextId = nextStationId(progress)
@@ -30,6 +31,7 @@ export default function ExplorePage({ active = true }) {
   const [navigationOverlayOpen, setNavigationOverlayOpen] = useState(false)
   const [bonusOverlayOpen, setBonusOverlayOpen] = useState(false)
   const [nearbyOverlayOpen, setNearbyOverlayOpen] = useState(false)
+  const [drawOpen, setDrawOpen] = useState(false)
   const [showDock, setShowDock] = useState(false)
   const navigation = useRef(null)
   const feature = useRef(null)
@@ -45,9 +47,11 @@ export default function ExplorePage({ active = true }) {
   useEffect(() => {
     function routeChanged() { setArrivalId(null); setStoryOpen(false) }
     function resetView() { routeChanged(); setPreviewId(null) }
+    function drawOverlay(event) { setDrawOpen(!!event.detail?.open) }
+    window.addEventListener(DRAW_OVERLAY_EVENT,drawOverlay)
     window.addEventListener('hashchange', routeChanged)
     window.addEventListener('railway:journey-reset', resetView)
-    return () => { window.removeEventListener('hashchange', routeChanged); window.removeEventListener('railway:journey-reset', resetView) }
+    return () => { window.removeEventListener(DRAW_OVERLAY_EVENT,drawOverlay); window.removeEventListener('hashchange', routeChanged); window.removeEventListener('railway:journey-reset', resetView) }
   }, [])
   useEffect(() => {
     if (!active || typeof IntersectionObserver === 'undefined') return undefined
@@ -67,7 +71,7 @@ export default function ExplorePage({ active = true }) {
     requestAnimationFrame(() => { window.scrollTo({ top: 0 }); feature.current?.focus({ preventScroll: true }) })
   }
   function taskPrimary() { if (!current) resumeJourney(); else setArrivalId(selectedId) }
-  const primaryLabel = completed && free ? '此站已完成・選其他站點' : !current && nextId ? `回到下一站・${nextStation.name}` : bonus.bonusPieces.includes(selectedId) ? '到站掃碼・記錄到訪' : '到站掃碼・領取拼圖'
+  const primaryLabel = completed && free ? '此站已完成・選其他站點' : !current && nextId ? `回到下一站・${nextStation.name}` : pieceIds.includes(selectedId) ? '到站掃碼・記錄到訪' : '到站掃碼・領取拼圖'
 
   return <>
     <div ref={navigation} className="explore-toolbar-slot">
@@ -100,7 +104,7 @@ export default function ExplorePage({ active = true }) {
         {!completeSummary && <NearbyExplore key={selectedId} stationId={selectedId} active={active} bonus={bonus} completed={progress.completed} collectedCount={collectedCount} total={total} onOverlayChange={setNearbyOverlayOpen}/>}
       </div>
       {(progress.sessionOnly || bonus.sessionOnly) && <p className="journey-session-note" role="status">{t('explorePage.journey.session.note.text')}</p>}
-      {active && showDock && !arrivalId && !storyOpen && !navigationOverlayOpen && !bonusOverlayOpen && !nearbyOverlayOpen && <div className="explore-task-dock" aria-label={t('explorePage.explore.task.dock.aria.label')}><span>{free && nextId ? localize(`本次選擇・${selected.name}`) : nextStation ? t('explore.nextShort', { stationName: localize(nextStation.name) }) : localize('旅程已完成')}</span>{nextId ? <button onClick={free && completed ? openMap : taskPrimary} aria-label={localize(free && completed ? '選其他站點' : current ? '到站掃碼' : '回到下一站')} title={localize(free && completed ? '選其他站點' : current ? '到站掃碼' : '回到下一站')}>{free && completed ? localize('選站點') : t(current ? 'explore.scanShort' : 'explore.backShort')}<Icon name={current ? 'camera' : 'arrow'} size={18}/></button> : <a href="#train">{t('explorePage.primary.button.text')}<Icon name="arrow" size={18}/></a>}</div>}
+      {active && showDock && !drawOpen && !arrivalId && !storyOpen && !navigationOverlayOpen && !bonusOverlayOpen && !nearbyOverlayOpen && <div className="explore-task-dock" aria-label={t('explorePage.explore.task.dock.aria.label')}><span>{free && nextId ? localize(`本次選擇・${selected.name}`) : nextStation ? t('explore.nextShort', { stationName: localize(nextStation.name) }) : localize('旅程已完成')}</span>{nextId ? <button onClick={free && completed ? openMap : taskPrimary} aria-label={localize(free && completed ? '選其他站點' : current ? '到站掃碼' : '回到下一站')} title={localize(free && completed ? '選其他站點' : current ? '到站掃碼' : '回到下一站')}>{free && completed ? localize('選站點') : t(current ? 'explore.scanShort' : 'explore.backShort')}<Icon name={current ? 'camera' : 'arrow'} size={18}/></button> : <a href="#train">{t('explorePage.primary.button.text')}<Icon name="arrow" size={18}/></a>}</div>}
       {arrivalId && active && <ArrivalDialog stationId={arrivalId} onStationVerified={id => { setPreviewId(id); setExplorationStation(id) }} onClose={() => setArrivalId(null)} onContinue={continueJourney}/>}
       {storyOpen && active && <StationStoryDialog station={selected} onClose={() => setStoryOpen(false)}/>}
     </section>

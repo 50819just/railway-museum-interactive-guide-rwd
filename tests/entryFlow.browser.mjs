@@ -16,6 +16,7 @@ const storedEntry = JSON.stringify({ version: 1, provider: 'line', party: 'solo'
 const journey = completed => JSON.stringify({ version: 2, completed })
 async function setup(viewport, seed = {}) {
   const context = await browser.newContext({ viewport, reducedMotion: 'reduce' })
+  await context.addInitScript(() => localStorage.setItem('railway.entry-guide.v1', '1'))
   const page = await context.newPage()
   page.on('pageerror', error => errors.push(error.message))
   await page.goto(url)
@@ -121,6 +122,7 @@ try {
   let persistent
   try {
     persistent = await chromium.launchPersistentContext(profile, options)
+    await persistent.addInitScript(() => localStorage.setItem('railway.entry-guide.v1', '1'))
     let page = persistent.pages()[0]; await page.goto(url)
     await page.getByRole('button', { name: 'LINE 模擬登入', exact: true }).click()
     await page.locator('input[name=entry-party][value=family]').check(); await page.locator('input[name=entry-mode][value=free]').check()
@@ -128,6 +130,7 @@ try {
     await page.getByRole('button', { name: '確認設定，開始遊玩', exact: true }).click()
     await page.waitForSelector('.app-shell'); await persistent.close()
     persistent = await chromium.launchPersistentContext(profile, options)
+    await persistent.addInitScript(() => localStorage.setItem('railway.entry-guide.v1', '1'))
     page = persistent.pages()[0]; await page.goto(url); await page.waitForSelector('.app-shell')
     assert.equal(await page.evaluate(key => localStorage.getItem(key), modeKey), 'free')
     assert.equal(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).party, entryKey), 'family')

@@ -52,6 +52,14 @@ test('explore keeps collection progress in the toolbar instead of repeating visi
 test('consumer UI has no development-facing labels, including collapsed content and model messages', () => {
   for (const file of scripts(join(root, 'src'))) {
     if (file.endsWith('PaymentSandboxPanel.jsx')) continue
+    // Guest upgrade must disclose the same-device simulated login and non-merge fallback.
+    if (file === join(root, 'src/features/entry/guestCopy.js')) {
+      const copy = readFileSync(file, 'utf8')
+      assert.match(copy, /同裝置模擬，不是雲端帳號/u)
+      assert.match(copy, /不會自動合併/u)
+      assert.doesNotMatch(copy, /\bfetch\s*\(|access_token|client_secret/u)
+      continue
+    }
     // 2026-11-05: this entry is explicitly a local simulated login, never OAuth.
     if (file === join(root, 'src/features/entry/EntryGate.jsx')) {
       const entry = readFileSync(file, 'utf8')

@@ -1,3 +1,4 @@
+import { getProgressStorage, GUEST_SESSION_EVENT } from '../entry/guestSession.js'
 export const EXPLORATION_MODE_KEY = 'railway.exploration-mode.v1'
 export const EXPLORATION_MODE_EVENT = 'railway:exploration-mode-change'
 const normalizeMode = mode => mode === 'free' ? 'free' : 'sequential'
@@ -7,7 +8,7 @@ let sessionOnly = false
 export function getExplorationMode() {
   if (sessionOnly) return sessionMode
   try {
-    return normalizeMode(window.localStorage.getItem(EXPLORATION_MODE_KEY))
+    return normalizeMode(getProgressStorage().getItem(EXPLORATION_MODE_KEY))
   } catch {
     return sessionMode
   }
@@ -18,7 +19,7 @@ export function setExplorationMode(mode) {
   const next = normalizeMode(mode)
   sessionMode = next
   try {
-    window.localStorage.setItem(EXPLORATION_MODE_KEY, next)
+    getProgressStorage().setItem(EXPLORATION_MODE_KEY, next)
     sessionOnly = false
   } catch {
     sessionOnly = true
@@ -28,3 +29,9 @@ export function setExplorationMode(mode) {
   }
   return next
 }
+
+if (typeof window !== 'undefined') window.addEventListener(GUEST_SESSION_EVENT, () => {
+  sessionOnly = false
+  sessionMode = 'sequential'
+  window.dispatchEvent(new CustomEvent(EXPLORATION_MODE_EVENT, { detail: { mode: getExplorationMode() } }))
+})

@@ -4,6 +4,7 @@ import useLocale from '../i18n/useLocale'
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import trapDialogFocus from './trapDialogFocus'
+import DrawHost from '../features/draw/DrawHost.jsx'
 import ActivityNotice from './ActivityNotice'
 import './BrandIdentity.css'
 import './AppNavigation.css'
@@ -101,6 +102,7 @@ export default function AppShell({ children, page, onNavigate, onOpenJourneySett
           <button ref={menuButtonRef} className="header-menu-button" type="button" aria-label={t('appShell.header.menu.button.aria.label')} aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="app-navigation-dialog" onClick={openMenu}><Icon name="menu" size={23}/></button>
         </div>
       </header>
+      <DrawHost/>
       <ActivityNotice onNavigate={onNavigate}/>
       <main id="main" tabIndex={-1}>{localize(children)}</main>
       {onOpenJourneySettings && <footer className="journey-settings-entry"><button type="button" onClick={onOpenJourneySettings} aria-haspopup="dialog">旅程設定</button></footer>}

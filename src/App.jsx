@@ -1,24 +1,28 @@
+import { isGuestSession, getSessionScope, subscribePlaySession, requestGuestLogin } from './features/entry/guestSession'
+import { guestCopy } from './features/entry/guestCopy'
+import GuestAccessPanel from './features/entry/GuestAccessPanel'
+import HelpTip from './components/HelpTip'
 import { t } from './i18n/runtime.js'
 import useLocale from './i18n/useLocale'
 import { getLocale } from './i18n/runtime'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore, lazy, Suspense } from 'react'
 import AppShell from './components/AppShell'
 import EntryGate from './features/entry/EntryGate'
 import ExplorePage from './features/explore/ExplorePage'
-import AssetPreviewPage from './features/assets/AssetPreviewPage'
-import FamilyPage from './features/family/FamilyPage'
-import MorePage from './features/more/MorePage'
+const AssetPreviewPage = lazy(() => import('./features/assets/AssetPreviewPage'))
+const FamilyPage = lazy(() => import('./features/family/FamilyPage'))
+const MorePage = lazy(() => import('./features/more/MorePage'))
 import PuzzlePage from './features/puzzle/PuzzlePage'
-import RedemptionPuzzleBar from './features/redemption/RedemptionPuzzleBar'
-import RevisitPage from './features/revisit/RevisitPage'
+const RedemptionPuzzleBar = lazy(() => import('./features/redemption/RedemptionPuzzleBar'))
+const RevisitPage = lazy(() => import('./features/revisit/RevisitPage'))
 import useJourney from './features/arrival/useJourney'
 import { syncBonusVisits } from './features/bonus/bonusStore'
 import IntroExperience from './features/intro/IntroExperience'
 import useIntro from './features/intro/useIntro'
-import PaymentDemoPage from './features/payment/PaymentDemoPage'
-import PaymentDemoReturnDialog from './features/payment/PaymentDemoReturnDialog'
-import GiftStageReturnDialog from './features/payment/GiftStageReturnDialog'
-import PhotoStageReturnDialog from './features/photo-service/PhotoStageReturnDialog'
+const PaymentDemoPage = lazy(() => import('./features/payment/PaymentDemoPage'))
+const PaymentDemoReturnDialog = lazy(() => import('./features/payment/PaymentDemoReturnDialog'))
+const GiftStageReturnDialog = lazy(() => import('./features/payment/GiftStageReturnDialog'))
+const PhotoStageReturnDialog = lazy(() => import('./features/photo-service/PhotoStageReturnDialog'))
 import './App.css'
 import './styles/StitchVisual.css'
 import './styles/TextLayout.css'
@@ -30,15 +34,20 @@ function focusPage() {
   })
 }
 export default function App() {
-  return <EntryGate><MuseumApp/></EntryGate>
+  const scope = useSyncExternalStore(subscribePlaySession, getSessionScope)
+  return <Suspense fallback={<p role="status" aria-busy="true">…</p>}><EntryGate key={scope}><MuseumApp/></EntryGate></Suspense>
 }
 function MuseumApp({ onOpenJourneySettings }) {
   const locale = useLocale()
+  const guest = isGuestSession()
+  const c = guestCopy(locale)
+  const privatePage = guest && !['explore', 'puzzles'].includes(currentPage())
   useEffect(() => { document.documentElement.lang = getLocale(); document.title = t('app.title') }, [locale])
   const [page, setPage] = useState(currentPage)
   const journey = useJourney()
   useEffect(() => {
-    const sync = () => syncBonusVisits(journey.completed)
+    const scope = getSessionScope()
+    const sync = () => { if (getSessionScope() === scope) syncBonusVisits(journey.completed) }
     sync()
     const timer = window.setInterval(sync, 30000)
     return () => window.clearInterval(timer)
@@ -48,7 +57,8 @@ function MuseumApp({ onOpenJourneySettings }) {
   useEffect(() => {
     const update = () => setPage(currentPage())
     window.addEventListener('hashchange', update)
-    return () => window.removeEventListener('hashchange', update)
+    const frame = requestAnimationFrame(update)
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('hashchange', update) }
   }, [])
   useEffect(() => {
     const pageChanged = previousPageRef.current !== page
@@ -59,5 +69,5 @@ function MuseumApp({ onOpenJourneySettings }) {
     if (next===page) focusPage()
     else window.location.hash=next
   }
-  return <><AppShell page={page} onNavigate={navigate} onOpenJourneySettings={onOpenJourneySettings}>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">{t('app.intro.session.notice.text')}</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='payment-demo'&&<PaymentDemoPage onNavigate={navigate}/>} {page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</AppShell><PaymentDemoReturnDialog active={page==='train' && intro.phase==='closed'}/><GiftStageReturnDialog active={['train','payment-demo'].includes(page) && intro.phase==='closed'}/><PhotoStageReturnDialog active={page==='photos' && intro.phase==='closed'}/><IntroExperience state={intro} onAction={introAction}/></>
+  return <><AppShell page={page} onNavigate={navigate} onOpenJourneySettings={onOpenJourneySettings}>{guest && <section className="guest-session-bar"><span>{c.guest}</span><HelpTip label={c.guest}>{c.helpBody}</HelpTip><button onClick={requestGuestLogin}>{c.login}</button></section>}{privatePage ? <GuestAccessPanel onNavigate={navigate}/> : <>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">{t('app.intro.session.notice.text')}</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='payment-demo'&&<PaymentDemoPage onNavigate={navigate}/>} {page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</>}</AppShell>{!guest && page==='train' && <><PaymentDemoReturnDialog active={!guest && page==='train' && intro.phase==='closed'}/></>}{!guest && ['train','payment-demo'].includes(page) && <GiftStageReturnDialog active={!guest && ['train','payment-demo'].includes(page) && intro.phase==='closed'}/>}{!guest && page==='photos' && <PhotoStageReturnDialog active={!guest && page==='photos' && intro.phase==='closed'}/>}<IntroExperience state={intro} onAction={introAction}/></>
 }

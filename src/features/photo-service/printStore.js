@@ -26,7 +26,7 @@ export async function bookOrder(input, photos, completed, slots) {
     const tx=db.transaction('orders','readwrite'); const store=tx.objectStore('orders');let result,failure
     const req=store.getAll()
     req.onsuccess=()=> { try { result={...validateBooking(input,photos,completed,req.result,slots),id:crypto.randomUUID(),createdAt:new Date().toISOString()};store.add(result) } catch(e){failure=e;tx.abort()} }
-    tx.oncomplete=()=>resolve(result)
+    tx.oncomplete=()=>{window.dispatchEvent(new Event(stageEvent));resolve(result)}
     tx.onabort=()=>reject(failure || Error('預訂未儲存成功，請重試；沒有收款或送印。'))
   })
 }
@@ -35,7 +35,7 @@ export async function updateOrder(id, action) {
   return new Promise((resolve,reject)=>{
     const tx=db.transaction('orders','readwrite');const store=tx.objectStore('orders');const req=store.get(id);let result,failure
     req.onsuccess=()=>{try{if(!req.result)throw Error('找不到預訂紀錄。');result=changeStatus(req.result,action);store.put(result)}catch(e){failure=e;tx.abort()}}
-    tx.oncomplete=()=>resolve(result)
+    tx.oncomplete=()=>{window.dispatchEvent(new Event(stageEvent));resolve(result)}
     tx.onabort=()=>reject(failure || Error('狀態未儲存成功，請重試。'))
   })
 }
