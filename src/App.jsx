@@ -12,6 +12,7 @@ import ExplorePage from './features/explore/ExplorePage'
 const AssetPreviewPage = lazy(() => import('./features/assets/AssetPreviewPage'))
 const FamilyPage = lazy(() => import('./features/family/FamilyPage'))
 const MorePage = lazy(() => import('./features/more/MorePage'))
+const VisitPage = lazy(() => import('./features/visit/VisitPage'))
 import PuzzlePage from './features/puzzle/PuzzlePage'
 const RedemptionPuzzleBar = lazy(() => import('./features/redemption/RedemptionPuzzleBar'))
 const RevisitPage = lazy(() => import('./features/revisit/RevisitPage'))
@@ -26,7 +27,7 @@ const PhotoStageReturnDialog = lazy(() => import('./features/photo-service/Photo
 import './App.css'
 import './styles/StitchVisual.css'
 import './styles/TextLayout.css'
-const currentPage = () => ['train','photos','family','more','puzzles','revisit','payment-demo'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'explore'
+const currentPage = () => ['train','photos','family','more','puzzles','revisit','payment-demo','visit'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'explore'
 function focusPage() {
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0 })
@@ -41,7 +42,7 @@ function MuseumApp({ onOpenJourneySettings }) {
   const locale = useLocale()
   const guest = isGuestSession()
   const c = guestCopy(locale)
-  const privatePage = guest && !['explore', 'puzzles'].includes(currentPage())
+  const privatePage = guest && !['explore', 'puzzles', 'visit'].includes(currentPage())
   useEffect(() => { document.documentElement.lang = getLocale(); document.title = t('app.title') }, [locale])
   const [page, setPage] = useState(currentPage)
   const journey = useJourney()
@@ -69,5 +70,5 @@ function MuseumApp({ onOpenJourneySettings }) {
     if (next===page) focusPage()
     else window.location.hash=next
   }
-  return <><AppShell page={page} onNavigate={navigate} onOpenJourneySettings={onOpenJourneySettings}>{guest && <section className="guest-session-bar"><span>{c.guest}</span><HelpTip label={c.guest}>{c.helpBody}</HelpTip><button onClick={requestGuestLogin}>{c.login}</button></section>}{privatePage ? <GuestAccessPanel onNavigate={navigate}/> : <>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">{t('app.intro.session.notice.text')}</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='payment-demo'&&<PaymentDemoPage onNavigate={navigate}/>} {page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</>}</AppShell>{!guest && page==='train' && <><PaymentDemoReturnDialog active={!guest && page==='train' && intro.phase==='closed'}/></>}{!guest && ['train','payment-demo'].includes(page) && <GiftStageReturnDialog active={!guest && ['train','payment-demo'].includes(page) && intro.phase==='closed'}/>}{!guest && page==='photos' && <PhotoStageReturnDialog active={!guest && page==='photos' && intro.phase==='closed'}/>}<IntroExperience state={intro} onAction={introAction}/></>
+  return <><AppShell page={page} onNavigate={navigate} onOpenJourneySettings={onOpenJourneySettings}>{guest && <section className="guest-session-bar"><span>{c.guest}</span><HelpTip label={c.guest}>{c.helpBody}</HelpTip><button onClick={requestGuestLogin}>{c.login}</button></section>}{privatePage ? <GuestAccessPanel onNavigate={navigate}/> : <>{intro.sessionOnly && intro.phase === 'closed' && <p className="intro-session-notice" role="status">{t('app.intro.session.notice.text')}</p>}<div hidden={page!=='explore'}><ExplorePage active={page==='explore'}/></div>{page==='payment-demo'&&<PaymentDemoPage onNavigate={navigate}/>} {page==='visit'&&<VisitPage onNavigate={navigate} showServices={!guest}/>} {page==='family'&&<FamilyPage onNavigate={navigate}/>} {page==='puzzles'&&<PuzzlePage/>} {page==='revisit'&&<RevisitPage/>} {page==='train'&&<RedemptionPuzzleBar/>} {page==='more'&&<MorePage onNavigate={navigate} onOpenGuide={event => introAction('replayTutorial', event?.currentTarget)} onReplayWelcome={event => introAction('replayWelcome', event?.currentTarget)}/>} {['train','photos'].includes(page)&&<AssetPreviewPage page={page} onNavigate={navigate}/>}</>}</AppShell>{!guest && page==='train' && <><PaymentDemoReturnDialog active={!guest && page==='train' && intro.phase==='closed'}/></>}{!guest && ['train','payment-demo'].includes(page) && <GiftStageReturnDialog active={!guest && ['train','payment-demo'].includes(page) && intro.phase==='closed'}/>}{!guest && page==='photos' && <PhotoStageReturnDialog active={!guest && page==='photos' && intro.phase==='closed'}/>}<IntroExperience state={intro} onAction={introAction}/></>
 }

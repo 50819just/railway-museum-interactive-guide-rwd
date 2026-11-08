@@ -96,7 +96,7 @@ export default function AppShell({ children, page, onNavigate, onOpenJourneySett
         <div className="mobile-header-start">
           <a className="mobile-brand" href="#explore" onClick={() => onNavigate('explore')} aria-label={t('appShell.brand.aria.label')}><img className="brand-emblem" src={brandMark} width="30" height="34" alt=""/><span className="brand-name">{t('appShell.brand.name.text')}</span></a>
         </div>
-        <span className="desktop-location"><Icon name={page === 'train' ? 'train' : page === 'photos' ? 'camera' : page === 'puzzles' ? 'puzzle' : page === 'more' || page === 'family' ? 'grid' : 'map'} size={18}/> {localize(locationLabels[page])}</span>
+        <span className="desktop-location"><Icon name={page === 'train' ? 'train' : page === 'photos' ? 'camera' : page === 'puzzles' ? 'puzzle' : page === 'more' || page === 'family' ? 'grid' : 'map'} size={18}/> {page === 'visit' ? t('visit.title') : localize(locationLabels[page])}</span>
         <div className="header-actions"><LanguageSwitcher/>
           <button className="header-login-button" type="button" onClick={() => onNavigate('family')} aria-label={t('appShell.copy.family.copy')} title={t('appShell.header.login.button.title')}><Icon name="user" size={19}/><span>{t('appShell.span.text')}</span></button>
           <button ref={menuButtonRef} className="header-menu-button" type="button" aria-label={t('appShell.header.menu.button.aria.label')} aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="app-navigation-dialog" onClick={openMenu}><Icon name="menu" size={23}/></button>
@@ -112,6 +112,7 @@ export default function AppShell({ children, page, onNavigate, onOpenJourneySett
       <div className="navigation-dialog-content">
         <header><div><span className="navigation-dialog-label">{t('appShell.brand.name.text')}</span><h2 id="app-navigation-title">{t('appShell.app.navigation.title.text')}</h2></div><button className="navigation-close-button" type="button" aria-label={t('appShell.navigation.close.button.aria.label')} onClick={closeMenu} autoFocus><Icon name="close"/></button></header>
         <nav aria-label={t('appShell.nav.aria.label.2')}>{navigation.map(item => <button key={item.id} type="button" onClick={() => navigateFromMenu(item.id)} aria-current={activePage === item.id ? 'page' : undefined}><Icon name={item.icon}/><span>{localize(item.name)}</span><Icon name="arrow" size={19}/></button>)}</nav>
+        <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('visit')} aria-current={page === 'visit' ? 'page' : undefined}><Icon name="list"/><span>{t('visit.title')}</span><Icon name="arrow" size={19}/></button>
         <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('more')} aria-current={page === 'more' ? 'page' : undefined}><Icon name="info"/><span>{t('appShell.span.text.2')}</span><Icon name="arrow" size={19}/></button>
         <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('family')}><Icon name="user"/><span>{t('appShell.copy.family.copy')}</span><Icon name="arrow" size={19}/></button>
       </div>

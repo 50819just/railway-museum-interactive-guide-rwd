@@ -30,6 +30,7 @@ export default function MorePage({ onNavigate, onOpenGuide, onReplayWelcome }) {
     <section className="more-services" aria-labelledby="more-services-title">
       <h2 id="more-services-title">{t('morePage.more.services.title.text')}</h2>
       <div className="more-link-group">
+        <button className="more-service-link" type="button" onClick={() => onNavigate('visit')}><span className="more-service-icon"><Icon name="list"/></span><span><strong>{t('visit.title')}</strong><small>{t('visit.entry')}</small></span><Icon name="arrow" size={19}/></button>
         <button className="more-service-link" type="button" onClick={onOpenGuide} disabled={!onOpenGuide}><span className="more-service-icon"><Icon name="info"/></span><span><strong>{t('onboardingDialog.span.text.2')}</strong><small>{t('morePage.small.text')}</small></span><Icon name="arrow" size={19}/></button>
         <button className="more-service-link" type="button" onClick={onReplayWelcome} disabled={!onReplayWelcome}><span className="more-service-icon"><Icon name="train"/></span><span><strong>{t('morePage.strong.text')}</strong><small>{t('morePage.small.text.2')}</small></span><Icon name="arrow" size={19}/></button>
         <button className="more-service-link" type="button" onClick={() => onNavigate('train')}><span className="more-service-icon"><Icon name="train"/></span><span><strong>{t('appShell.copy.name.copy.2')}</strong><small>{t('morePage.small.text.3')}</small></span><Icon name="arrow" size={19}/></button>

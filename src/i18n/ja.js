@@ -1,5 +1,7 @@
+import { visitCatalogs } from '../features/visit/visitCopy.js'
 // Japanese copy; building and source names retain their original spelling.
 export const ja = {
+  ...visitCatalogs.ja,
   "app.intro.session.notice.text": "開始設定は今回のみ有効です。次回の保存は保証されませんが、そのまま利用できます。",
   "activityNotice.activity.demo.notice.aria.label": "旅の案内テロップ",
   "activityNotice.activity.demo.label.text": "ご案内",

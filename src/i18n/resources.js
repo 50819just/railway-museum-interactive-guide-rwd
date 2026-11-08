@@ -1,5 +1,7 @@
+import { visitCatalogs } from '../features/visit/visitCopy.js'
 // Stable semantic keys; legacy messages are localized at the display boundary.
 export const zhTW = {
+  ...visitCatalogs['zh-TW'],
   "app.intro.session.notice.text": "啟動設定目前僅本次有效，無法保證下次記住；不影響這次使用。",
   "activityNotice.activity.demo.notice.aria.label": "旅程提醒跑馬燈",
   "activityNotice.activity.demo.label.text": "旅程提醒",
@@ -1549,6 +1551,7 @@ export const zhTW = {
   "activity.holdHint": "按住內容暫停，放開繼續；鍵盤聚焦時暫停，移開焦點繼續。"
 }
 export const en = {
+  ...visitCatalogs['en'],
   "app.intro.session.notice.text": "Startup settings are saved for this session only. You can still use the guide.",
   "activityNotice.activity.demo.notice.aria.label": "Journey reminders",
   "activityNotice.activity.demo.label.text": "Reminder",
@@ -3098,6 +3101,7 @@ export const en = {
   "activity.holdHint": "Hold to pause; release to resume. Keyboard focus pauses the ribbon; move focus away to resume."
 }
 export const ko = {
+  ...visitCatalogs['ko'],
   "app.intro.session.notice.text": "시작 설정은 이번에만 유지돼요. 이용에는 문제가 없어요.",
   "activityNotice.activity.demo.notice.aria.label": "여정 안내",
   "activityNotice.activity.demo.label.text": "안내",
