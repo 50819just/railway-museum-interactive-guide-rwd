@@ -3,3 +3,8 @@
 
 /* Keep familiar line icons paired with short, accessible labels. */
 .family-page button,.family-icon-label,.family-card h2,.family-permissions dt{display:flex;align-items:center;gap:10px}.family-page button{justify-content:center}.family-page svg{flex-shrink:0}.family-choices{grid-template-columns:repeat(2,minmax(0,1fr))}.family-choices label{flex-wrap:wrap;gap:10px;padding:16px;min-height:76px}.family-help>summary .family-icon-label{display:inline-flex}.family-page button:focus-visible{outline:3px solid var(--teal);outline-offset:4px}@media(max-width:380px){.family-choices{grid-template-columns:1fr}}
+
+/* Short, local feedback; no looping or blocking motion. */
+.family-page button, .family-page .family-choices label { transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease; }
+.family-page button:active:not(:disabled), .family-page .family-choices label:active { transform: scale(.985); }
+@media (prefers-reduced-motion: reduce) { .family-page button, .family-page .family-choices label { transition: none; transform: none !important; } }

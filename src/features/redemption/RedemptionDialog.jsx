@@ -1,3 +1,4 @@
+import FamilyCollectionNotice from '../family-experience/FamilyCollectionNotice'
 import { getLocale } from '../../i18n/runtime.js'
 import { t, localize } from '../../i18n/runtime.js'
 import { useEffect, useRef, useState } from 'react'
@@ -69,6 +70,7 @@ export default function RedemptionDialog({ selectedProductId, redemption, collec
   return <dialog ref={dialog} className="redemption-dialog" aria-labelledby="redemption-dialog-title" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); onClose() }} onClick={backdrop}>
     <header className="redemption-dialog-header"><div><p className="eyebrow">{t('redemptionDialog.eyebrow.text')}</p><h2 id="redemption-dialog-title">{localize(title)}</h2></div><button type="button" className="redemption-dialog-close" aria-label={t('redemptionDialog.redemption.dialog.close.aria.label')} onClick={onClose}><Icon name="close" size={21}/></button></header>
     <div className="redemption-dialog-content">
+      {phase !== 'cancel' && <FamilyCollectionNotice/>}
       {phase === 'confirm' && product && <>
         <div className="redemption-choice"><img src={`${import.meta.env.BASE_URL}images/${product.image}`} alt={localize(`${product.name}的商品圖片`)} width="120" height="120"/><div><p>{t('redemptionDialog.p.text')}</p><h3 tabIndex={-1} data-redeem-focus>{localize(product.name)}</h3><strong>{localize(feeCopy(product.fee))}</strong></div></div>
         <dl className="redemption-checklist"><div><dt>{t('redemptionDialog.dt.text')}</dt><dd>{t('redemptionDialog.dd.text', { value1: localize(collectedCount), value2: localize(collectedCount === 10 ? '・已集滿' : `・還差 ${Math.max(0, 10 - collectedCount)} 片`) })}</dd></div><div><dt>{t('redemptionDialog.dt.text.2')}</dt><dd>{t('redemptionDialog.dd.text.2')}</dd></div><div><dt>{t('redemptionDialog.dt.text.3')}</dt><dd>{localize(availability?.reason || '品項、庫存、服務時間與領取地點仍待正式確認。')}</dd></div></dl>

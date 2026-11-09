@@ -1,3 +1,7 @@
+import FamilyTeamCard from '../family-experience/FamilyTeamCard'
+import FamilyCollectionNotice from '../family-experience/FamilyCollectionNotice'
+import { familyCopy } from '../family-experience/familyCopy.js'
+import useLocale from '../../i18n/useLocale'
 import HelpTip from '../../components/HelpTip'
 import { t, localize } from '../../i18n/runtime.js'
 import { useRef, useState } from 'react'
@@ -16,6 +20,7 @@ function load() {
   } catch { return { state: emptyState(), problem: '無法讀取本機紀錄，為保護原資料，暫停組別操作；規則仍可閱讀。' } }
 }
 export default function FamilyPage({ onNavigate }) {
+  const fc = familyCopy(useLocale())
   const [loaded] = useState(load)
   const [state, setState] = useState(loaded.state)
   const [problem, setProblem] = useState(loaded.problem)
@@ -70,6 +75,9 @@ export default function FamilyPage({ onNavigate }) {
   }
   return <section className="family-page" aria-labelledby="family-title">
     <header className="family-heading"><p className="eyebrow">{t('familyPage.eyebrow.text')}</p><h1 id="family-title" tabIndex={-1}>{t('appShell.copy.family.copy')}</h1><p>{t('familyPage.p.text')}</p></header>
+    <FamilyTeamCard/>
+    <FamilyCollectionNotice/>
+    <HelpTip label={fc.groupLabel}>{fc.group}</HelpTip>
     <DemoLoginCard onSuccess={() => onNavigate('payment-demo')}/>
     <HelpTip label="親子同行玩法說明"><strong>{t('familyPage.h2.text')}</strong><br/>{t('familyPage.p.text.2')}<br/>{t('familyPage.dt.text')}：{t('familyPage.dd.text')}<br/>{t('familyPage.dt.text.2')}：{t('familyPage.dd.text.2')}<br/>{t('familyPage.dt.text.3')}：{t('familyPage.dd.text.3')}<br/>{t('familyPage.dt.text.4')}：{t('familyPage.dd.text.4')}</HelpTip>
     {problem && <p ref={errorRef} tabIndex={-1} className="family-error" role="alert">{localize(problem)}</p>}

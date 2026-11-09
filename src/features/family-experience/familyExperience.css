@@ -1,0 +1,29 @@
+.family-experience-team { margin: 14px 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-card, 18px); background: var(--surface-low); color: var(--teal); overflow-wrap: anywhere; }
+.family-experience-heading { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 1.7; }
+.family-experience-heading > strong { flex: 1; min-width: 0; }
+.family-experience-heading > svg { flex-shrink: 0; }
+.family-experience-roles { display: grid; gap: 8px; padding: 0; margin: 12px 0 0; list-style: none; }
+.family-experience-roles li { display: flex; align-items: center; gap: 9px; font-size: 13px; line-height: 1.8; }
+.family-experience-roles li > span { display: grid; place-items: center; flex-shrink: 0; width: 25px; height: 25px; border-radius: 50%; background: var(--teal); color: var(--paper); font-size: 12px; }
+.family-experience-team > p, .family-experience-clue > p { font-size: 13px; line-height: 1.8; margin: 10px 0 0; }
+.family-experience-clue { margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--gold-action); border-radius: 10px; background: var(--surface-container); }
+.family-experience-clue > strong { font-size: 12px; color: var(--gold-ink); }
+.family-experience-collection { margin: 12px 0; padding: 12px 14px; background: var(--surface-low); border: 1px solid var(--line); border-radius: 12px; text-align: left; overflow-wrap: anywhere; }
+.family-experience-collection p { margin: 0; font-size: 13px; line-height: 1.8; color: var(--teal); }
+.family-experience-collection small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.entry-family-age { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; font-size: 13px; line-height: 1.8; }
+.entry-family-age > span { flex: 1; }
+.bonus-popup-family .bonus-popup-question { animation: family-question-in 180ms ease-out; }
+.bonus-popup-family :is(.bonus-popup-options button,.bonus-popup-primary,.bonus-popup-close) { transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease; }
+.bonus-popup-family :is(.bonus-popup-options button,.bonus-popup-primary,.bonus-popup-close):active:not(:disabled) { transform: scale(.98); }
+.bonus-popup-family .bonus-popup-options button[aria-pressed="true"] .bonus-option-letter { background: var(--teal); color: var(--paper); }
+.bonus-popup-family :is(button,a):focus-visible { outline: 3px solid var(--gold-action); outline-offset: 3px; }
+@keyframes family-question-in { from { opacity: .65; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (min-width: 600px) { .family-experience-roles { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media (prefers-reduced-motion: reduce) { .bonus-popup-family .bonus-popup-question { animation: none; } .bonus-popup-family :is(.bonus-popup-options button,.bonus-popup-primary,.bonus-popup-close) { transition: none; transform: none !important; } }
+
+.family-experience-image { display: block; width: 100%; height: auto; max-height: 190px; object-fit: cover; object-position: 34% 46%; border-radius: 12px; margin-bottom: 12px; }
+.entry-image-option:has(input[value="family"]) > img, .entry-confirm-dialog.is-family .entry-confirm-image { object-position: 34% 46%; }
+
+.family-experience-collection, .entry-family-confirm { display: flex; align-items: center; gap: 6px; }
+.family-experience-collection > p, .entry-family-confirm > p { flex: 1; min-width: 0; }

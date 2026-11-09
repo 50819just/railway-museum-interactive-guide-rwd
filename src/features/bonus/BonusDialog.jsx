@@ -1,3 +1,8 @@
+import FamilyTeamCard from '../family-experience/FamilyTeamCard'
+import FamilyCollectionNotice from '../family-experience/FamilyCollectionNotice'
+import useFamilyParty from '../family-experience/useFamilyParty'
+import { familyCopy } from '../family-experience/familyCopy.js'
+import { familyQuestionPresentation } from '../family-experience/familyExperience.js'
 import { isGuestSession } from '../entry/guestSession'
 import { guestCopy } from '../entry/guestCopy'
 import { getLocale } from '../../i18n/runtime'
@@ -13,13 +18,15 @@ import { awardedPieceIds } from './bonusPresentation'
 import { questionsForQuiz, sourcesForQuestion, validQuestionSet } from './museumQuestionSelection'
 import './BonusDialog.css'
 
-function QuizQuestion({ quiz, questions, onSubmit }) {
+function QuizQuestion({ quiz, questions, onSubmit, party }) {
+  const fc = familyCopy(getLocale())
   const [selected, setSelected] = useState(null)
   const [error, setError] = useState('')
   const errorNotice = useRef(null)
   const locked = useRef(false)
   const question = questions[quiz.step]
-  const easy = quiz.consecutiveWrong >= BONUS_POLICY.easyAfterWrong
+  const presentation = familyQuestionPresentation(question, quiz, party, BONUS_POLICY.easyAfterWrong)
+  const easy = presentation.easy
   function choose(index) { locked.current = false; setSelected(index); setError('') }
   function confirm() {
     if (selected === null || locked.current) return
@@ -33,9 +40,11 @@ function QuizQuestion({ quiz, questions, onSubmit }) {
     <ol className="bonus-popup-steps" aria-label={t('bonusDialog.bonus.popup.steps.aria.label')}>{questions.map((_, index) => <li key={index} className={index < quiz.step ? 'is-done' : index === quiz.step ? 'is-current' : ''} aria-current={index === quiz.step ? 'step' : undefined}><span>{index < quiz.step ? <Icon name="check" size={15}/> : index + 1}</span><small>{localize(index < quiz.step ? '已答對' : index === quiz.step ? '作答中' : '待作答')}</small></li>)}</ol>
     <p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text', { value1: localize(question.stationName || '接續中的玩法題'), value2: localize(quiz.step + 1), value3: localize(questions.length), value4: localize(easy ? '・簡單版本' : '') })}</p>
     <div className="bonus-popup-mission"><p>{stationMission(question.stationId)}</p><HelpTip label={bonusCopy('context')}><p>{bonusCopy('source')}</p><QuestionSources question={question}/></HelpTip></div>
-    <h3 tabIndex={-1} data-bonus-focus>{localize(easy ? question.easyTitle : question.title)}</h3>
-    {easy && <HelpTip label={bonusCopy('hint')}>{localize(question.hint)}</HelpTip>}
-    <div className="bonus-popup-options" role="group" aria-label={t('bonusDialog.bonus.popup.options.aria.label')}>{(easy ? question.easyChoices : question.choices).map((choice, index) => <button key={choice} type="button" aria-pressed={selected === index} onClick={() => choose(index)}><span className="bonus-option-letter">{localize(String.fromCharCode(65 + index))}</span><span>{localize(choice)}</span>{selected === index && <Icon name="check" size={19}/>}</button>)}</div>
+    {presentation.family && <FamilyTeamCard compact/>}
+    <h3 tabIndex={-1} data-bonus-focus>{localize(presentation.title)}</h3>
+    {presentation.family && <div className="family-experience-clue"><strong>{fc.clue}</strong><p>{localize(question.hint)}</p></div>}
+    {easy && !presentation.family && <HelpTip label={bonusCopy('hint')}>{localize(question.hint)}</HelpTip>}
+    <div className="bonus-popup-options" role="group" aria-label={t('bonusDialog.bonus.popup.options.aria.label')}>{presentation.choices.map((choice, index) => <button key={choice} type="button" aria-pressed={selected === index} onClick={() => choose(index)}><span className="bonus-option-letter">{localize(String.fromCharCode(65 + index))}</span><span>{localize(choice)}</span>{selected === index && <Icon name="check" size={19}/>}</button>)}</div>
     <p ref={errorNotice} tabIndex={-1} className="bonus-popup-error" role="alert">{localize(error)}</p>
     <button className="bonus-popup-primary" type="button" disabled={selected === null} onClick={confirm}>{t('bonusDialog.bonus.popup.primary.text')}<Icon name="arrow" size={18}/></button>
   </div>
@@ -48,6 +57,7 @@ function QuestionSources({ question }) {
 }
 
 export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFocusId = 'bonus-title' }) {
+  const party = useFamilyParty()
   const dialog = useRef(null)
   const returnTrigger = useRef(null)
   const returnFocus = useRef(true)
@@ -62,7 +72,7 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
   const legacyQuiz = phase === 'quiz' ? !validQuestionSet(bonus.quiz) : phase === 'review' && !review.question.sourceIds?.length
   const contentNotice = phase === 'quiz' || phase === 'review' ? legacyQuiz ? '接續中的舊版玩法題；下一次挑戰將使用展區知識題。' : '依館方公開資料改寫，非館方核定題庫。' : '拼圖僅記錄於本裝置，不代表館方領獎資格。'
   const step = bonus.quiz?.step
-  const easy = (bonus.quiz?.consecutiveWrong || 0) >= BONUS_POLICY.easyAfterWrong
+  const easy = party === 'family' || (bonus.quiz?.consecutiveWrong || 0) >= BONUS_POLICY.easyAfterWrong
 
   useEffect(() => {
     const element = dialog.current
@@ -108,13 +118,14 @@ export default function BonusDialog({ bonus, onAnswer, onDraw, onClose, returnFo
     const bounds = event.currentTarget.getBoundingClientRect()
     if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onClose()
   }
-  return <dialog ref={dialog} className="bonus-popup" aria-labelledby="bonus-popup-title" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); onClose() }} onClick={backdrop}>
+  return <dialog ref={dialog} className={`bonus-popup${party === 'family' ? ' bonus-popup-family' : ''}`} aria-labelledby="bonus-popup-title" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); onClose() }} onClick={backdrop}>
     <header className="bonus-popup-header"><div><p className="eyebrow">{t('bonusDialog.eyebrow.text')}</p><h2 id="bonus-popup-title">{localize(phase === 'result' ? '旅程的新收穫' : phase === 'draw' ? '抽取拼圖' : '三題小挑戰')}</h2></div><button type="button" className="bonus-popup-close" aria-label={t('bonusDialog.bonus.popup.close.aria.label')} onClick={() => onClose()}><Icon name="close" size={21}/></button></header>
-    {phase === 'quiz' && <QuizQuestion key={`${step}-${easy ? 'easy' : 'normal'}-${challengeQuestions[step]?.id || 'legacy'}`} quiz={bonus.quiz} questions={challengeQuestions} onSubmit={answer}/>}
+    {phase === 'quiz' && <QuizQuestion key={`${step}-${easy ? 'easy' : 'normal'}-${challengeQuestions[step]?.id || 'legacy'}`} quiz={bonus.quiz} questions={challengeQuestions} onSubmit={answer} party={party}/>}
     {phase === 'review' && <section className="bonus-popup-review"><span className="bonus-popup-emblem"><Icon name="check" size={35}/></span><p className="bonus-popup-kicker">{localize(review.last ? '三題挑戰完成' : '這題答對了')}</p><h3 tabIndex={-1} data-bonus-focus>{localize(review.last ? '線索找齊了，準備抽拼圖。' : '答得好，下一題繼續。')}</h3><p>{localize(review.hint)}</p><HelpTip label={bonusCopy('context')}><p>{bonusCopy('source')}</p><QuestionSources question={review.question}/></HelpTip><button type="button" className="bonus-popup-primary" onClick={() => setReview(null)}>{localize(review.last ? '前往抽取拼圖' : '下一題')}<Icon name="arrow" size={18}/></button></section>}
     {phase === 'draw' && <section className="bonus-popup-draw"><span className="bonus-popup-emblem"><Icon name="puzzle" size={42}/></span><p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text.2')}</p><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text')}</h3><p>{t('bonusDialog.p.text.2')}</p><button type="button" className="bonus-popup-primary" onClick={draw} disabled={drawing}>{t('bonusDialog.bonus.popup.primary.text.2')}<Icon name="puzzle" size={20}/></button><p className="bonus-popup-error" role="alert">{localize(error)}</p></section>}
     {phase === 'result' && <section className="bonus-popup-result"><span className="bonus-popup-emblem"><Icon name="puzzle" size={42}/></span><p className="bonus-popup-kicker">{t('bonusDialog.bonus.popup.kicker.text.3')}</p><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text.2', { value1: localize(rewards.length) })}</h3><ul className="bonus-popup-rewards">{rewards.map(id => <li key={id}><span>{localize(stationNumber(id))}</span><div><strong>{localize(stations.find(station => station.id === id)?.name || `第 ${id} 站拼圖`)}</strong><small>{t('bonusDialog.small.text')}</small></div><Icon name="check" size={20}/></li>)}</ul><button type="button" className="bonus-popup-primary" onClick={collect}>{t('bonusDialog.bonus.popup.primary.text.3')}<Icon name="arrow" size={18}/></button><a className="bonus-popup-secondary" href="#explore">{t('bonusDialog.bonus.popup.secondary.text')}</a></section>}
     {phase === 'idle' && <section className="bonus-popup-review"><h3 tabIndex={-1} data-bonus-focus>{t('bonusDialog.h3.text.3')}</h3><p>{t('bonusDialog.p.text.3')}</p><button type="button" className="bonus-popup-primary" onClick={collect}>{t('bonusDialog.bonus.popup.primary.text.3')}</button></section>}
+    {(phase === 'result' || phase === 'draw') && <FamilyCollectionNotice/>}
     <footer className="bonus-popup-footer">
       {bonus.sessionOnly && <p className="bonus-popup-storage-warning" role="status">{t('bonusDialog.bonus.popup.storage.warning.text')}</p>}
       <HelpTip label={bonusCopy('rules')}>

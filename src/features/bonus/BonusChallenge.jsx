@@ -1,3 +1,6 @@
+import FamilyTeamCard from '../family-experience/FamilyTeamCard'
+import FamilyCollectionNotice from '../family-experience/FamilyCollectionNotice'
+import useFamilyParty from '../family-experience/useFamilyParty'
 import HelpTip from '../../components/HelpTip'
 import { bonusCopy, bonusDrawLimit } from './bonusCopy.js'
 import { getLocale } from '../../i18n/runtime.js'
@@ -11,6 +14,7 @@ import { challengeEntry } from './bonusPresentation'
 import './BonusChallenge.css'
 
 export default function BonusChallenge({ completed = [], bonus = {}, onSetDeparture, onStart, onAnswer, onDraw }) {
+  const party = useFamilyParty()
   const [departure, setDeparture] = useState('')
   const [timeFeedback, setTimeFeedback] = useState('')
   const [actionFeedback, setActionFeedback] = useState('')
@@ -45,6 +49,7 @@ export default function BonusChallenge({ completed = [], bonus = {}, onSetDepart
   }
   return <section className="bonus-challenge" aria-labelledby="bonus-title">
     <header className="bonus-heading"><span className="bonus-heading-icon"><Icon name="puzzle" size={25}/></span><div><p className="eyebrow">{t('bonusChallenge.eyebrow.text')}</p><h2 id="bonus-title" tabIndex={-1}>{t('bonusChallenge.bonus.title.text')}</h2></div><span className="bonus-demo-badge">{t('bonusChallenge.bonus.demo.badge.text')}</span></header>
+    {party === 'family' && <><FamilyTeamCard/><FamilyCollectionNotice/></>}
     <p className="bonus-intro">{t('bonusChallenge.bonus.intro.text')}</p>
     <div className="bonus-summary" aria-label={t('bonusChallenge.bonus.summary.aria.label')}><div><span>{t('bonusChallenge.span.text')}</span><strong>{localize(available)}<small>{t('bonusChallenge.small.text')}</small></strong></div><div><span>{t('bonusChallenge.span.text.2')}</span><strong>{localize(used)}<small>{t('bonusChallenge.small.text.2', { value1: localize(bonusDrawLimit(bonus)) })}</small></strong></div><div><span>{t('bonusChallenge.span.text.3')}</span><strong>{localize(pieces.length)}<small>{t('bonusChallenge.small.text.3')}</small></strong></div></div>
     {bonus.sessionOnly && <p className="bonus-storage-warning" role="status">{t('bonusChallenge.bonus.storage.warning.text')}</p>}

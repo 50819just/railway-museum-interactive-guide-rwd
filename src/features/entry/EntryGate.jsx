@@ -1,3 +1,6 @@
+import FamilyTeamCard from '../family-experience/FamilyTeamCard'
+import { familyCopy } from '../family-experience/familyCopy.js'
+import { setActiveFamilyEntry } from '../family-experience/familyExperience.js'
 import useLocale from '../../i18n/useLocale'
 import LanguageSwitcher from '../../i18n/LanguageSwitcher'
 import { getLocale } from '../../i18n/runtime'
@@ -31,7 +34,7 @@ const modeLabel = mode => mode === 'free' ? guestCopy(getLocale()).free : guestC
 const collectionStarted = () => collectedPuzzleIds([...getJourneySnapshot().completed, ...getDrawPieceIds()], getBonusSnapshot()).length > 0
 
 function ConfirmJourneyDialog({ party, mode, onBack, onStart }) {
-  const c = guestCopy(useLocale())
+  const locale = useLocale(), c = guestCopy(locale), fc = familyCopy(locale)
   const dialogRef = useRef(null)
   useEffect(() => {
     const dialog = dialogRef.current
@@ -40,11 +43,12 @@ function ConfirmJourneyDialog({ party, mode, onBack, onStart }) {
     dialog.showModal()
     return () => { dialog.close(); document.body.style.overflow = previous }
   }, [])
-  return <dialog ref={dialogRef} className="entry-mode-dialog entry-confirm-dialog" aria-labelledby="entry-confirm-title" aria-describedby="entry-confirm-rule" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); onBack() }}>
+  return <dialog ref={dialogRef} className={`entry-mode-dialog entry-confirm-dialog${party === 'family' ? ' is-family' : ''}`} aria-labelledby="entry-confirm-title" aria-describedby="entry-confirm-rule" onKeyDown={trapDialogFocus} onCancel={event => { event.preventDefault(); onBack() }}>
     <div className="entry-dialog-content">
-      <img className="entry-confirm-image" src={`${import.meta.env.BASE_URL}images/${party === 'family' ? 'group-entrance.jpg' : 'entry/solo-visit-v1.png'}`} alt="" width="156" height="88"/>
+      <img className="entry-confirm-image" src={`${import.meta.env.BASE_URL}images/${party === 'family' ? 'experience-v1/family-team-v1.jpg' : 'entry/solo-visit-v1.png'}`} alt="" width="156" height="88"/>
       <p className="entry-eyebrow">{c.confirmLabel}</p><h2 id="entry-confirm-title">{c.ready}</h2>
       <p className="entry-confirm-combination">{partyLabel(party)} × {modeLabel(mode)}</p>
+      {party === 'family' && <><FamilyTeamCard compact/><div className="entry-family-confirm"><p className="entry-family-note">{fc.collection}</p><HelpTip label={fc.collectionHelp}>{fc.limit}</HelpTip></div></>}
       <div id="entry-confirm-rule" className="entry-confirm-rule"><p><Icon name="info" size={18}/><strong>{c.rule}</strong></p><small>{c.ruleHint}</small></div>
       <div className="entry-dialog-actions"><button className="entry-secondary" onClick={onBack}>{c.edit}</button><button className="entry-primary" onClick={onStart}>{c.start}<Icon name="arrow" size={18}/></button></div>
     </div>
@@ -52,7 +56,7 @@ function ConfirmJourneyDialog({ party, mode, onBack, onStart }) {
 }
 
 export default function EntryGate({ children }) {
-  const c = guestCopy(useLocale())
+  const locale = useLocale(), c = guestCopy(locale), fc = familyCopy(locale)
   const guest = isGuestSession()
   const [loginOpen, setLoginOpen] = useState(false)
   useEffect(() => { const open = () => setLoginOpen(true); window.addEventListener(GUEST_LOGIN_EVENT, open); return () => window.removeEventListener(GUEST_LOGIN_EVENT, open) }, [])
@@ -78,6 +82,7 @@ export default function EntryGate({ children }) {
   const headingRef = useRef(null)
   const continueRef = useRef(null)
   const phase = entryPhase(record)
+  useEffect(() => { setActiveFamilyEntry(record) }, [record, guest])
   useEffect(() => {
     if (phase === 'ready' && !configuring) return
     headingRef.current?.focus()
@@ -90,6 +95,7 @@ export default function EntryGate({ children }) {
   }
   function commit(next) {
     if (!sessionOnly && !saveEntry(storage, next)) setSessionOnly(true)
+    setActiveFamilyEntry(next)
     setRecord(next)
   }
   function act(action) {
@@ -122,7 +128,7 @@ export default function EntryGate({ children }) {
     catch { /* Continue only for this session. */ }
     const next = entryTransition(record, { type: 'confirm-settings', party })
     if (persisted) commit(next)
-    else { setSessionOnly(true); setRecord(next) }
+    else { setSessionOnly(true); setActiveFamilyEntry(next); setRecord(next) }
     setConfirmOpen(false)
     setConfiguring(false)
     window.location.hash = 'explore'
@@ -152,7 +158,7 @@ export default function EntryGate({ children }) {
             <legend>{c.party}</legend>
             {[
               { id: 'solo', title: c.solo, image: 'entry/solo-visit-v1.png' },
-              { id: 'family', title: c.family, image: 'group-entrance.jpg' },
+              { id: 'family', title: c.family, image: 'experience-v1/family-team-v1.jpg' },
             ].map(option => <label key={option.id} className={`entry-image-option${party === option.id ? ' is-selected' : ''}`}>
               <img src={`${import.meta.env.BASE_URL}images/${option.image}`} alt="" width="360" height="200"/>
               <span className="entry-image-option-copy"><strong>{option.title}</strong></span>
@@ -173,6 +179,7 @@ export default function EntryGate({ children }) {
             </label>)}
           </fieldset>
         </div>
+        {party === 'family' && <><div className="entry-family-age"><span>{fc.age}</span><HelpTip label={fc.age}>{fc.ageHelp}</HelpTip></div><FamilyTeamCard compact/></>}
         {locked && <p className="entry-lock-rule" role="status">已開始收集拼圖，玩法已鎖定。若要更換，請進入旅程後至「旅程設定」重新開始。</p>}
         <div ref={departureRef} className="entry-departure-actions">
           <p className="entry-selection-summary" aria-live="polite">{c.chosen} <strong>{partyLabel(party)} × {modeLabel(mode)}</strong></p>
