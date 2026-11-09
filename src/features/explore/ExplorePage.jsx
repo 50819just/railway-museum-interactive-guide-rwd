@@ -1,3 +1,4 @@
+import StationHighlights from '../highlights/StationHighlights.jsx'
 import { DRAW_OVERLAY_EVENT } from '../draw/drawNavigation.js'
 import NearbyExplore from '../nearby/NearbyExplore.jsx'
 import HelpTip from '../../components/HelpTip'
@@ -101,6 +102,7 @@ export default function ExplorePage({ active = true }) {
             <button className="task-route-button" onClick={openMap}><Icon name="map" size={18}/>{localize(current ? '還沒到？開地圖看看' : '回到園區探索地圖')}</button>
           </>}
         </article>
+        {!completeSummary && <StationHighlights key={`highlights-${selectedId}`} stationId={selectedId}/>}
         {!completeSummary && <NearbyExplore key={selectedId} stationId={selectedId} active={active} bonus={bonus} completed={progress.completed} collectedCount={collectedCount} total={total} onOverlayChange={setNearbyOverlayOpen}/>}
       </div>
       {(progress.sessionOnly || bonus.sessionOnly) && <p className="journey-session-note" role="status">{t('explorePage.journey.session.note.text')}</p>}
