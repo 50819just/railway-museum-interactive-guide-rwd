@@ -117,6 +117,12 @@ test('consumer UI has no development-facing labels, including collapsed content 
       assert.match(content, /if\(!link&&!current.stagePayment\)throw Error/u)
       content = content.replace('本機預訂尚未連結此測試單。', '本機預訂尚未連結此訂單。')
     }
+    // The related-work title is user-requested; it is not a development label.
+    // Keep the exact title checked and continue scanning all other copy.
+    if (file === join(root, 'src/components/relatedWorksCopy.js')) {
+      assert.match(content, /virtualTour: '線上園區模擬逛展'/u)
+      content = content.replace("virtualTour: '線上園區模擬逛展'", "virtualTour: '線上園區逛展'")
+    }
     if (file === join(root, 'src/components/AppShell.jsx')) content = content.replace("'payment-demo': '付款流程 Demo',", "'payment-demo': '付款流程',")
     if (file === join(root, 'src/features/assets/RedemptionPage.jsx')) content = content.replace(/^    <section className="pd-entry"[^\n]*<\/section>\n/m, '')
     assert.doesNotMatch(content, /示範|測試|原型|候選|模擬|樣本|沙盒|演示|\bDemo\b/u, file)
