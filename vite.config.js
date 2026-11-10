@@ -6,4 +6,6 @@ export default defineConfig({
   // Relative URLs work for both GitHub project Pages and local previews.
   base: './',
   plugins: [react()],
+  // Standalone works keep their own embedded modules and import maps.
+  optimizeDeps: { entries: ['index.html'] },
 })

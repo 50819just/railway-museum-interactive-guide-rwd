@@ -1,6 +1,9 @@
+import { relatedWorksCopies, navigationCopies } from '../components/relatedWorksCopy.js'
 import { visitCatalogs } from '../features/visit/visitCopy.js'
 // Japanese copy; building and source names retain their original spelling.
 export const ja = {
+  ...Object.fromEntries(Object.entries(relatedWorksCopies['ja']).map(([key, value]) => [`relatedWorks.${key}`, value])),
+  ...Object.fromEntries(Object.entries(navigationCopies['ja']).map(([key, value]) => [`navigation.${key}`, value])),
   ...visitCatalogs.ja,
   "app.intro.session.notice.text": "開始設定は今回のみ有効です。次回の保存は保証されませんが、そのまま利用できます。",
   "activityNotice.activity.demo.notice.aria.label": "旅の案内テロップ",

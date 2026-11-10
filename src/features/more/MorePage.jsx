@@ -48,6 +48,6 @@ export default function MorePage({ onNavigate, onOpenGuide, onReplayWelcome }) {
       </div>
       <HelpTip label="官方消息來源說明">{t('morePage.more.source.note.text')}</HelpTip>
     </section>
-    <p className="more-release-version">{t('appShell.brand.name.text')}<strong>v{APP_VERSION}</strong><span aria-hidden="true">・</span><time dateTime={RELEASE_DATE}>{formatDate(RELEASE_DATE, {year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'})}</time></p>
+    <p className="more-release-version">{t('appShell.brand.name.text')}<strong>V{APP_VERSION}</strong><span aria-hidden="true">・</span><time dateTime={RELEASE_DATE}>{formatDate(RELEASE_DATE, {year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'})}</time></p>
   </div>
 }

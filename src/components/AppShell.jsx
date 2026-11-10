@@ -8,6 +8,8 @@ import DrawHost from '../features/draw/DrawHost.jsx'
 import ActivityNotice from './ActivityNotice'
 import './BrandIdentity.css'
 import './AppNavigation.css'
+import RelatedWorks from './RelatedWorks'
+import { APP_VERSION } from '../data/release'
 
 const brandMark = `${import.meta.env.BASE_URL}images/railway-arch-mark.svg`
 const navigation = [
@@ -115,6 +117,8 @@ export default function AppShell({ children, page, onNavigate, onOpenJourneySett
         <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('visit')} aria-current={page === 'visit' ? 'page' : undefined}><Icon name="list"/><span>{t('visit.title')}</span><Icon name="arrow" size={19}/></button>
         <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('more')} aria-current={page === 'more' ? 'page' : undefined}><Icon name="info"/><span>{t('appShell.span.text.2')}</span><Icon name="arrow" size={19}/></button>
         <button className="navigation-family-link" type="button" onClick={() => navigateFromMenu('family')}><Icon name="user"/><span>{t('appShell.copy.family.copy')}</span><Icon name="arrow" size={19}/></button>
+        <RelatedWorks/>
+        <p className="navigation-version" aria-label={t('navigation.versionLabel', { version: `V${APP_VERSION}` })}>{t('appShell.brand.name.text')}<span>V{APP_VERSION}</span></p>
       </div>
     </dialog>
   </div>
