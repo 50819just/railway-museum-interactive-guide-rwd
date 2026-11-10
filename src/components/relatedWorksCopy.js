@@ -2,6 +2,10 @@
 export const relatedWorksCopies = {
   'zh-TW': {
     title: '更多作品',
+    desktopTitle: '使用桌面版瀏覽器體驗更佳',
+    desktopMessage: '搭配滑鼠與較大的螢幕，園區探索會更順手。你也可以選擇繼續開啟。',
+    desktopBack: '返回選單',
+    desktopContinue: '繼續開啟',
     hint: '換個方式，繼續探索鐵道',
     official: '火車博物館官方網站',
     virtualTour: '線上園區模擬逛展',
@@ -12,6 +16,10 @@ export const relatedWorksCopies = {
   },
   en: {
     title: 'More to explore',
+    desktopTitle: 'Best experienced in a desktop browser',
+    desktopMessage: 'A mouse and a larger screen make exploring easier. You can still choose to continue.',
+    desktopBack: 'Back to menu',
+    desktopContinue: 'Continue',
     hint: 'Discover another side of the railway',
     official: 'National Railway Museum website',
     virtualTour: 'Virtual museum tour',
@@ -22,6 +30,10 @@ export const relatedWorksCopies = {
   },
   ja: {
     title: 'もっと楽しむ',
+    desktopTitle: 'パソコンのブラウザがおすすめです',
+    desktopMessage: 'マウスと大きな画面があると、園内をより快適に探索できます。このまま開くこともできます。',
+    desktopBack: 'メニューに戻る',
+    desktopContinue: '続けて開く',
     hint: '別の角度から、鉄道の世界へ',
     official: '鉄道博物館公式サイト',
     virtualTour: 'オンライン園内ツアー',
@@ -32,6 +44,10 @@ export const relatedWorksCopies = {
   },
   ko: {
     title: '더 둘러보기',
+    desktopTitle: '데스크톱 브라우저를 권장해요',
+    desktopMessage: '마우스와 큰 화면으로 더 편하게 탐험할 수 있어요. 그대로 열 수도 있어요.',
+    desktopBack: '메뉴로 돌아가기',
+    desktopContinue: '계속 열기',
     hint: '다른 방식으로 철도를 탐험해 보세요',
     official: '철도박물관 공식 웹사이트',
     virtualTour: '온라인 박물관 둘러보기',

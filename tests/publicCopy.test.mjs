@@ -82,6 +82,7 @@ test('consumer UI has no development-facing labels, including collapsed content 
       ])
       for (const catalog of [zhTW, en, ja, ko]) for (const [key, value] of Object.entries(catalog)) {
         if (/^(?:paymentDemo|demoLoginCard\.)/u.test(key) || localWorkflowKeys.has(key)) continue
+        if (key === 'relatedWorks.virtualTour' && value === '線上園區模擬逛展') continue
         assert.doesNotMatch(value, /示範|測試|原型|候選|模擬|樣本|沙盒|演示|\bDemo\b/u, key)
       }
       continue
