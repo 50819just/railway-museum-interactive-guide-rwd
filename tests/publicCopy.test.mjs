@@ -82,7 +82,6 @@ test('consumer UI has no development-facing labels, including collapsed content 
       ])
       for (const catalog of [zhTW, en, ja, ko]) for (const [key, value] of Object.entries(catalog)) {
         if (/^(?:paymentDemo|demoLoginCard\.)/u.test(key) || localWorkflowKeys.has(key)) continue
-        if (key === 'relatedWorks.virtualTour' && value === '線上園區模擬逛展') continue
         assert.doesNotMatch(value, /示範|測試|原型|候選|模擬|樣本|沙盒|演示|\bDemo\b/u, key)
       }
       continue
@@ -121,8 +120,7 @@ test('consumer UI has no development-facing labels, including collapsed content 
     // The related-work title is user-requested; it is not a development label.
     // Keep the exact title checked and continue scanning all other copy.
     if (file === join(root, 'src/components/relatedWorksCopy.js')) {
-      assert.match(content, /virtualTour: '線上園區模擬逛展'/u)
-      content = content.replace("virtualTour: '線上園區模擬逛展'", "virtualTour: '線上園區逛展'")
+      assert.match(content, /virtualTour: '鐵道逛展・卡牌對戰'/u)
     }
     if (file === join(root, 'src/components/AppShell.jsx')) content = content.replace("'payment-demo': '付款流程 Demo',", "'payment-demo': '付款流程',")
     if (file === join(root, 'src/features/assets/RedemptionPage.jsx')) content = content.replace(/^    <section className="pd-entry"[^\n]*<\/section>\n/m, '')
